@@ -7,21 +7,26 @@
 
 ```python
 def triangle_type(a, b, c):
-    # code here ...
-
->>> triangle_type(1, 1, 1)
-равностранен
-
->>> triangle_type(1,41, 1,41, 2)
-равнобедрен
-
->>> triangle_type(3, 4, 5)
-разностранен
+    if a == b and b == c:
+        return "equilateral"
+    elif a == b or a == c or b == c:
+        return "isosceles"
+    else:
+        return "multifaceted"
 ```
 
 ### _> Палиндроми
 Да се напише функция, която приема 2 думи и проверява дали са палиндроми. Палиндром е дума, която прочетена от ляво на дясно и от дясно на ляво са еднакви.
 Думата "невен" е палиндром.
+
+```python
+def test_palindromes(a, b):
+    reversed_a = a[::-1]
+    if reversed_a.lower() == b.lower():
+        print('PALINDROMES')
+    else:
+        print('NOT PALINDROMES')
+```
 
 ### _> Are two words anagrams?
 
@@ -81,21 +86,40 @@ Output:
 ANAGRAMS
 ```
 
+```python
+def test_anagrams(a, b):
+    if sorted(a.lower()) == sorted(b.lower()):
+        print('ANAGRAMS')
+    else:
+        print('NOT ANAGRAMS')
+```
+
 
 ### _>  Броят на четните числа от всички в даден списък
 Дефинирайте функция `evens_count`, която приема като аргумент списък от цели числа и връща като резултат броя четни числа в него.
 
 ```python
->>> events_count([1, 2, 4])
-2
+def events_counter(input_list):
+    even_numbers = 0
+    for a in input_list:
+        if not isinstance(a, int):
+            print('Error: %s is not an integer!'%(a))
+            return
+        if a%2 == 0:
+            even_numbers += 1
+    print(even_numbers)
 ```
 
 ### _> Брой на срещания на дадена дума в списък от думи
 Дефинирайте функция `words_count`, която приема като аргумент списък от думи и дума, и връща колко пъти се среща думата в списъка.
 
 ```python
->>> words_count(['list', 'python', 'word'], 'word')
-1
+def words_count(input_list, word):
+    occurences = 0
+    for current_word in input_list:
+        if current_word.lower() == word.lower():
+           occurences += 1
+    print(occurences)
 ```
 
 ### _> Counting substrings
@@ -108,7 +132,17 @@ For overlapping substrings, check the "baba" example below.
 
 ```python
 def count_substrings(haystack, needle):
-    pass
+    occurences = 0
+
+    current_position = 0
+    while current_position + len(needle) <= len(haystack):
+        if haystack[current_position : current_position + len(needle)] == needle:
+            occurences += 1
+            current_position += len(needle)
+        else:
+            current_position += 1
+
+    print(occurences)
 ```
 
 ***Test examples***
