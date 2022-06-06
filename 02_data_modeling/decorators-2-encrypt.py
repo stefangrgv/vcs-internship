@@ -2,20 +2,25 @@ def encrypt(step_key):
     if not isinstance(step_key, int):
         raise TypeError('Step key must be of type integer!')
 
-    def decorator_outer(fn):
-        def decorator_inner():
-            txt = fn()
-            result = ''
-            for i in range(len(txt)):
-                char = txt[i]
-                #uppercase
-                if char == ' ':
-                    result += ' '
-                elif char.isupper():
-                    result += chr((ord(char) + step_key - 65) % 26 + 65)
-                #lowercase
-                else:
-                    result += chr((ord(char) + step_key - 97) % 26 + 97)
-            return result
-        return decorator_inner
-    return decorator_outer
+    def wrapper(fn):
+        result = ''
+        txt = fn()
+        for char in txt:
+            if not char.isalpha():
+                result += char
+            #uppercase letter
+            elif char.isupper():
+                result += chr((ord(char) + step_key - 65) % 26 + 65)
+            #lowercase letter
+            else:
+                result += chr((ord(char) + step_key - 97) % 26 + 97)
+        return lambda : result
+    return wrapper
+
+@encrypt(2)
+def fox():
+    return 'The quick brown fox jump$ over th3 lazy rabb!t'
+
+encrypted_fox = fox()
+assert encrypted_fox == 'Vjg swkem dtqyp hqz lwor$ qxgt vj3 ncba tcdd!v', 'Error in encrypting fox()'
+print(encrypted_fox)
