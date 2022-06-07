@@ -1,23 +1,18 @@
 def double(x):
     return 2 * x
 
+def identity(x):
+    return x
+
+def compose(outer_func, inner_func):
+    return lambda x: outer_func(inner_func(x))
+
 def iterate(func):
-    def identity(x):
-        return x
-
-    def run_nested_function(x):
-        result = func(x)
-        for n in range(1, i):
-            result = func(result)
-        return result
-
-    i = 0
+    current = identity
     while True:
-        if i == 0:
-            yield identity
-        else:
-            yield run_nested_function
-        i += 1
+        yield current
+        current = compose(func, current)
+
 
 i = iterate(double)
 f = next(i)
