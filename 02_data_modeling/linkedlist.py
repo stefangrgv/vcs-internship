@@ -1,13 +1,42 @@
 class Cons:
-    pass
+    def __init__(self, data, next):
+        self.data = data
+        self.next = next
 
+    def to_list(self):
+        data, next = self.data, self.next
+        as_list = [data]
+        while next != nil:
+            as_list.append(next.data)
+            next = next.next
+        return as_list
+
+    def __repr__(self):
+        as_list = self.to_list()
+        str_repr = '<'
+        for n, item in enumerate(as_list):
+            if n < len(as_list)-1:
+                str_repr += '{}, '.format(item)
+            else:
+                str_repr += '{}>'.format(item)
+        return str_repr
+
+    def __iter__(self):
+        as_list = self.to_list()
+        for i in range(len(as_list)):
+            yield as_list[i]
+
+    def __getitem__(self, item):
+        as_list = self.to_list()
+        return as_list[item]
 
 nil = "?"
 
-
-def make_list(items):
-    pass
-
+def make_list(*items):
+    llist = Cons(items[-1], nil)
+    for i in items[-2::-1]:
+        llist = Cons(i, llist)
+    return llist
 
 """
 Create a linked list with idiomatic python interface
