@@ -30,13 +30,10 @@ class Cons:
 
 class List:
     def __init__(self, *args):
-        llist_length = 1
         next_node = Cons(args[-1], nil)
         for node in list(reversed(args))[1:]:
-            llist_length += 1
             next_node = Cons(node, next_node)
         self.head = next_node
-        self.length = llist_length
 
     def create(*args):
         return List(*args)
@@ -45,40 +42,30 @@ class List:
         return self.head.get_list()
 
     def __repr__(self):
-        return '<'+ ', '.join([str(d) if (self.length > 1) else '' for d in self]) + '>'
+        return '<' + ', '.join([str(d) if (self.head.next != nil) else '' for d in self]) + '>'
 
     def __iter__(self):
-        self.n = 0
-        return self
-
-    def __next__(self):
-        try:
-            result = self[self.n]
-        except IndexError:
-            raise StopIteration
-        self.n += 1
-        return result
-
+        return Iterator(self.head)
 
     def __getitem__(self, item):
-        if item >= self.length:
-            raise IndexError('Index {} is out of bounds for LinkedList of length {}'.format(item, self.length))
+        if item >= 0:
+            current_node = self.head
+            count = 0
+            while current_node:
+                if count == item:
+                    return current_node.data
+                elif current_node.next == nil:
+                    raise IndexError('Index {} out of bounds for linked list of size {}'.format(item, count))
+                else:
+                    current_node = current_node.next
+                    count += 1
 
-        if item < 0:
-            if -item > self.length:
-                raise IndexError(
-                    'Index {} is out of bounds for LinkedList of length {}'.format(item, self.length))
-            else:
-                item = self.length + item
+        else:
+            llist = self.get_list()
+            result = llist[item]
+            return result
 
-        current = 0
-        data = self.head.data
-        next = self.head.next
-        while current != item:
-            data = next.data
-            next = next.next
-            current += 1
-        return data
+
 
 nil = "?"
 
