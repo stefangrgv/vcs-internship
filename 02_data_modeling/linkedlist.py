@@ -42,7 +42,7 @@ class List:
         return self.head.get_list()
 
     def __repr__(self):
-        return '<' + ', '.join([str(d) if (self.head.next != nil) else '' for d in self]) + '>'
+        return '<' + ', '.join([str(d) for d in self if self.head.next != nil]) + '>'
 
     def __iter__(self):
         return Iterator(self.head)
