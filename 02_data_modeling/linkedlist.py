@@ -1,18 +1,28 @@
+class Iterator:
+    def __init__(self, head):
+        self.current = head
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current == nil:
+            raise StopIteration
+        else:
+            item = self.current.data
+            self.current = self.current.next
+            return item
+
 class Cons:
     def __init__(self, data, next):
         self.data = data
         self.next = next
 
-    def get_list(self):
-        data, next = self.data, self.next
-        if data == nil:
-            return list()
+    def __iter__(self):
+        return Iterator(self)
 
-        llist = [data]
-        while next != nil:
-            llist.append(next.data)
-            next = next.next
-        return llist
+    def get_list(self):
+        return [d for d in self]
 
     def __repr__(self):
         return '<' + ', '.join([str(s) for s in self.get_list()]) + '>'
@@ -20,10 +30,13 @@ class Cons:
 
 class List:
     def __init__(self, *args):
+        llist_length = 1
         next_node = Cons(args[-1], nil)
-        for n in range(len(args)-2, -1, -1):
-            next_node = Cons(args[n], next_node)
+        for node in list(reversed(args))[1:]:
+            llist_length += 1
+            next_node = Cons(node, next_node)
         self.head = next_node
+        self.length = llist_length
 
     def create(*args):
         return List(*args)
@@ -32,28 +45,38 @@ class List:
         return self.head.get_list()
 
     def __repr__(self):
-        return str(self.head)
+        return '<'+ ', '.join([str(d) if (self.length > 1) else '' for d in self]) + '>'
 
     def __iter__(self):
-        data, next = self.head.data, self.head.next
-        yield data
-        while next != nil:
-            data, next = next.data, next.next
-            yield data
+        self.n = 0
+        return self
+
+    def __next__(self):
+        try:
+            result = self[self.n]
+        except IndexError:
+            raise StopIteration
+        self.n += 1
+        return result
 
 
     def __getitem__(self, item):
-        len_llist = len(self.get_list())
-        if item >= len_llist:
-            raise IndexError('Index {} is out of bound for LinkedList of length {}'.format(item, len_llist))
+        if item >= self.length:
+            raise IndexError('Index {} is out of bounds for LinkedList of length {}'.format(item, self.length))
 
         if item < 0:
-            item = len_llist - item - 2
+            if -item > self.length:
+                raise IndexError(
+                    'Index {} is out of bounds for LinkedList of length {}'.format(item, self.length))
+            else:
+                item = self.length + item
 
         current = 0
-        data, next = self.head.data, self.head.next
+        data = self.head.data
+        next = self.head.next
         while current != item:
-            data, next = next.data, next.next
+            data = next.data
+            next = next.next
             current += 1
         return data
 
