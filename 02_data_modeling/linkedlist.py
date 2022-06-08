@@ -3,32 +3,59 @@ class Cons:
         self.data = data
         self.next = next
 
-    def to_list(self):
+    def get_list(self):
         data, next = self.data, self.next
-        as_list = [data]
+        if data == nil:
+            return list()
+
+        llist = [data]
         while next != nil:
-            as_list.append(next.data)
+            llist.append(next.data)
             next = next.next
-        return as_list
+        return llist
 
     def __repr__(self):
-        as_list = self.to_list()
-        str_repr = '<'
-        for n, item in enumerate(as_list):
-            if n < len(as_list)-1:
-                str_repr += '{}, '.format(item)
-            else:
-                str_repr += '{}>'.format(item)
-        return str_repr
+        return '<' + ', '.join([str(s) for s in self.get_list()]) + '>'
+
+
+class List:
+    def __init__(self, *args):
+        next_node = Cons(args[-1], nil)
+        for n in range(len(args)-2, -1, -1):
+            next_node = Cons(args[n], next_node)
+        self.head = next_node
+
+    def create(*args):
+        return List(*args)
+
+    def get_list(self):
+        return self.head.get_list()
+
+    def __repr__(self):
+        return str(self.head)
 
     def __iter__(self):
-        as_list = self.to_list()
-        for i in range(len(as_list)):
-            yield as_list[i]
+        data, next = self.head.data, self.head.next
+        yield data
+        while next != nil:
+            data, next = next.data, next.next
+            yield data
+
 
     def __getitem__(self, item):
-        as_list = self.to_list()
-        return as_list[item]
+        len_llist = len(self.get_list())
+        if item >= len_llist:
+            raise IndexError('Index {} is out of bound for LinkedList of length {}'.format(item, len_llist))
+
+        if item < 0:
+            item = len_llist - item - 2
+
+        current = 0
+        data, next = self.head.data, self.head.next
+        while current != item:
+            data, next = next.data, next.next
+            current += 1
+        return data
 
 nil = "?"
 
