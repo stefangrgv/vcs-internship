@@ -59,7 +59,8 @@ class List:
                     return current_node.data
                 elif current_node.next == nil:
                     raise IndexError(
-                        'Index {} out of bounds for linked list of size {}'.format(item, count))
+                        'Index {} out of bounds for linked list of size {}'
+                        .format(item, count))
                 else:
                     current_node = current_node.next
                     count += 1
