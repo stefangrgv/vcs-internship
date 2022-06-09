@@ -4,7 +4,7 @@ def count_substrings(haystack, needle):
     current_position = 0
     while current_position + len(needle) <= len(haystack):
         if haystack[current_position: current_position
-              + len(needle)] == needle:
+                    + len(needle)] == needle:
             occurrences += 1
             current_position += len(needle)
         else:

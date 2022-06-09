@@ -21,9 +21,10 @@ Hint: use list comprehension + recursion
 
 
 def flatten(input_list):
-    elements = [el for el in input_list if not isinstance(el, list)]  # elements
-    lists = [el for el in input_list if isinstance(el, list)]  # lists
-    return (flatten(elements + [i for ll in lists for i in ll]) if len(lists) else elements)
+    elements = [el for el in input_list if not isinstance(el, list)]
+    lists = [el for el in input_list if isinstance(el, list)]
+    return (flatten(elements + [i for ll in lists for i in ll])
+            if len(lists) else elements)
 
 
 if __name__ == "__main__":
