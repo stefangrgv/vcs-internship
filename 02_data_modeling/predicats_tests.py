@@ -1,5 +1,6 @@
 import unittest
-from solution import gt, lt, pred, for_any, for_all, present, eq, oftype
+from predicats import gt, lt, pred, for_any, for_all, present, eq, oftype
+
 
 class PredicatesTest(unittest.TestCase):
     def test_simple_gt(self):
@@ -69,6 +70,7 @@ class PredicatesTest(unittest.TestCase):
     def test_present(self):
         self.assertTrue(present()(0))
         self.assertFalse(present()(None))
+
 
 if __name__ == '__main__':
     unittest.main()
