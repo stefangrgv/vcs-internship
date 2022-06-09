@@ -17,7 +17,7 @@ jobs:
       run: npm install eslint
     - name: Run eslint
       run: |
-        npx eslint .
+        npx eslint
 
   run_python_linters:
     name: Run Python Linter Checks
