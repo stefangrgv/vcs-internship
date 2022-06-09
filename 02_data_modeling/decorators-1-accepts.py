@@ -22,4 +22,3 @@ def greet(name):
 
 greet('Ivan')
 greet(123)
-
