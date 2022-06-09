@@ -1,56 +1,51 @@
 import operator
+import functools
 
 class Predicate:
-    def __init__(self, func, argument=()):
+    def __init__(self, func):
         self.func = func
-        self.argument = argument
 
-    def __call__(self, arg):
-        return self.func(arg)
+    def __call__(self, x):
+        return self.func(x)
 
     def __and__(self, other):
-        return lambda x: self.func(x) * other.func(x)
+        return lambda x: self(x) and other(x)
+
+    def __rand__(self, other):
+        return lambda x: self(x) and other(x)
 
     def __or__(self, other):
-        return lambda x: self.func(x) + other.func(x)
+        return lambda x: self(x) or other(x)
+
+    def __ror__(self, other):
+        return lambda x: self(x) or other(x)
 
     def __invert__(self):
-        return lambda x: not self.func(x)
+        return lambda x: not self(x)
 
     def __rshift__(self, other):
-        return lambda x: not self.func(x) + other.func(x)
+        return lambda x: not self(x) or other(x)
 
 def gt(x):
-    return Predicate(lambda n: n > x, x)
+    return Predicate(lambda n: n > x)
 
 def lt(x):
-    return Predicate(lambda n: n < x, x)
+    return Predicate(lambda n: n < x)
 
 def eq(x):
-    return Predicate(lambda n: n == x, x)
+    return Predicate(lambda n: n == x)
 
 def oftype(x):
-    return Predicate(lambda n: isinstance(n, x), x)
+    return Predicate(lambda n: isinstance(n, x))
 
 def present():
     return Predicate(lambda n: n is not None)
 
 def pred(function):
-    return Predicate(lambda n: bool(function(n)))
-
-def constructor(f, g, op):
-    return lambda x: op(f(x), g(x))
+    return Predicate(lambda n: function(n))
 
 def for_any(*predicates):
-    result = predicates[0]
-    for pred in predicates[1:]:
-        result = constructor(pred.func, result, operator.add)
-
-    return result
+    return functools.reduce(operator.or_, predicates)
 
 def for_all(*predicates):
-    result = predicates[0].func
-    for pred in predicates[1:]:
-        result = constructor(pred.func, result, operator.mul)
-
-    return result
+    return functools.reduce(operator.and_, predicates)
