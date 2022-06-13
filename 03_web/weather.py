@@ -1,47 +1,41 @@
+import sys
 import requests
+from urllib.parse import urlencode
 
-API_URL = "https://api.openweathermap.org/data/2.5/weather?"
+API_URL = "https://api.openweathermap.org/data/2.5/weather"
 API_KEY = "d3606dad4f3cb4e5b81018dbd6ee2445"
 
 
 def get_weather_data(city):
-    url = "{}q={}&appid={}".format(API_URL, city, API_KEY)
+    query = urlencode({"q": city, "appid": API_KEY})
+    url = f'{API_URL}?{query}'
+
     response = requests.get(url)
-
     if response.status_code != 200:
-        print("Error in request! Please make sure the input is correct and try again.")
-        return
+        print("Error in request! Please make sure the input "
+              "is correct and try again.")
+        return None
 
-    data = response.json()
-    return data
+    return response.json()
 
 
 def print_data(data):
-    print("\t{}, {}".format(data["name"], data["sys"]["country"]))
-    print("\tCurrent weather: {}".format(data["weather"][0]["main"]))
-    print("\tTemperature is %2.1f" % (data["main"]["temp"] - 273.15) + u'\N{DEGREE SIGN}' + "C")
-    print("\tAtmospheric pressure is %i hPa" % (data["main"]["pressure"]))
-    print("\tHumidity is %i" % (data["main"]["humidity"]) + "%")
-    return
+    print(f'{data["name"]}, {data["sys"]["country"]}')
+    print(f'Current weather: {data["weather"][0]["main"]}')
+    print(f'Temperature is {(data["main"]["temp"] - 273.15):.1f}'
+          + u'\N{DEGREE SIGN}' + 'C')
+    print(f'Atmospheric pressure is {data["main"]["pressure"]} hPa')
+    print(f'Humidity is {data["main"]["humidity"]}%')
 
 
 def main():
-    print("Weather information")
-    running = True
-    while running:
-        city = input("\nWhich city would you like to get weather data on? ")
+    if len(sys.argv) < 2:
+        raise IOError("Expected location as first argument")
 
-        data = get_weather_data(city)
-        if data is not None:
-            print_data(data)
-
-            again = input("\nWould you like to look up another city? [Y/N] ")
-            while again.lower() != "n" and again.lower() != "y":
-                again = input("\twrong input, please enter Y or N: ")
-
-            if again.lower() == 'n':
-                running = False
-
+    city = sys.argv[1]
+    data = get_weather_data(city)
+    if data is not None:
+        print_data(data)
 
 if __name__ == "__main__":
     main()
