@@ -1,0 +1,42 @@
+var ul = function (items) {
+  var result = items.reduce(function (ul_str, item){
+    ul_str += `\t<li>${item["label"]}</li>\n`
+
+    return ul_str;
+  }, "<ul>\n");
+
+  result += "</ul>";
+
+  return result;
+};
+
+
+var ol = function (items) {
+  var result = items.reduce(function (ol_str, item){
+    ol_str += `\t<li>${item["label"]}</li>\n`
+
+    return ol_str;
+  }, "<ol>\n");
+
+  result += "</ol>";
+
+  return result;
+};
+
+
+var items = [{ "label" : "Item 1"},
+             { "label" : "Item 2", "children" : [
+                {
+                    "label" : "Level 2 of Item 2"
+                },
+                {
+                    "label" : "Another level 2"
+                }
+             ]}];
+
+
+var htmlul = ul(items);
+console.log(htmlul);
+
+var htmlol = ol(items);
+console.log(htmlol);
