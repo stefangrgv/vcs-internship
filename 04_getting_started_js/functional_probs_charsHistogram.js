@@ -13,7 +13,7 @@ var charsHistogram = function (str){
 
 var str = 'Count the characters in this very profound sentence';
 
-correct_result = { c: 4,
+const correctResult = { c: 4,
   o: 3,
   u: 2,
   n: 5,
@@ -31,4 +31,4 @@ correct_result = { c: 4,
   d: 1 }
 
 console.log(charsHistogram(str))
-console.assert(Object.entries(charsHistogram(str)).toString() === Object.entries(correct_result).toString());
+console.assert(Object.entries(charsHistogram(str)).toString() === Object.entries(correctResult).toString());
