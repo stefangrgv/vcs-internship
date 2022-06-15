@@ -1,61 +1,35 @@
-var ul = function (items) {
-  var result = items.reduce(function (ulStr, item){
-    ulStr += `\t<li>${item["label"]}</li>\n`
-    if ("children" in item){
-      var childrenStr = item["children"].reduce(function (chStr, child){
-        chStr += `\t\t\t<li>${child["label"]}</li>\n`;
-
-        return chStr;
-      }, "\t\t<ul>\n");
-
-      childrenStr += "\t\t</ul>\n";
-      childrenStr += "\t</li>\n";
-
-      ulStr += childrenStr;
+var constructItem = function (item){
+  if ('children' in item){
+    return `\t<li>${item['label']}</li>\n\t\t<ol>\n`
+              + item['children']
+                    .map(child => `\t\t\t<li>${child['label']}</li>\n`)
+                    .join('')
+              + '\t\t</ol>\n\t</li>\n';
     }
-    return ulStr;
-  }, "<ul>\n");
+  return `\t<li>${item['label']}</li>\n`;
+}
 
-  result += "</ul>";
-
-  return result;
+var ul = function (items) {
+  return '<ul>\n'+ items.map(function (item){
+    return constructItem(item);
+  }).join('') + '</ul>'
 };
-
 
 var ol = function (items) {
-  var result = items.reduce(function (olStr, item){
-    olStr += `\t<li>${item["label"]}</li>\n`
-    if ("children" in item){
-      var childrenStr = item["children"].reduce(function (chStr, child){
-        chStr += `\t\t\t<li>${child["label"]}</li>\n`;
-
-        return chStr;
-      }, "\t\t<ol>\n");
-
-      childrenStr += "\t\t</ol>\n";
-      childrenStr += "\t</li>\n";
-
-      olStr += childrenStr;
-    }
-    return olStr;
-  }, "<ol>\n");
-
-  result += "</ol>";
-
-  return result;
+  return '<ol>\n'+ items.map(function (item){
+    return constructItem(item);
+  }).join('') + '</ol>'
 };
 
-
-var items = [{ "label" : "Item 1"},
-             { "label" : "Item 2", "children" : [
+var items = [{ 'label' : 'Item 1'},
+             { 'label' : 'Item 2', 'children' : [
                 {
-                    "label" : "Level 2 of Item 2"
+                    'label' : 'Level 2 of Item 2'
                 },
                 {
-                    "label" : "Another level 2"
+                    'label' : 'Another level 2'
                 }
              ]}];
-
 
 var htmlul = ul(items);
 console.log(htmlul);
