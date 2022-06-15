@@ -1,13 +1,13 @@
 var wordsHistogram = function (str){
   const punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
-  const regex_punctuation = new RegExp('[' + punctuation + ']', 'g');
+  const regexPunctuation = new RegExp('[' + punctuation + ']', 'g');
 
-  str = str.replace(regex_punctuation, "");
+  str = str.replace(regexPunctuation, "");
   str = str.toLowerCase();
   const words = str.split(" ");
 
   var histogram = words.reduce(function (hist, currentWord){
-    !hist.hasOwnProperty(currentWord) ? hist[currentWord] = 1 : hist[currentWord] += 1;
+    !(currentWord in hist) ? hist[currentWord] = 1 : hist[currentWord] += 1;
 
     return hist;
   }, {});

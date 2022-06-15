@@ -18,7 +18,7 @@ var students = [{
 
 var pluck = function (property, arr) {
   var result = arr.reduce(function (total, currentElement){
-    if (currentElement.hasOwnProperty(property)){
+    if (property in currentElement){
       total = total.concat(currentElement[property]);
     }
 

@@ -1,19 +1,19 @@
 var ul = function (items) {
-  var result = items.reduce(function (ul_str, item){
-    ul_str += `\t<li>${item["label"]}</li>\n`
-    if (item.hasOwnProperty("children")){
-      var children_str = item["children"].reduce(function (ch_str, child){
-        ch_str += `\t\t\t<li>${child["label"]}</li>\n`;
+  var result = items.reduce(function (ulStr, item){
+    ulStr += `\t<li>${item["label"]}</li>\n`
+    if ("children" in item){
+      var childrenStr = item["children"].reduce(function (chStr, child){
+        chStr += `\t\t\t<li>${child["label"]}</li>\n`;
 
-        return ch_str;
+        return chStr;
       }, "\t\t<ul>\n");
 
-      children_str += "\t\t</ul>\n";
-      children_str += "\t</li>\n";
+      childrenStr += "\t\t</ul>\n";
+      childrenStr += "\t</li>\n";
 
-      ul_str += children_str;
+      ulStr += childrenStr;
     }
-    return ul_str;
+    return ulStr;
   }, "<ul>\n");
 
   result += "</ul>";
@@ -23,21 +23,21 @@ var ul = function (items) {
 
 
 var ol = function (items) {
-  var result = items.reduce(function (ol_str, item){
-    ol_str += `\t<li>${item["label"]}</li>\n`
-    if (item.hasOwnProperty("children")){
-      var children_str = item["children"].reduce(function (ch_str, child){
-        ch_str += `\t\t\t<li>${child["label"]}</li>\n`;
+  var result = items.reduce(function (olStr, item){
+    olStr += `\t<li>${item["label"]}</li>\n`
+    if ("children" in item){
+      var childrenStr = item["children"].reduce(function (chStr, child){
+        chStr += `\t\t\t<li>${child["label"]}</li>\n`;
 
-        return ch_str;
+        return chStr;
       }, "\t\t<ol>\n");
 
-      children_str += "\t\t</ol>\n";
-      children_str += "\t</li>\n";
+      childrenStr += "\t\t</ol>\n";
+      childrenStr += "\t</li>\n";
 
-      ol_str += children_str;
+      olStr += childrenStr;
     }
-    return ol_str;
+    return olStr;
   }, "<ol>\n");
 
   result += "</ol>";
