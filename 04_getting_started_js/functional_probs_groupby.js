@@ -19,7 +19,7 @@ var students = [{
 var groupBy = function(groupingFunction, arr) {
   return arr.reduce(function (groupedArr, element){
     const currentKey = groupingFunction(element).toString();
-    if (groupedArr.hasOwnProperty(currentKey)){
+    if (groupedArr.hasOwnProperty(currentKey)){ // eslint-disable-line no-prototype-builtins
       groupedArr[currentKey] = groupedArr[currentKey].concat(element);
     } else {
       groupedArr[currentKey] = [element]
@@ -27,8 +27,6 @@ var groupBy = function(groupingFunction, arr) {
 
     return groupedArr;
   },{});
-
-  return groupedArr;
 };
 
 
