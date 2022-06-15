@@ -1,5 +1,4 @@
-
-var range = function (from, to) {
+let range = function (from, to) {
   if (from === to){
     return [to];
   }

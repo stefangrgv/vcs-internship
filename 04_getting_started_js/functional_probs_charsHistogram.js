@@ -1,14 +1,14 @@
 var charsHistogram = function (str){
   const punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
-  const regex_punctuation = new RegExp('[' + punctuation + ']', 'g');
+  const regexPunctuation = new RegExp('[' + punctuation + ']', 'g');
 
-  str = str.replace(regex_punctuation, "");
+  str = str.replace(regexPunctuation, "");
   str = str.replace(/\s/g, "");
   str = str.toLowerCase();
   const strArray = Array.from(str);
 
   var histogram = strArray.reduce(function (hist, currentChar){
-    !hist.hasOwnProperty(currentChar) ? hist[currentChar] = 1 : hist[currentChar] += 1;
+    !(currentChar in hist) ? hist[currentChar] = 1 : hist[currentChar] += 1;
 
     return hist;
   }, {});

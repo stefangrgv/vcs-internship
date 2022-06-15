@@ -1,10 +1,10 @@
-var zip = function (){
-  args = Array.from(arguments);
+let zip = function (){
+  let args = Array.from(arguments);
 
   return args[0].map(function (_, i){
-    return args.reduce(function (zip_element, currentArg){
-      zip_element = zip_element.concat(currentArg[i]);
-      return zip_element;
+    return args.reduce(function (zipElement, currentArg){
+      zipElement = zipElement.concat(currentArg[i]);
+      return zipElement;
     }, []);
   });
 }
