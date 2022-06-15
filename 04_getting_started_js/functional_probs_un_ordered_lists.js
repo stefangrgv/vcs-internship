@@ -1,8 +1,8 @@
 var ul = function (items) {
-  var result = items.reduce(function (ul_str, item){
-    ul_str += `\t<li>${item["label"]}</li>\n`
+  var result = items.reduce(function (ulStr, item){
+    ulStr += `\t<li>${item["label"]}</li>\n`
 
-    return ul_str;
+    return ulStr;
   }, "<ul>\n");
 
   result += "</ul>";
@@ -12,10 +12,10 @@ var ul = function (items) {
 
 
 var ol = function (items) {
-  var result = items.reduce(function (ol_str, item){
-    ol_str += `\t<li>${item["label"]}</li>\n`
+  var result = items.reduce(function (olStr, item){
+    olStr += `\t<li>${item["label"]}</li>\n`
 
-    return ol_str;
+    return olStr;
   }, "<ol>\n");
 
   result += "</ol>";
