@@ -1,36 +1,26 @@
 var ul = function (items) {
-  var result = items.reduce(function (ulStr, item){
-    ulStr += `\t<li>${item["label"]}</li>\n`
-
-    return ulStr;
-  }, "<ul>\n");
-
-  result += "</ul>";
-
-  return result;
+  return '<ul>\n'+ items
+                      .map( item => `\t<li>${item['label']}</li>\n`)
+                      .join('')
+                    + '</ul>'
 };
 
 
 var ol = function (items) {
-  var result = items.reduce(function (olStr, item){
-    olStr += `\t<li>${item["label"]}</li>\n`
-
-    return olStr;
-  }, "<ol>\n");
-
-  result += "</ol>";
-
-  return result;
+  return '<ol>\n'+ items
+                      .map( item => `\t<li>${item['label']}</li>\n`)
+                      .join('')
+                    + '</ol>'
 };
 
 
-var items = [{ "label" : "Item 1"},
-             { "label" : "Item 2", "children" : [
+var items = [{ 'label' : 'Item 1'},
+             { 'label' : 'Item 2', 'children' : [
                 {
-                    "label" : "Level 2 of Item 2"
+                    'label' : 'Level 2 of Item 2'
                 },
                 {
-                    "label" : "Another level 2"
+                    'label' : 'Another level 2'
                 }
              ]}];
 
