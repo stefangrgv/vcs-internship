@@ -20,11 +20,7 @@ var groupBy = function(groupingFunction, arr) {
   var group_arr = {};
   arr.forEach(function(element){
     const currentKey = groupingFunction(element).toString();
-    if (!group_arr.hasOwnProperty(currentKey)){
-      group_arr[currentKey] = [element];
-    } else {
-      group_arr[currentKey].push(element);
-    }
+    !group_arr.hasOwnProperty(currentKey) ? group_arr[currentKey] = [element] : group_arr[currentKey].push(element);
   });
 
   return group_arr;

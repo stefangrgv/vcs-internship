@@ -1,15 +1,16 @@
 function sum(a, b){
-  if ((typeof a === "number") && (typeof b === "number"))
+  if ((typeof a === "number") && (typeof b === "number")){
     return a + b;
-  else
+  } else {
     throw new TypeError("Both arguments must be numbers!");
+  }
 }
 
 function concat(a, b){
-  if ((typeof a === "string") && (typeof b === "string"))
+  if ((typeof a === "string") && (typeof b === "string")){
     return a + b;
-  else {
-    throw new TypeError("Both arguments must be strings!")
+  } else {
+    throw new TypeError("Both arguments must be strings!");
   }
 }
 

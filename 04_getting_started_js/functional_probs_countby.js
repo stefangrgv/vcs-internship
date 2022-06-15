@@ -16,21 +16,17 @@ var students = [{
 }];
 
 
-var countBy = function(countingFunction, arr) {
-  var count_arr = {};
-  arr.forEach(function(element){
-    const counted_el = countingFunction(element);
-    if (counted_el in count_arr){
-      count_arr[counted_el] += 1;
-    } else{
-      count_arr[counted_el] = 1;
-    }
+var countBy = function (countingFunction, arr) {
+  var countArr = {};
+  arr.forEach(function (element){
+    const countedElement = countingFunction(element);
+    countedElement in countArr ? countArr[countedElement] += 1 : countArr[countedElement] = 1;
   });
 
-  return count_arr;
+  return countArr;
 };
 
 
-console.log(countBy(function(student) {
+console.log(countBy(function (student) {
   return student.course;
 }, students));
