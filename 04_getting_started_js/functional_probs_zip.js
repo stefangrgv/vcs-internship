@@ -4,7 +4,7 @@ let zip = function (){
   return args[0].map(function (element, i){
     let currentArray = [];
     args.forEach(function (arg, j){
-      currentArray = currentArray.concat(arg[i]));
+      currentArray = currentArray.concat(arg[i]);
     }
     return currentArray;
   });
