@@ -14,10 +14,13 @@ jobs:
       with:
         node-version: '14.x'
     - name: Install npm dependencies
-      run: npm install eslint
-    - name: Run eslint
+      run: |
+        npm install eslint
+        npm install standard --global
+    - name: Run eslint, standard
       run: |
         npx eslint
+        npx standard
 
   run_python_linters:
     name: Run Python Linter Checks
