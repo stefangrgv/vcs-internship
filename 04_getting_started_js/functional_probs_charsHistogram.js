@@ -8,11 +8,7 @@ var charsHistogram = function (str){
   const strArray = Array.from(str);
 
   var histogram = strArray.reduce(function (hist, currentChar){
-    if (!hist.hasOwnProperty(currentChar)){
-      hist[currentChar] = 1;
-    } else {
-      hist[currentChar] += 1;
-    }
+    !hist.hasOwnProperty(currentChar) ? hist[currentChar] = 1 : hist[currentChar] += 1;
 
     return hist;
   }, {});

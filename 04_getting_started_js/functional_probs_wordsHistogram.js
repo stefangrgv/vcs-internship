@@ -7,11 +7,7 @@ var wordsHistogram = function (str){
   const words = str.split(" ");
 
   var histogram = words.reduce(function (hist, currentWord){
-    if (!hist.hasOwnProperty(currentWord)){
-      hist[currentWord] = 1;
-    } else {
-      hist[currentWord] += 1;
-    }
+    !hist.hasOwnProperty(currentWord) ? hist[currentWord] = 1 : hist[currentWord] += 1;
 
     return hist;
   }, {});
