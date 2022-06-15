@@ -20,7 +20,7 @@ jobs:
     - name: Run eslint, standard
       run: |
         npx eslint
-        npx standard
+        npx standard --fix
 
   run_python_linters:
     name: Run Python Linter Checks
