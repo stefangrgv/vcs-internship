@@ -17,13 +17,18 @@ var students = [{
 
 
 var countBy = function (countingFunction, arr) {
-  var countArr = {};
-  arr.forEach(function (element){
+  return arr.reduce(function (countedArr, element){
     const countedElement = countingFunction(element);
-    countedElement in countArr ? countArr[countedElement] += 1 : countArr[countedElement] = 1;
-  });
+    if (countedArr.hasOwnProperty(countedElement)){
+      countedArr[countedElement] += 1;
+    } else {
+      countedArr[countedElement] = 1;
+    }
 
-  return countArr;
+    return countedArr;
+  },{});
+
+  return countedArr;
 };
 
 

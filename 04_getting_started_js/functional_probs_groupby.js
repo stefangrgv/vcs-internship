@@ -17,13 +17,18 @@ var students = [{
 
 
 var groupBy = function(groupingFunction, arr) {
-  var groupArr = {};
-  arr.forEach(function(element){
+  return arr.reduce(function (groupedArr, element){
     const currentKey = groupingFunction(element).toString();
-    !(currentKey in groupArr) ? groupArr[currentKey] = [element] : groupArr[currentKey].push(element);
-  });
+    if (groupedArr.hasOwnProperty(currentKey)){
+      groupedArr[currentKey] = groupedArr[currentKey].concat(element);
+    } else {
+      groupedArr[currentKey] = [element]
+    }
 
-  return groupArr;
+    return groupedArr;
+  },{});
+
+  return groupedArr;
 };
 
 
