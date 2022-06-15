@@ -5,7 +5,7 @@ let zip = function (){
     let currentArray = [];
     args.forEach(function (arg, j){
       currentArray = currentArray.concat(arg[i]);
-    }
+    })
     return currentArray;
   });
 }
