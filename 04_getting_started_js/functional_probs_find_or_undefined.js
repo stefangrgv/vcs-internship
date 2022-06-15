@@ -2,7 +2,7 @@ var find = function(predicate, arr) {
   return arr.find(predicate);
 };
 
-p = function(x){
+var p = function(x){
   return x > 3;
 }
 

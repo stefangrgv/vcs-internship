@@ -1,5 +1,5 @@
 var only = function(type, arr) {
-  return arr.every(e => typeof e === type)
+  return arr.every(e => typeof e === type.toString())
 };
 
 const arr = [1,2,3,4];
