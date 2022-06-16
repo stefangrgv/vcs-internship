@@ -14,7 +14,9 @@ jobs:
       with:
         node-version: '14.x'
     - name: Install npm dependencies
-      run: npm install eslint
+      run: |
+        npm install eslint --save-dev
+        npm init @eslint/config
     - name: Run eslint
       run: |
         npx eslint
