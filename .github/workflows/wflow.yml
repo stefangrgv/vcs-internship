@@ -17,7 +17,7 @@ jobs:
       run: npm install eslint --save
     - name: Run eslint
       run: |
-        run: npm init @eslint/config
+        npm init @eslint/config
         npx eslint .
 
   run_python_linters:
