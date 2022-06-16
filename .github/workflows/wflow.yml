@@ -14,7 +14,9 @@ jobs:
       with:
         node-version: '14.x'
     - name: Install npm dependencies
-      run: npm install eslint --save
+      run: |
+        npm install eslint --save
+        npm install @babel/eslint-parser --save-dev
     - name: Run eslint
       run: |
         npm init @eslint/config
