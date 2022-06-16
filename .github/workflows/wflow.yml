@@ -14,11 +14,10 @@ jobs:
       with:
         node-version: '14.x'
     - name: Install npm dependencies
-      run: npm install eslint
-    - name: Configure eslint
-      run: npm init @eslint/config
+      run: npm install eslint --save
     - name: Run eslint
       run: |
+        run: npm init @eslint/config
         npx eslint .
 
   run_python_linters:
