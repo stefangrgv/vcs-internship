@@ -19,11 +19,7 @@ var students = [{
 var countBy = function (countingFunction, arr) {
   return arr.reduce(function (countedArr, element) {
     var countedElement = countingFunction(element);
-    if (countedArr.hasOwnProperty(countedElement)) {
-      countedArr[countedElement] += 1;
-    } else {
-      countedArr[countedElement] = 1;
-    }
+    countedArr[countedElement] = (countedArr[countedElement] || 0) + 1;
 
     return countedArr;
   },{});
