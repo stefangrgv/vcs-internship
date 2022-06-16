@@ -19,7 +19,7 @@ var students = [{
 var countBy = function (countingFunction, arr) {
   return arr.reduce(function (countedArr, element){
     const countedElement = countingFunction(element);
-    if (countedArr.hasOwnProperty(countedElement)){ // eslint-disable-line no-prototype-builtins
+    if (countedArr.hasOwnProperty(countedElement)){
       countedArr[countedElement] += 1;
     } else {
       countedArr[countedElement] = 1;
