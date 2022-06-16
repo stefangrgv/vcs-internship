@@ -17,6 +17,7 @@ jobs:
       run: |
         npm install eslint --save
         npm install @babel/eslint-parser --save-dev
+        npm install @babel/core --save
     - name: Run eslint
       run: |
         npm init @eslint/config
