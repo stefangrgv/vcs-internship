@@ -1,5 +1,5 @@
-var always = function(value) {
-  return function(){
+var always = function (value) {
+  return function () {
     return value;
   };
 };

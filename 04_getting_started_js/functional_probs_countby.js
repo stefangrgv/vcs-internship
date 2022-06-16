@@ -1,25 +1,25 @@
 var students = [{
-  "name" : "Daniel Taskoff",
-  "course" : "Frontend JavaScript"
+  'name' : 'Daniel Taskoff',
+  'course' : 'Frontend JavaScript'
 }, {
-  "name" : "Elena Jeleva",
-  "course" : "Programming 101"
+  'name' : 'Elena Jeleva',
+  'course' : 'Programming 101'
 }, {
-  "name" : "Luboslava Dimitrova",
-  "course" : "Frontend JavaScript"
+  'name' : 'Luboslava Dimitrova',
+  'course' : 'Frontend JavaScript'
 }, {
-  "name" : "Anton Antonov",
-  "course" : "Core Java"
+  'name' : 'Anton Antonov',
+  'course' : 'Core Java'
 }, {
-  "name" : "Nikola Dichev",
-  "course" : "Core Java"
+  'name' : 'Nikola Dichev',
+  'course' : 'Core Java'
 }];
 
 
 var countBy = function (countingFunction, arr) {
-  return arr.reduce(function (countedArr, element){
-    const countedElement = countingFunction(element);
-    if (countedArr.hasOwnProperty(countedElement)){
+  return arr.reduce(function (countedArr, element) {
+    var countedElement = countingFunction(element);
+    if (countedArr.hasOwnProperty(countedElement)) {
       countedArr[countedElement] += 1;
     } else {
       countedArr[countedElement] = 1;

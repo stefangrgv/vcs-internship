@@ -1,7 +1,14 @@
 var without = function (exclude, arr) {
-  return arr.filter(function (el){
+  return arr.filter(function (el) {
     return !exclude.includes(el);
   });
 }
 
-console.log("[1,2,3,4,5,6] without [5,6] is ", without([5,6], [1,2,3,4,5,6])); // [1,2,3,4]
+var arrayEquals = function (a, b) {
+  return Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index]);
+}
+var expectedResult = [1,2,3,4];
+console.assert(arrayEquals(without([5,6], [1,2,3,4,5,6]), expectedResult));
