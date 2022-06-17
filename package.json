@@ -1,3 +1,23 @@
 {
-
+  "name": "vcs-internship",
+  "version": "1.0.0",
+  "description": "",
+  "main": ".eslintrc.js",
+  "scripts": {
+    "eslint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stefangrgv/vcs-internship.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stefangrgv/vcs-internship/issues"
+  },
+  "homepage": "https://github.com/stefangrgv/vcs-internship#readme",
+  "devDependencies": {
+    "eslint": "^8.17.0"
+  }
 }
