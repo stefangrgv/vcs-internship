@@ -14,14 +14,9 @@ jobs:
       with:
         node-version: '14.x'
     - name: Install npm dependencies
-      run: |
-        npm install eslint --save
-        npm install @babel/eslint-parser --save-dev
-        npm install @babel/core --save
+      run: npm install eslint
     - name: Run eslint
-      run: |
-        npm init @eslint/config
-        npx eslint .
+      run: npx eslint .
 
   run_python_linters:
     name: Run Python Linter Checks
