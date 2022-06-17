@@ -3,7 +3,6 @@ module.exports = {
     'extends': [
         'eslint:recommended'
     ],
-    'parser': '@babel/eslint-parser',
     'parserOptions': {
           'requireConfigFile': false
     },

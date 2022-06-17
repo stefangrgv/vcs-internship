@@ -1,5 +1,7 @@
 var containsAll = function (elements, arr) {
-  return elements.every(e => arr.includes(e));
+  return elements.every(function (e) {
+    return arr.includes(e);
+  });
 }
 
 console.assert(!(containsAll([1, 4], [1, 2, 3])));
