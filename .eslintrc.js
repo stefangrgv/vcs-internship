@@ -4,7 +4,10 @@ module.exports = {
         'eslint:recommended'
     ],
     'parserOptions': {
-          'requireConfigFile': false
+          'requireConfigFile': false,
+          'ecmaVersion': 6,
+          'sourceType': 'script',
+          'ecmaFeatures': {}
     },
     'rules': {
           'camelcase': ['error', {
@@ -12,11 +15,10 @@ module.exports = {
                                 }],
           'space-before-function-paren': ['error', 'always'],
           'space-before-blocks': ['error', 'always'],
-          'quotes': [2, 'single', { 'avoidEscape': true }],
-          'no-prototype-builtins': [0],
+          'quotes': [2, 'single', {'allowTemplateLiterals': true, 'avoidEscape': true}],
     },
     'env': {
       'browser': true,
       'node': true,
-    }
+    },
 }
