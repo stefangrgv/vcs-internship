@@ -4,7 +4,10 @@ module.exports = {
         'eslint:recommended'
     ],
     'parserOptions': {
-          'requireConfigFile': false
+          'requireConfigFile': false,
+          'ecmaVersion': 6,
+          'sourceType': 'script',
+          'ecmaFeatures': {}
     },
     'rules': {
           'camelcase': ['error', {
@@ -18,9 +21,4 @@ module.exports = {
       'browser': true,
       'node': true,
     },
-    'parserOptions': {
-      'ecmaVersion': 6,
-      'sourceType': 'script',
-      'ecmaFeatures': {}
-  }
 }
