@@ -1,5 +1,5 @@
-class Point{
-    constructor(x, y) {
+class Point {
+    constructor (x, y) {
         if (!(typeof x === 'number') || !(typeof y === 'number')) {
             throw Error('Point coordinates (x, y) must be numbers!');
         }
@@ -7,27 +7,27 @@ class Point{
         this._y = y;
     }
 
-    get x() {
+    get x () {
         return this._x;
     }
 
-    get y() {
+    get y () {
         return this._y;
     }
 
-    xInc() {
+    xInc () {
         this._x += 1;
     }
 
-    xDec() {
+    xDec () {
         this._x -= 1;
     }
 
-    yInc() {
+    yInc () {
         this._y += 1;
     }
 
-    yDec() {
+    yDec () {
         this._y -= 1;
     }
 }
@@ -42,11 +42,11 @@ Point.prototype.equals = function (other) {
     return false;
 }
 
-point1 = new Point(0,2);
+var point1 = new Point(0,2);
 point1.xInc();
 point1.xInc();
 point1.yInc();
 
-point2 = new Point(2,3);
+var point2 = new Point(2,3);
 
 console.assert(point1.equals(point2));
