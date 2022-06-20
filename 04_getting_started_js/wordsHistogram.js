@@ -2,7 +2,7 @@ var wordsHistogram = function (str) {
   var processedStr = str.replace(/[^a-z0-9\s]/gi, '').toLowerCase();
   var words = processedStr.split(' ');
   var histogram = words.reduce(function (hist, currentWord) {
-    currentWord in hist ? hist[currentWord] += 1 : hist[currentWord] = 1;
+    hist[currentWord] = (hist[currentWord] || 0) + 1;
 
     return hist;
   }, {});

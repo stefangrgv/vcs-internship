@@ -3,7 +3,7 @@ var charsHistogram = function (str) {
   var strArray = Array.from(processedStr);
 
   var histogram = strArray.reduce(function (hist, currentChar) {
-    currentChar in hist ? hist[currentChar] += 1 : hist[currentChar] = 1;
+    hist[currentChar] = (hist[currentChar] || 0) + 1;
 
     return hist;
   }, {});
