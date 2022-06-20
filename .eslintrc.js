@@ -3,7 +3,13 @@ module.exports = {
     'extends': [
         'eslint:recommended'
     ],
+    'parserOptions': {
+          'requireConfigFile': false
+    },
     'rules': {
+          'camelcase': ['error', {
+                                  'properties': 'always'
+                                }],
           'space-before-function-paren': ['error', 'always'],
           'space-before-blocks': ['error', 'always'],
           'quotes': [2, 'single', {'allowTemplateLiterals': true, 'avoidEscape': true}],
@@ -17,5 +23,4 @@ module.exports = {
       'sourceType': 'script',
       'ecmaFeatures': {}
   }
-
 }
