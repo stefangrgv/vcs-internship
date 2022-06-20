@@ -1,72 +1,53 @@
 // String prototypes
-Object.assign(String.prototype,{
-  capitalize () {
-    return this.toUpperCase();
-  }
-});
+String.prototype.capitalize = function () {
+  return this.toUpperCase();
+};
 
-Object.assign(String.prototype, {
-  dasherize () {
-    return this.replace(/_/g, '-');
-  }
-});
+String.prototype.dasherize = function () {
+  return this.replace(/_/g, '-');
+};
 
-Object.assign(String.prototype, {
-  times (x) {
-    return (this + ' ').repeat(x).slice(0, -1);
-  }
-});
+String.prototype.times = function (x) {
+  return (this + ' ').repeat(x).slice(0, -1);
+};
 
-Object.assign(String.prototype, {
-  blank () {
-    return this.replace(/\s/g, '').length === 0;
-  }
-});
-
+String.prototype.blank = function () {
+  return this.replace(/\s/g, '').length === 0;
+};
 // Array prototypes
-Object.assign(Array.prototype, {
-  first () {
-    if (this.length === 0) {
-      throw new Error('Array has no elements!');
-    }
-    return this[0];
+Array.prototype.first = function () {
+  if (this.length === 0) {
+    throw new Error('Array has no elements!');
   }
-});
+  return this[0];
+};
 
-Object.assign(Array.prototype, {
-  range (from, to) {
-    if ((typeof from != 'number') || (typeof to != 'number')) {
-      throw new Error('Arguments of range() must be numbers!');
-    }
-    if (from === to) {
-      return to;
-    }
-    return [from].concat(this.range(from+1, to))
+Array.prototype.range = function (from, to) {
+  if ((typeof from != 'number') || (typeof to != 'number')) {
+    throw new Error('Arguments of range() must be numbers!');
   }
-});
+  if (from === to) {
+    return to;
+  }
+  return [from].concat(this.range(from+1, to))
+};
 
-Object.assign(Array.prototype, {
-  sum () {
-    return this.reduce(function (a,b) {
-      return a+b;
-    },0)
-  }
-});
+Array.prototype.sum = function () {
+  return this.reduce(function (a,b) {
+    return a+b;
+  },0)
+};
 
-Object.assign(Array.prototype, {
-  average () {
-    return this.sum()/this.length;
-  }
-});
+Array.prototype.average = function () {
+  return this.sum()/this.length;
+};
 
 // Number prototype
-Object.assign(Number.prototype, {
-  times (action) {
-    for(let i = 0; i < this; i++) {
-      action();
-    }
+Number.prototype.times = function (action) {
+  for(let i = 0; i < this; i++) {
+    action();
   }
-});
+};
 
 console.assert('javascript'.capitalize() === 'JAVASCRIPT');
 console.assert('border_bottom_width'.dasherize() === 'border-bottom-width');
