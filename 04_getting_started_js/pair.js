@@ -1,30 +1,30 @@
-class Pair{
-  constructor(left, right){
+class Pair {
+  constructor (left, right) {
     this.left = left;
     this.right = right;
   }
 
-  equals(other){
-    if ((this.left === other.left) && (this.right === other.right)){
+  equals (other) {
+    if ((this.left === other.left) && (this.right === other.right)) {
       return true;
     }
     return false;
   }
 
-  toString(){
+  toString () {
     return `(${this.left}, ${this.right})`;
   }
 
-  toList(){
+  toList () {
     return [this.left, this.right];
   }
 
-  combine(f){
+  combine (f) {
     return f(this.left, this.right);
   }
 }
 
-var sum = function (a, b){
+var sum = function (a, b) {
   return (a + b);
 }
 
