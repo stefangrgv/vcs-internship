@@ -10,11 +10,12 @@ module.exports = {
     },
     'env': {
       'browser': true,
+      'node': true,
     },
-    "parserOptions": {
-      "ecmaVersion": 6,
-      "sourceType": "script",
-      "ecmaFeatures": {}
+    'parserOptions': {
+      'ecmaVersion': 6,
+      'sourceType': 'script',
+      'ecmaFeatures': {}
   }
 
 }
