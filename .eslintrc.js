@@ -6,9 +6,15 @@ module.exports = {
     'rules': {
           'space-before-function-paren': ['error', 'always'],
           'space-before-blocks': ['error', 'always'],
-          'quotes': [2, 'single', { 'avoidEscape': true }]
+          'quotes': [2, 'single', {'allowTemplateLiterals': true, 'avoidEscape': true}],
     },
     'env': {
       'browser': true,
-    }
+    },
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "script",
+      "ecmaFeatures": {}
+  }
+
 }
