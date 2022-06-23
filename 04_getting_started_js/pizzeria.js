@@ -96,7 +96,7 @@ function placeOrder () {
 
 function updateQueueHeader () {
     let queueText = (queue.length != 1) ? `Queue (${queue.length} items)` : `Queue (${queue.length} item)`
-    document.getElementById('queueText').innerHTML=queueText;
+    document.getElementById('queueText').innerHTML = queueText;
 }
 
 function generateRandomBool () {
@@ -107,7 +107,7 @@ function generateRandomBool () {
 function generateRandomInt (max) {
     // generates a random integer in the range [0, max]
     let rand = Math.random();
-    rand = Math.floor( rand * (max+1) );
+    rand = Math.floor( rand * (max + 1) );
 
     return rand;
 }
