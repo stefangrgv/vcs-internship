@@ -28,18 +28,11 @@ Array.prototype.range = function (from, to) {
     throw new Error('Arguments of range() must be numbers!');
   }
   
-  var result = Array(to - from + 1).fill(0).map( function (value, index) {
-    value = from + index;
-    return value;
-  });
-
-  return result;
+  return Array(to - from + 1).fill(0).map((value, index) => from + index);
 };
 
 Array.prototype.sum = function () {
-  return this.reduce(function (a,b) {
-    return a + b;
-  },0)
+  return this.reduce( (a, b) => a + b, 0)
 };
 
 Array.prototype.average = function () {
