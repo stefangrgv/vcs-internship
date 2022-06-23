@@ -1,10 +1,10 @@
 class Pizza {
     constructor (name, cost, timeToMake) {
-        if (!((typeof cost  === 'number') && Number.isInteger(cost))) {
+        if (!(Number.isInteger(cost))) {
             throw Error('Error: cost must be an integer');
         }
 
-        if (!((typeof timeToMake === 'number') && Number.isInteger(timeToMake))) {
+        if (!(Number.isInteger(timeToMake))) {
             throw Error('Error: timeToMake must be an integer');
         }
 
@@ -41,7 +41,6 @@ class PizzaOrder {
         return this._id;
     }
 
-    //
     getPizza () {
         return this._pizza;
     }
@@ -53,25 +52,23 @@ class PizzaOrder {
     }
 
     ready ( callback ) {
-        callback(this._pizza, queue[0]);
+        callback(this.getPizza(), this);
     }
 }
 
 function notifyPizzaReady (pizza, order) {
-    // update the page queue
-    let htmlQueueList = document.getElementById('queueOL');
-    let htmlQueueItems = document.querySelectorAll('#queueOL li');
-    htmlQueueList.removeChild(htmlQueueItems[0]);
-
-    pizzasReady += 1;
-    totalPrice += pizza.getCost();
-    
     // update the notification for a ready order
     document.getElementById('orderReadyText').innerHTML = `#${order.getId()} (${pizza.getName()}) is ready!`
 
     // update the ready count and the total price
+    pizzasReady += 1;
+    totalPrice += pizza.getCost();
     document.getElementById('readyText').innerHTML = `Price: ${totalPrice} for ${pizzasReady} pizzas`;
 
+    // update the page queue
+    let htmlQueueList = document.getElementById('queueOL');
+    let htmlQueueItems = document.querySelectorAll('#queueOL li');
+    htmlQueueList.removeChild(htmlQueueItems[0]);
     queue.shift();
     updateQueueHeader();
 
@@ -79,7 +76,8 @@ function notifyPizzaReady (pizza, order) {
 }
 
 function placeOrder () {
-    let randomPizzaIndex = generateRandomInt(pizzas.length - 1);
+    // create a new order of a random pizza and add it to the queue
+    let randomPizzaIndex = randomInt(pizzas.length - 1);
     let order = new PizzaOrder(pizzas[randomPizzaIndex]);
     queue.push(order);
     
@@ -99,12 +97,12 @@ function updateQueueHeader () {
     document.getElementById('queueText').innerHTML = queueText;
 }
 
-function generateRandomBool () {
-    // randomly generates a true or false value
-    return ( generateRandomInt(1) == 1 );
+function randomBool () {
+    // randomly generates a true or false value with a 50:50 chance
+    return ( randomInt(1) == 1 );
 }
 
-function generateRandomInt (max) {
+function randomInt (max) {
     // generates a random integer in the range [0, max]
     let rand = Math.random();
     rand = Math.floor( rand * (max + 1) );
@@ -113,11 +111,10 @@ function generateRandomInt (max) {
 }
 
 function tick () {
-    let randBool = generateRandomBool();
-    if (randBool) {
+    if (randomBool()) {
         placeOrder();
     } else {
-        // update the notification for no new order
+        // no new order, update the notification
         document.getElementById('newOrderText').innerHTML = `Waiting for orders...`;
     }
 
@@ -126,19 +123,19 @@ function tick () {
     }
 }
 
-var tickTime = 1000;
-
 var ordersMade = 0;
+var pizzasReady = 0;
+var totalPrice = 0;
 var queue = [];
 var kitchenBusy = false;
 
+// define pizzas
+
 var peperoni = new Pizza('Peperoni', 100 /*cost*/, 2000 /*timeToMake in ms = 2 seconds */);
-var vegetariana = new Pizza('Vegetariana', 70, 1500);
-var quattroStagioni = new Pizza('Quattro Stagioni', 120, 2500);
+var vegetariana = new Pizza('Vegetariana', 70, 1000);
+var quattroStagioni = new Pizza('Quattro Stagioni', 120, 2000);
 
 var pizzas = [peperoni, vegetariana, quattroStagioni];
 
-var pizzasReady = 0;
-var totalPrice = 0;
-
+var tickTime = 1000; // ms
 setInterval(tick, tickTime);
