@@ -43,15 +43,14 @@ class Robot {
         }
         this._position = startPoint;
     }
-
+    
     moveLeft (amount) {
         if (!(typeof amount === 'number')) {
             throw Error('moveLeft requires an argument of type number');
         }
         
-        for (var i=0; i < amount; i+=1) {
-            this._position.xDec();
-        }
+        Array(amount).fill()
+                     .map( () => this._position.xDec());
     }
 
     moveRight (amount) {
@@ -59,9 +58,8 @@ class Robot {
             throw Error('moveRight requires an argument of type number');
         }
 
-        for (var i=0; i < amount; i+=1) {
-            this._position.xInc();
-        }
+        Array(amount).fill()
+                     .map( () => this._position.xInc());
     }
 
 
@@ -70,9 +68,8 @@ class Robot {
             throw Error('moveUp requires an argument of type number');
         }
 
-        for (var i=0; i < amount; i+=1) {
-            this._position.yDec();
-        }
+        Array(amount).fill()
+                     .map( () => this._position.yDec());
     }
 
 
@@ -81,9 +78,8 @@ class Robot {
             throw Error('moveLeft requires an argument of type number');
         }
         
-        for (var i=0; i < amount; i+=1) {
-            this._position.yInc();
-        }
+        Array(amount).fill()
+                     .map( () => this._position.yInc());
     }
 
     getPosition () {
@@ -97,4 +93,4 @@ var robot = new Robot(new Point(0, 0));
 robot.moveLeft(10);
 robot.moveDown(5);
 
-console.log(robot.getPosition().toString()); // Point @ -10, 5
+console.assert(robot.getPosition().toString() === new Point(-10, 5).toString());
