@@ -28,12 +28,11 @@ Array.prototype.range = function (from, to) {
     throw new Error('Arguments of range() must be numbers!');
   }
   
-  let result = [];
-  let el = from;
-  while (el <= to) {
-    result.push(el);
-    el++;
-  }
+  var result = Array(to - from + 1).fill(0);
+  result = result.map( function (value, index) {
+    value = from + index;
+    return value;
+  });
 
   return result;
 };
@@ -50,8 +49,8 @@ Array.prototype.average = function () {
 
 // Number prototype
 Number.prototype.times = function (action) {
-  Array( Number(this) ).fill()
-                       .map( () => action() );
+  let n = Number(this);
+  Array(n).fill().map(action);
 };
 
 console.assert('javascript'.capitalize() === 'JAVASCRIPT');
