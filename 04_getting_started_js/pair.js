@@ -3,25 +3,22 @@ class Pair {
     this.left = left;
     this.right = right;
   }
+}
 
-  equals (other) {
-    if ((this.left === other.left) && (this.right === other.right)) {
-      return true;
-    }
-    return false;
-  }
+Pair.prototype.equals = function (other) {
+  return ((this.left === other.left) && (this.right === other.right));
+}
 
-  toString () {
-    return `(${this.left}, ${this.right})`;
-  }
+Pair.prototype.toString = function () {
+  return `(${this.left}, ${this.right})`;
+}
 
-  toList () {
-    return [this.left, this.right];
-  }
+Pair.prototype.toList = function () {
+  return [this.left, this.right];
+}
 
-  combine (f) {
-    return f(this.left, this.right);
-  }
+Pair.prototype.combine = function (f) {
+  return f(this.left, this.right);
 }
 
 function sum (a, b) {
