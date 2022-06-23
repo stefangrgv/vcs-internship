@@ -10,12 +10,12 @@ var constructItem = function (item) {
 }
 
 var ul = function (items) {
-  return '<ul>\n'+ items.map(item => constructItem(item))
+  return '<ul>\n' + items.map(item => constructItem(item))
                         .join('') + '</ul>';
 };
 
 var ol = function (items) {
-  return '<ol>\n'+ items.map(item => constructItem(item))
+  return '<ol>\n' + items.map(item => constructItem(item))
                         .join('') + '</ol>';
 };
 

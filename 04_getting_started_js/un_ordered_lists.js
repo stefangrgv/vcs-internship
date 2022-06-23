@@ -1,5 +1,5 @@
 var ul = function (items) {
-  return '<ul>\n'+ items
+  return '<ul>\n' + items
                       .map(item => `\t<li>${item['label']}</li>\n`)
                       .join('')
                     + '</ul>'
@@ -7,7 +7,7 @@ var ul = function (items) {
 
 
 var ol = function (items) {
-  return '<ol>\n'+ items
+  return '<ol>\n' + items
                       .map(item => `\t<li>${item['label']}</li>\n`)
                       .join('')
                     + '</ol>'
