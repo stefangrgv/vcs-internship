@@ -49,7 +49,7 @@ class PizzaOrder {
     start () {
         kitchenBusy = true;
         
-        setTimeout( this.ready, this.getPizza().getTimeToMake(), notifyPizzaReady );
+        setTimeout( this.ready.bind(this), this.getPizza().getTimeToMake(), notifyPizzaReady );
     }
 
     ready ( callback ) {
@@ -63,15 +63,16 @@ function notifyPizzaReady (pizza, order) {
     let htmlQueueItems = document.querySelectorAll('#queueOL li');
     htmlQueueList.removeChild(htmlQueueItems[0]);
 
-    var currentCost = queue[0].getPizza().getCost();
     pizzasReady += 1;
-    totalPrice += currentCost;
+    totalPrice += pizza.getCost();
     
+    // update the notification for a ready order
+    document.getElementById('orderReadyText').innerHTML = `#${order.getId()} (${pizza.getName()}) is ready!`
+
     // update the ready count and the total price
     document.getElementById('readyText').innerHTML = `Total price: ${totalPrice} for ${pizzasReady} pizzas`;
 
     queue.shift();
-    
     updateQueueHeader();
 
     kitchenBusy = false;
@@ -82,6 +83,9 @@ function placeOrder () {
     let order = new PizzaOrder(pizzas[randomPizzaIndex]);
     queue.push(order);
     
+    // update the notification for a new order
+    document.getElementById('newOrderText').innerHTML = `New order #${order.getId()} (${order.getPizza().getName()})`
+
     // update the page queue
     let htmlQueue = document.getElementById('queueOL');
     let htmlQueueEntry = document.createElement('li');
@@ -112,12 +116,17 @@ function tick () {
     let randBool = generateRandomBool();
     if (randBool) {
         placeOrder();
+    } else {
+        // update the notification for no new order
+        document.getElementById('newOrderText').innerHTML = `Waiting for orders...`;
     }
 
     if (!(kitchenBusy) && (queue.length > 0)) {
         queue[0].start();
     }
 }
+
+var tickTime = 1000;
 
 var ordersMade = 0;
 var queue = [];
@@ -132,4 +141,4 @@ var pizzas = [peperoni, vegetariana, quattroStagioni];
 var pizzasReady = 0;
 var totalPrice = 0;
 
-setInterval(tick, 1000);
+setInterval(tick, tickTime);
