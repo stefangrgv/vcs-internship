@@ -8,12 +8,13 @@ String.prototype.dasherize = function () {
 };
 
 String.prototype.times = function (x) {
-  return (this + ' ').repeat(x).slice(0, -1);
+  return (this + ' ').repeat(x).trim();
 };
 
 String.prototype.blank = function () {
   return this.replace(/\s/g, '').length === 0;
 };
+
 // Array prototypes
 Array.prototype.first = function () {
   if (this.length === 0) {
@@ -26,27 +27,31 @@ Array.prototype.range = function (from, to) {
   if ((typeof from != 'number') || (typeof to != 'number')) {
     throw new Error('Arguments of range() must be numbers!');
   }
-  if (from === to) {
-    return to;
+  
+  let result = [];
+  let el = from;
+  while (el <= to) {
+    result.push(el);
+    el++;
   }
-  return [from].concat(this.range(from+1, to))
+
+  return result;
 };
 
 Array.prototype.sum = function () {
   return this.reduce(function (a,b) {
-    return a+b;
+    return a + b;
   },0)
 };
 
 Array.prototype.average = function () {
-  return this.sum()/this.length;
+  return this.sum() / this.length;
 };
 
 // Number prototype
 Number.prototype.times = function (action) {
-  for(let i = 0; i < this; i++) {
-    action();
-  }
+  Array( Number(this) ).fill()
+                       .map( () => action() );
 };
 
 console.assert('javascript'.capitalize() === 'JAVASCRIPT');
@@ -62,7 +67,7 @@ console.log([].range(1, 10));
 console.assert([1,2,3].sum() === 6);
 console.assert([1,2,3].average() === 2);
 
-var a=5;
+var a = 5;
 a.times(function () {
   console.log('OMG');
 });
