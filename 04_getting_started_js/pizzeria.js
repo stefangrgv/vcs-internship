@@ -70,7 +70,7 @@ function notifyPizzaReady (pizza, order) {
     document.getElementById('orderReadyText').innerHTML = `#${order.getId()} (${pizza.getName()}) is ready!`
 
     // update the ready count and the total price
-    document.getElementById('readyText').innerHTML = `Total price: ${totalPrice} for ${pizzasReady} pizzas`;
+    document.getElementById('readyText').innerHTML = `Price: ${totalPrice} for ${pizzasReady} pizzas`;
 
     queue.shift();
     updateQueueHeader();
