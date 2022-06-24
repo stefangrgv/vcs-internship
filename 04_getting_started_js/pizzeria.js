@@ -103,12 +103,12 @@ function randomBool (trueChancePercent) {
 
 function randomInt (max) {
     // generates a random integer in the range [0, max]
-    return Math.floor( Math.random() * (max + 1) );;
+    return Math.floor( Math.random() * (max + 1) );
 }
 
 function tick () {
     // randomly place a new order
-    randomBool(trueChancePercent = 50) ? placeOrder() : document.getElementById('newOrderText').innerHTML = `Waiting for orders...`;
+    randomBool(50) ? placeOrder() : document.getElementById('newOrderText').innerHTML = `Waiting for orders...`;
 
     if (!(kitchenBusy) && (queue.length > 0)) {
         queue[0].start();
