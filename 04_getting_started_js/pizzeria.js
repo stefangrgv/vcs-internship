@@ -17,12 +17,12 @@ class Pizza {
         return this._name;
     }
 
-    getTimeToMake () {
-        return this._timeToMake;
-    }
-
     getCost () {
         return this._cost;
+    }
+
+    getTimeToMake () {
+        return this._timeToMake;
     }
 }
 
@@ -37,12 +37,12 @@ class PizzaOrder {
         this._id = ordersMade;
     }
 
-    getId () {
-        return this._id;
-    }
-
     getPizza () {
         return this._pizza;
+    }
+
+    getId () {
+        return this._id;
     }
 
     start () {
@@ -57,7 +57,7 @@ class PizzaOrder {
 }
 
 function notifyPizzaReady (pizza, order) {
-    // update the notification for a ready order
+    // update the text for a ready order
     document.getElementById('orderReadyText').innerHTML = `#${order.getId()} (${pizza.getName()}) is ready!`
 
     // update the ready count and the total price
@@ -77,11 +77,10 @@ function notifyPizzaReady (pizza, order) {
 
 function placeOrder () {
     // create a new order of a random pizza and add it to the queue
-    let randomPizzaIndex = randomInt(pizzas.length - 1);
-    let order = new PizzaOrder(pizzas[randomPizzaIndex]);
+    let order = new PizzaOrder(pizzas[randomInt(pizzas.length - 1)]);
     queue.push(order);
     
-    // update the notification for a new order
+    // update the text for a new order
     document.getElementById('newOrderText').innerHTML = `New order #${order.getId()} (${order.getPizza().getName()})`
 
     // update the page queue
@@ -97,26 +96,19 @@ function updateQueueHeader () {
     document.getElementById('queueText').innerHTML = queueText;
 }
 
-function randomBool () {
-    // randomly generates a true or false value with a 50:50 chance
-    return ( randomInt(1) == 1 );
+function randomBool (trueChancePercent) {
+    // randomly generates a true or false value with a trueChancePercent % chance of being true
+    return ( randomInt(100) <= trueChancePercent );
 }
 
 function randomInt (max) {
     // generates a random integer in the range [0, max]
-    let rand = Math.random();
-    rand = Math.floor( rand * (max + 1) );
-
-    return rand;
+    return Math.floor( Math.random() * (max + 1) );;
 }
 
 function tick () {
-    if (randomBool()) {
-        placeOrder();
-    } else {
-        // no new order, update the notification
-        document.getElementById('newOrderText').innerHTML = `Waiting for orders...`;
-    }
+    // randomly place a new order
+    randomBool(trueChancePercent = 50) ? placeOrder() : document.getElementById('newOrderText').innerHTML = `Waiting for orders...`;
 
     if (!(kitchenBusy) && (queue.length > 0)) {
         queue[0].start();
@@ -130,12 +122,12 @@ var queue = [];
 var kitchenBusy = false;
 
 // define pizzas
-
 var peperoni = new Pizza('Peperoni', 100 /*cost*/, 2000 /*timeToMake in ms = 2 seconds */);
 var vegetariana = new Pizza('Vegetariana', 70, 1000);
 var quattroStagioni = new Pizza('Quattro Stagioni', 120, 2000);
 
 var pizzas = [peperoni, vegetariana, quattroStagioni];
 
+// main loop
 var tickTime = 1000; // ms
 setInterval(tick, tickTime);
