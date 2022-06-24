@@ -48,7 +48,7 @@ class PizzaOrder {
     start () {
         kitchenBusy = true;
         
-        setTimeout( this.ready.bind(this), this.getPizza().getTimeToMake(), notifyPizzaReady );
+        setTimeout(this.ready.bind(this), this.getPizza().getTimeToMake(), notifyPizzaReady);
     }
 
     ready ( callback ) {
@@ -97,7 +97,7 @@ function updateQueueHeader () {
 }
 
 function randomBool (trueChancePercent) {
-    // randomly generates a true or false value with a trueChancePercent % chance of being true
+    // randomly generates a boolean value with a trueChancePercent % chance of being true
     return ( randomInt(100) <= trueChancePercent );
 }
 
@@ -108,7 +108,7 @@ function randomInt (max) {
 
 function tick () {
     // randomly place a new order
-    randomBool(50) ? placeOrder() : document.getElementById('newOrderText').innerHTML = `Waiting for orders...`;
+    randomBool(20) ? placeOrder() : document.getElementById('newOrderText').innerHTML = `Waiting for orders...`;
 
     if (!(kitchenBusy) && (queue.length > 0)) {
         queue[0].start();
@@ -129,5 +129,5 @@ var quattroStagioni = new Pizza('Quattro Stagioni', 120, 2000);
 var pizzas = [peperoni, vegetariana, quattroStagioni];
 
 // main loop
-var tickTime = 1000; // ms
+var tickTime = 500; // ms
 setInterval(tick, tickTime);

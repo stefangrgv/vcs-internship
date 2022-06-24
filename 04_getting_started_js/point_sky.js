@@ -1,6 +1,6 @@
 class Point {
     constructor (x, y) {
-        if (!(typeof x === 'number') || !(typeof y === 'number')) {
+        if ((typeof x !== 'number') || (typeof y !== 'number')) {
             throw Error('Point coordinates (x, y) must be numbers!');
         }
         this._x = x;
@@ -36,10 +36,7 @@ Point.prototype.equals = function (other) {
     if (!(other instanceof Point)) {
         throw Error('Error: method equals() requires an argument of type Point');
     }
-    if ((this.x === other.x) && (this.y === other.y)) {
-        return true;
-    }
-    return false;
+    return (this.x === other.x) && (this.y === other.y);
 }
 
 var point1 = new Point(0,2);

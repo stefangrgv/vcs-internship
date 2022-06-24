@@ -1,6 +1,6 @@
 class Point {
     constructor (x, y) {
-        if (!(typeof x === 'number') || !(typeof y === 'number')) {
+        if ((typeof x !== 'number') || (typeof y !== 'number')) {
             throw Error('Point coordinates (x, y) must be numbers!');
         }
         this._x = x;
@@ -45,36 +45,33 @@ class Robot {
     }
     
     moveLeft (amount) {
-        if (!(typeof amount === 'number')) {
+        if (typeof amount !== 'number') {
             throw Error('moveLeft requires an argument of type number');
         }
         
-        Array(amount).fill()
-                     .map( () => this._position.xDec());
+        Array(amount).fill().map(() => this._position.xDec());
     }
 
     moveRight (amount) {
-        if (!(typeof amount === 'number')) {
+        if (typeof amount !== 'number') {
             throw Error('moveRight requires an argument of type number');
         }
 
-        Array(amount).fill()
-                     .map( () => this._position.xInc());
+        Array(amount).fill().map(() => this._position.xInc());
     }
 
 
     moveUp (amount) {
-        if (!(typeof amount === 'number')) {
+        if (typeof amount !== 'number') {
             throw Error('moveUp requires an argument of type number');
         }
 
-        Array(amount).fill()
-                     .map( () => this._position.yDec());
+        Array(amount).fill().map(() => this._position.yDec());
     }
 
 
     moveDown (amount) {
-        if (!(typeof amount === 'number')) {
+        if (typeof amount !== 'number') {
             throw Error('moveLeft requires an argument of type number');
         }
         
