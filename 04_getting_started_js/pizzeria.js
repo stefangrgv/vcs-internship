@@ -32,9 +32,9 @@ class PizzaOrder {
             throw Error('PizzaOrder requires an argument of type Pizza');
         }
 
-        ordersMade += 1;
         this._pizza = pizza;
-        this._id = ordersMade;
+        this._id = Date.now() - startTime;
+        this._status = 'waiting'
     }
 
     getPizza () {
@@ -45,10 +45,23 @@ class PizzaOrder {
         return this._id;
     }
 
+    get status () {
+        return this._status;
+    }
+
+    set status (value) {
+        if (value === 'waiting' || value === 'preparing' || value === 'ready') {
+            this._status = value;
+        } else {
+            throw Error('New order status must be one of the following: \'waiting\', \'preparing\' or \'ready\'!');
+        }
+    }
+
     start () {
-        kitchenBusy = true;
-        
-        setTimeout(this.ready.bind(this), this.getPizza().getTimeToMake(), notifyPizzaReady);
+        this.status = 'preparing';
+        setTimeout(this.ready.bind(this), this.getPizza().getTimeToMake(), setOrderReady);
+
+        uiSetOrderPreparing(this.getPizza(), this);
     }
 
     ready ( callback ) {
@@ -56,44 +69,43 @@ class PizzaOrder {
     }
 }
 
-function notifyPizzaReady (pizza, order) {
-    // update the text for a ready order
-    document.getElementById('orderReadyText').innerHTML = `#${order.getId()} (${pizza.getName()}) is ready!`
+function setOrderReady (pizza, order) {
+    order.status = 'ready';
+    uiSetOrderReady(pizza, order);
+}
 
-    // update the ready count and the total price
-    pizzasReady += 1;
-    totalPrice += pizza.getCost();
-    document.getElementById('readyText').innerHTML = `Price: ${totalPrice} for ${pizzasReady} pizzas`;
+function uiSetOrderReady (pizza, order) {
+    const ordersReadyUI = document.getElementById('readyOL');
+    
+    let li = document.createElement('li');
+    li.appendChild(document.createTextNode(`${pizza.getName()} [ID: ${order.getId()}]`));
+    ordersReadyUI.appendChild(li);
+    
+    document.getElementById('nowPreparingText').innerHTML = 'Waiting for orders...';
+    startNextOrder();
+}
 
-    // update the page queue
-    let htmlQueueList = document.getElementById('queueOL');
-    let htmlQueueItems = document.querySelectorAll('#queueOL li');
-    htmlQueueList.removeChild(htmlQueueItems[0]);
-    queue.shift();
-    updateQueueHeader();
+function uiSetOrderPreparing (pizza, order) {
+    const ordersQueueUI = document.getElementById('queueOL');
+    ordersQueueUI.removeChild(document.querySelectorAll('#queueOL li')[0]);
 
-    kitchenBusy = false;
+    document.getElementById('nowPreparingText').innerHTML = `Now preparing:<br><br>${pizza.getName()}<br>ID: ${order.getId()}`
+}
+
+function uiPlaceOrder (order) {
+    const ordersQueueUI = document.getElementById('queueOL');
+
+    let li = document.createElement('li');
+    li.appendChild(document.createTextNode(`${order.getPizza().getName()} [ID: ${order.getId()}]`));
+    ordersQueueUI.appendChild(li);
 }
 
 function placeOrder () {
     // create a new order of a random pizza and add it to the queue
     let order = new PizzaOrder(pizzas[randomInt(pizzas.length - 1)]);
-    queue.push(order);
-    
-    // update the text for a new order
-    document.getElementById('newOrderText').innerHTML = `New order #${order.getId()} (${order.getPizza().getName()})`
+    allOrders.push(order);
 
-    // update the page queue
-    let htmlQueue = document.getElementById('queueOL');
-    let htmlQueueEntry = document.createElement('li');
-    htmlQueueEntry.appendChild(document.createTextNode(`Order ID=${order.getId()} -- ${order.getPizza().getName()}`));
-    htmlQueue.appendChild(htmlQueueEntry);
-    updateQueueHeader();
-}
-
-function updateQueueHeader () {
-    let queueText = (queue.length != 1) ? `Queue (${queue.length} items)` : `Queue (${queue.length} item)`
-    document.getElementById('queueText').innerHTML = queueText;
+    uiPlaceOrder(order);
 }
 
 function randomBool (trueChancePercent) {
@@ -106,28 +118,28 @@ function randomInt (max) {
     return Math.floor( Math.random() * (max + 1) );
 }
 
-function tick () {
-    // randomly place a new order
-    randomBool(20) ? placeOrder() : document.getElementById('newOrderText').innerHTML = `Waiting for orders...`;
-
-    if (!(kitchenBusy) && (queue.length > 0)) {
-        queue[0].start();
+function startNextOrder () {
+    if (!(allOrders.find(el => el.status === 'preparing')) && (allOrders.find(el => el.status === 'waiting'))) {
+        allOrders.find(el => el.status === 'waiting').start();
     }
 }
 
-var ordersMade = 0;
-var pizzasReady = 0;
-var totalPrice = 0;
-var queue = [];
-var kitchenBusy = false;
+function tick () {
+    // randomly place a new order
+    randomBool(20) ? placeOrder() : document.getElementById('newOrderText').innerHTML = `Waiting for orders...`;
+    startNextOrder();
+}
 
 // define pizzas
-var peperoni = new Pizza('Peperoni', 100 /*cost*/, 2000 /*timeToMake in ms = 2 seconds */);
-var vegetariana = new Pizza('Vegetariana', 70, 1000);
-var quattroStagioni = new Pizza('Quattro Stagioni', 120, 2000);
+const peperoni = new Pizza('Peperoni', 100 /*cost*/, 2000 /*timeToMake in ms = 2 seconds */);
+const vegetariana = new Pizza('Vegetariana', 70, 1000);
+const quattroStagioni = new Pizza('Quattro Stagioni', 120, 2000);
 
-var pizzas = [peperoni, vegetariana, quattroStagioni];
+const pizzas = [peperoni, vegetariana, quattroStagioni];
+
+let allOrders = [];
 
 // main loop
-var tickTime = 500; // ms
+const tickTime = 500; // ms
+const startTime = Date.now();
 setInterval(tick, tickTime);

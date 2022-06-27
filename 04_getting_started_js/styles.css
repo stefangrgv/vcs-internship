@@ -1,0 +1,13 @@
+div {
+  display: inline-block;
+  width: 33%;
+  vertical-align: top;
+}
+
+h1 {
+  font-size: 28;
+}
+
+li {
+  font-size: 20;
+}
