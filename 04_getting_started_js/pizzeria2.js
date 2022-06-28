@@ -12,9 +12,6 @@ class Pizza {
 class PizzaOrder {
     constructor (pizza) {
         this.pizza = pizza;
-    }
-
-    assignId () {
         this.id = Date.now();
     }
 
@@ -27,9 +24,54 @@ class PizzaOrder {
     }
 
     start () {
-        this.isPrepared = true;
-        setTimeout(this.whenReady.bind(this), this.pizza.timeToMake, this.pizza, this);
+        //
     }
+}
+
+class Cook {
+    constructor () {
+        this.pendingOrders = [];
+        this.readyOrders = [];
+        this.isBusy = false;
+        this.pizzas = [
+            new Pizza('Peperoni', 100 /*cost*/, 2000 /*timeToMake in ms = 2 seconds */),
+            new Pizza('Vegetariana', 70, 1000),
+            new Pizza('Quattro Stagioni', 120, 2000)
+        ];
+    }
+
+    placeNewOrder () {
+        this.pendingOrders.push(new PizzaOrder(this.pizzas[randomInt(this.pizzas.length - 1)]));
+        this.pendingOrders.at(-1).ready(this.readyCallback);
+
+        console.log(`NEW order: ${this.pendingOrders.at(-1).getId()} --- ${this.pendingOrders.at(-1).pizza.name}\t${this.pendingOrders.length} order(s) in queue`)
+    }
+
+    startCooking () {
+        if (!this.isBusy && this.pendingOrders.length > 0) {
+            this.isBusy = true;
+            setTimeout(
+                this.pendingOrders[0].whenReady.bind(this),
+                this.pendingOrders[0].pizza.timeToMake,
+                this.pendingOrders[0].pizza,
+                this.pendingOrders[0]
+            );
+
+            console.log(`STARTED order: ${this.pendingOrders[0].getId()} --- ${this.pendingOrders[0].pizza.name}`)
+        }
+    }
+    
+    readyCallback (pizza, order) {
+        this.pendingOrders.shift();
+        this.isBusy = false;
+        this.readyOrders.push(order);
+
+        console.log(`READY order: ${order.getId()} --- ${pizza.name}\tTotal price ${this.caclulateTotalPrice()} for ${this.readyOrders.length} pizza(s)`)
+    }
+
+    caclulateTotalPrice () {
+        return this.readyOrders.reduce((total, el) => total += el.pizza.cost, 0);
+    }    
 }
 
 function randomInt (max) {
@@ -42,49 +84,15 @@ function randomBool (trueChancePercent) {
     return (randomInt(100) <= trueChancePercent);
 }
 
-function getTotalPrice () {
-    return prepared.reduce((sum, el) => sum += el.pizza.cost, 0);
-}
-
-function pizzaDone (pizza, order) {
-    // business
-    prepared.push(orders.shift());
-
-    // ui
-    console.log(`\t\tREADY order ${order.getId()} --- You have ${prepared.length} pizza(s) total for ${getTotalPrice()}$`);
-}
-
 function tick () {
     // place order
-    if (randomBool(20)) {
-        // business
-        orders.push(new PizzaOrder(pizzas[randomInt(pizzas.length - 1)]));
-        orders.at(-1).assignId();
-        orders.at(-1).ready(pizzaDone);
-
-        // ui
-        console.log(`NEW order ${orders.at(-1).getId()}: ${orders.at(-1).pizza.name} (${orders.length} order(s) in queue)`);
+    if (randomBool(25)) {
+        cook.placeNewOrder();
     }
 
     // start cooking
-    if ((orders.length > 0) && (!(orders[0].hasOwnProperty('isPrepared')))) {
-        // business
-        orders[0].start();
-
-        // ui
-        console.log(`\tSTARTED order ${orders[0].getId()}`);
-    }
+    cook.startCooking();
 }
 
-// define pizzas
-const peperoni = new Pizza('Peperoni', 100 /*cost*/, 2000 /*timeToMake in ms = 2 seconds */);
-const vegetariana = new Pizza('Vegetariana', 70, 1000);
-const quattroStagioni = new Pizza('Quattro Stagioni', 120, 2000);
-
-const pizzas = [peperoni, vegetariana, quattroStagioni];
-
- 
-let orders = [];
-let prepared = [];
-
-setInterval(tick, 500)
+let cook = new Cook();
+setInterval(tick, 500);
