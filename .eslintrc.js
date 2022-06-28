@@ -17,6 +17,7 @@ module.exports = {
         'space-before-blocks': ['error', 'always'],
         'quotes': [2, 'single', {'allowTemplateLiterals': true, 'avoidEscape': true}],
         'space-infix-ops': ['error', {}],
+        'no-prototype-builtins': [0],
   },
   'env': {
     'browser': true,
