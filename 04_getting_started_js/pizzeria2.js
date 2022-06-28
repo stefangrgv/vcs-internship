@@ -41,10 +41,11 @@ class Cook {
     }
 
     placeNewOrder () {
-        this.pendingOrders.push(new PizzaOrder(this.pizzas[randomInt(this.pizzas.length - 1)]));
+        let newPizza = new PizzaOrder(this.pizzas[randomInt(this.pizzas.length - 1)]);
+        this.pendingOrders.push(newPizza);
         this.pendingOrders.at(-1).ready(this.readyCallback);
 
-        console.log(`NEW order: ${this.pendingOrders.at(-1).getId()} --- ${this.pendingOrders.at(-1).pizza.name}\t${this.pendingOrders.length} order(s) in queue`)
+        console.log(`NEW order: ${newPizza.getId()} --- ${newPizza.pizza.name}\t${this.pendingOrders.length} order(s) in queue`)
     }
 
     startCooking () {
