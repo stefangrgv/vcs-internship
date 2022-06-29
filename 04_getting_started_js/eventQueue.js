@@ -2,7 +2,11 @@ var queue = {
     _eventQueue: {},
     
     on (eventName, callback) {
-        (this._eventQueue[eventName] = this._eventQueue[eventName] || []).push(callback);
+        if (!this._eventQueue.hasOwnProperty(eventName)) {
+            this._eventQueue[eventName] = [];
+        }
+        //this._eventQueue[eventName] = [...this._eventQueue[eventName], callback] // using spread operator
+        this._eventQueue[eventName].push(callback) // using .push
     },
 
     remove (eventName) {
@@ -10,7 +14,7 @@ var queue = {
     },
 
     trigger (eventName) {
-        this._eventQueue[eventName].forEach((fn) => fn());
+        this._eventQueue[eventName].forEach(fn => fn());
     }
 }
 
