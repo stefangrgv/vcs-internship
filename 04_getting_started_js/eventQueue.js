@@ -2,11 +2,10 @@ var queue = {
     _eventQueue: {},
     
     on (eventName, callback) {
-        if (!this._eventQueue.hasOwnProperty(eventName)) {
+        if (this._eventQueue.eventName === undefined) {
             this._eventQueue[eventName] = [];
         }
-        //this._eventQueue[eventName] = [...this._eventQueue[eventName], callback] // using spread operator
-        this._eventQueue[eventName].push(callback) // using .push
+        this._eventQueue[eventName] = [...this._eventQueue[eventName], callback]
     },
 
     remove (eventName) {
