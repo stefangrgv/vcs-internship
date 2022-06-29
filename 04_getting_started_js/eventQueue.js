@@ -1,24 +1,17 @@
 var queue = {
-    _tasks: [],
+    _eventQueue: {},
     
     on (eventName, callback) {
-        let newTask = {};
-        newTask[String(eventName)] = callback;
-        this._tasks.push(newTask);
+        (this._eventQueue[eventName] = this._eventQueue[eventName] || []).push(callback);
     },
-    
+
     remove (eventName) {
-        this._tasks = this._tasks.filter( (el) => String(Object.keys(el)) !== eventName);
+        delete this._eventQueue[eventName];
     },
 
     trigger (eventName) {
-        this._tasks.forEach(el => {
-            if (String(Object.keys(el)) === eventName) {
-                el[eventName]();
-            }
-        });
-        this.remove(eventName);
-    },
+        this._eventQueue[eventName].forEach((fn) => fn());
+    }
 }
 
 // checking functionality
@@ -34,5 +27,6 @@ queue.on('NOT_A_PANIC_EVENT', function () {
     console.log('ABSOLUTELY NO PANIC!!!');
 });
 
+queue.trigger('PANIC_EVENT')
 queue.remove('PANIC_EVENT')
 queue.trigger('NOT_A_PANIC_EVENT')
