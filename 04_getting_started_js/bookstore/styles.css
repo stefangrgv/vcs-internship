@@ -15,6 +15,11 @@
     width: 25%;
 }
 
+#thEmptyCart {
+    width: 30%;
+    box-sizing: border-box;
+}
+
 #thCartText {
     float: right;
     box-sizing: border-box;

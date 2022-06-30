@@ -76,6 +76,7 @@ class Bookstore {
 class Cart {
     constructor () {
         this.orders = [];
+        this.updateCartHTML();
     }
 
     add (book) {
@@ -85,6 +86,11 @@ class Cart {
 
     remove (ind) {
         this.orders.splice(ind, 1);
+        this.updateCartHTML();
+    }
+
+    empty () {
+        this.orders = [];
         this.updateCartHTML();
     }
 
@@ -106,12 +112,15 @@ class Cart {
         switch (this.orders.length) {
             case 0:
                 $('#thCartItems').html('(empty)');
+                $('#buttonEmptyCart').prop('disabled', true);
                 break;
             case 1:
                 $('#thCartItems').html(`(1 item, ${pages} pages)`)
+                $('#buttonEmptyCart').prop('disabled', false);
                 break;
             default:
                 $('#thCartItems').html(`(${this.orders.length} items, ${pages} pages total)`);
+                $('#buttonEmptyCart').prop('disabled', false);
                 break;
         }
     }
@@ -121,6 +130,8 @@ class Cart {
         this.orders.map(function (order, ind) {
             document.getElementById(`cartRemove_${ind}`).onclick = () => self.remove(ind);
         });
+
+        document.getElementById('buttonEmptyCart').onclick = () => self.empty();
     }
 }
 
