@@ -1,8 +1,44 @@
-table {
-    border: 1px solid;
-}
-
-th {
+.thBookstore {
     border: 1px solid;
     width: 33%;
+}
+
+.thCartTitle {
+    width: 75%;
+}
+
+.trCartHeader {
+    width = 50%;
+}
+
+.thCartButton {
+    width: 25%;
+}
+
+#thCartText {
+    float: right;
+    box-sizing: border-box;
+}
+
+#thCartImage {
+    width: 10%;
+    box-sizing: border-box;
+}
+
+#thCartItems {
+    float: right;
+}
+
+.column, .cartColumn {
+    border: 1px solid;
+    float: left;
+    box-sizing: border-box;
+}
+
+#bookPanel {
+    width: 80%;
+}
+
+#cartPanel {
+    width: 20%;
 }
