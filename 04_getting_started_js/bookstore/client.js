@@ -1,3 +1,4 @@
+/*
 let book3 = {
     'isbn': 60853980,
     'title': 'Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch',
@@ -27,7 +28,7 @@ let book1 = {
     'description': '&amp;lt;p&amp;gt;According to&amp;lt;em&amp;gt;The Nice and Accurate Prophecies of Agnes Nutter&amp;lt;/em&amp;gt;,&amp;lt;em&amp;gt;Witch&amp;lt;/em&amp;gt;&amp;&#35;40;the world&apos;s only&amp;lt;em&amp;gt;completely&amp;lt;/em&amp;gt;accurate book of prophecies, written in 1655, before she exploded&amp;&#35;41;, the world will end on a Saturday. Next Saturday, in fact. Just before dinner.&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;So the armies of Good and Evil are amassing, Atlantis is rising, frogs are falling, tempers are flaring. Everything appears to be going according to Divine Plan. Except a somewhat fussy angel and a fast-living demon—both of whom have lived amongst Earth&apos;s mortals since The Beginning and have grown rather fond of the lifestyle—are not actually looking forward to the coming Rapture.&amp;lt;/p&amp;gt;&amp;lt;p&amp;gt;And someone seems to have misplaced the Antichrist . . .&amp;lt;/p&amp;gt;',
     'average_rating': 7.27
 }
-
+*/
 /*
 book1 = loadBook('books/book1.json')
 book2 = loadBook('books/book2.json')
@@ -125,9 +126,7 @@ class Cart {
         this.cartButton();
     }
 
-    cartButton() {
-        self = this;
-
+    cartButton () {
         if (this.orders.length === 0) {
             $('#cartModalText').html('<p>Cart is empty</p>')
         } else {
@@ -148,10 +147,38 @@ class Cart {
 }
 
 
-let cart = new Cart();
-let bookstore = new Bookstore(cart, [book1, book2, book3])
+function readJSON (file) {
+    $.ajax({
+        method: 'GET',
+        url: file,
+        dataType: 'json',
+    }).done(function (data) {
+        return data;
+    })
+}
+var book1;
+var book2;
+var book3;
 
-$(document).ready( function () {
-    bookstore.updateBookstoreHTML();
-    $('#cartButton').click(cart.cartButton.bind(cart));
-})
+let cart;
+let bookstore;
+
+function loadFiles () {
+    book1 = readJSON('http://127.0.0.1:5500/04_getting_started_js/bookstore/books/book1.json');
+    book2 = readJSON('http://127.0.0.1:5500/04_getting_started_js/bookstore/books/book2.json');
+    book3 = readJSON('http://127.0.0.1:5500/04_getting_started_js/bookstore/books/book3.json');
+}
+
+
+function run () {
+    cart = new Cart();
+    bookstore = new Bookstore(cart, [book1, book2, book3]);
+    
+    $(document).ready( function () {
+        bookstore.updateBookstoreHTML();
+        $('#cartButton').click(cart.cartButton.bind(cart));
+    })
+}
+
+loadFiles();
+run();
