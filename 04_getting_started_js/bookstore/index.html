@@ -1,25 +1,61 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <title>Bookstore</title>
     </head>
     <body>
-        <div class="column" id="bookPanel">
-            <table id="tableBooks"></table>
+        <div class="container">
+            <ul class="nav nav-pills bg-info">
+                <li class="nav-item">
+                <a class="nav-link active" href="#" role="button" aria-haspopup="true" aria-expanded="false" id="cartButton" data-toggle="modal" data-target="#cartModal">Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" id="labelCartItems">(empty)</a>
+                </li>
+            </ul>
         </div>
-        <div class="column" id="cartPanel">
-            <table id="tableCartHeader">
-                <tr>
-                    <th id="thEmptyCart"><button id="buttonEmptyCart">Empty cart</button></th><th id="thCartText"><h1>Cart</h1></th><th id="thCartImage"><img src="img/cart.png" width="75px"></th>
-                </tr>
-                <tr>
-                    <th colspan="3"><h2 id="thCartItems">(empty)</h2></th>                
-                </tr>
-            </table>
-            <table id="tableCart"></table>
+        <div class="container bg-warning">
+            <div class="table" id="bookPanel">
+            </div>
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <div class="modal" id="descriptionModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="descriptionModalTitle"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="descriptionModalText"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="cartModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Shopping cart</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="cartModalText">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script src="client.js"></script>
     </body>
 </html>

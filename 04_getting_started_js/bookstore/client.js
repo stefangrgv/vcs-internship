@@ -46,29 +46,39 @@ class Bookstore {
     updateBookstoreHTML () {
         let result = this.books.reduce(function (str, book, ind) {
             if (ind % 3 === 0) {
-                str += '<tr>'
+                str += '<div class="row">'
             }
 
-            str += `<th class="thBookstore">${book.title}<br><img src="${book.image_url}" width=120px title="Cover of ${book.title}">
-            <br><button type="button" class="descriptionButton">Read description</button>
-            <br><button type="button" class="addButton" id="add_${book.isbn}">Add to cart</button>
-            </th>`
+            str += `
+                <div class="col-4 border"><center><img class="img-thumbnail w-75" src="${book.image_url}"></center>
+                    <center><button class="btn btn-info descriptionButton" id=desc_${book.isbn} data-toggle="modal" data-target="#descriptionModal">Read description</button></center>
+                    <center><button class="btn btn-dark addButton" id="add_${book.isbn}">Add to cart</button></center>
+                </div>`
 
             if ((ind + 1) % 3 === 0) {
-                str += '</tr>'
+                str += '</div>'
             }
 
             return str
-        }, '<table id="tableBooks">') + '</table>'
+        }, '<div class="table" id="bookPanel">') + '</div>'
        
-        $('#tableBooks').html(result);
+        $('#bookPanel').html(result);
+
+        this.initializeButtons();
+    }
+
+    showDescription (book) {
+        $('#descriptionModalTitle').html(book.title);
+        $('#descriptionModalText').html(book.description);
     }
 
     initializeButtons () {
+        let self = this;
         let cart = this.cart;
         
         this.books.map(function (book) {
-            document.getElementById(`add_${book.isbn}`).onclick = () => cart.add(book);
+            $(`#add_${book.isbn}`).click(() => cart.add(book));
+            $(`#desc_${book.isbn}`).click(() => self.showDescription(book));
         });
     }
 }
@@ -99,39 +109,41 @@ class Cart {
     }
 
     updateCartHTML () {
-        // list the cart contents and create buttons
-        $('#tableCart').html(this.orders.reduce(function (str, order, ind) {
-            str += `<tr><th class="thCartTitle">${order.title}</th> <th class="thCartButton"><button id="cartRemove_${ind}">Remove</button></th></tr>`;
-            return str
-        }, ''));
-
-        this.initializeButtons();
-        
-        // update cart info: number of items and total pages
         let pages = this.orders.reduce((pg, order) => pg += order.num_pages, 0);
-        switch (this.orders.length) {
-            case 0:
-                $('#thCartItems').html('(empty)');
-                $('#buttonEmptyCart').prop('disabled', true);
-                break;
-            case 1:
-                $('#thCartItems').html(`(1 item, ${pages} pages)`)
-                $('#buttonEmptyCart').prop('disabled', false);
-                break;
-            default:
-                $('#thCartItems').html(`(${this.orders.length} items, ${pages} pages total)`);
-                $('#buttonEmptyCart').prop('disabled', false);
-                break;
-        }
+        $('#labelCartItems').html(`${this.orders.length} item(s) , ${pages} pages total`)
     }
 
     initializeButtons () {
         let self = this;
-        this.orders.map(function (order, ind) {
-            document.getElementById(`cartRemove_${ind}`).onclick = () => self.remove(ind);
-        });
+        this.orders.map((order, ind) => $(`#cartRemove_${ind}`).click(() => self.remove(ind)));
 
-        document.getElementById('buttonEmptyCart').onclick = () => self.empty();
+        $('#buttonEmptyCart').click(() => self.empty());
+    }
+    
+    cartRemove (ind) {
+        this.remove(ind);
+        this.cartButton();
+    }
+
+    cartButton() {
+        self = this;
+
+        if (this.orders.length === 0) {
+            $('#cartModalText').html('<p>Cart is empty</p>')
+        } else {
+            $('#cartModalText').html(this.orders.reduce(function (str, item, ind) {
+                str += `
+                    <div class="row">\n
+                        <div class="col-9">
+                            <div>${item.title}</div>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-info" onClick="self.cartRemove(${ind})">Remove</button>
+                        </div>
+                    </div>`
+                return str;
+            }, ''));
+        }
     }
 }
 
@@ -141,6 +153,5 @@ let bookstore = new Bookstore(cart, [book1, book2, book3])
 
 $(document).ready( function () {
     bookstore.updateBookstoreHTML();
-    bookstore.initializeButtons();
-    //cart.initialize();
+    $('#cartButton').click(cart.cartButton.bind(cart));
 })

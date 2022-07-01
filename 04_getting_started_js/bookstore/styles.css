@@ -1,5 +1,4 @@
 .thBookstore {
-    border: 1px solid;
     width: 33%;
 }
 
@@ -35,7 +34,6 @@
 }
 
 .column, .cartColumn {
-    border: 1px solid;
     float: left;
     box-sizing: border-box;
 }
