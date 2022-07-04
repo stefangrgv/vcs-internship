@@ -18,7 +18,6 @@ module.exports = {
         'quotes': [2, 'single', {'allowTemplateLiterals': true, 'avoidEscape': true}],
         'space-infix-ops': ['error', {}],
         'no-prototype-builtins': [0],
-        'semi': ['error', 'always'],
   },
   'env': {
     'browser': true,
