@@ -34,7 +34,7 @@ class PizzaOrder {
 
         this._pizza = pizza;
         this._id = Date.now() - startTime;
-        this._status = 'waiting'
+        this._status = 'waiting';
     }
 
     getPizza () {
@@ -89,7 +89,7 @@ function uiSetOrderPreparing (pizza, order) {
     const ordersQueueUI = document.getElementById('queueOL');
     ordersQueueUI.removeChild(document.querySelectorAll('#queueOL li')[0]);
 
-    document.getElementById('nowPreparingText').innerHTML = `Now preparing:<br><br>${pizza.getName()}<br>ID: ${order.getId()}`
+    document.getElementById('nowPreparingText').innerHTML = `Now preparing:<br><br>${pizza.getName()}<br>ID: ${order.getId()}`;
 }
 
 function uiPlaceOrder (order) {

@@ -7,7 +7,7 @@ var constructItem = function (item) {
               + '\t\t</ol>\n\t</li>\n';
     }
   return `\t<li>${item['label']}</li>\n`;
-}
+};
 
 var ul = function (items) {
   return '<ul>\n' + items.map(item => constructItem(item))

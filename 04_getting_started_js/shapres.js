@@ -1,14 +1,14 @@
 function Shape (type) {
-  this.type = type
+  this.type = type;
 
   this.getType = function () {
-    return type
-  }
+    return type;
+  };
 }
 
 Shape.prototype.area = function () {
-  throw new Error('Cannot call area of Shape. Use subclasses!')
-}
+  throw new Error('Cannot call area of Shape. Use subclasses!');
+};
 
 class Rectangle extends Shape {
   constructor (side) {
@@ -27,7 +27,7 @@ class Rectangle extends Shape {
 class Triangle extends Shape {
   constructor (a, b, c) {
     if ((a <= 0) || (b <= 0) || (c <= 0)) {
-      throw Error('All sides must be > 0')
+      throw Error('All sides must be > 0');
     }
     if ((a + b <= c) || (a + c <= b) || (b + c <= a)) {
       throw Error('Triangle cannot exist: sides A + B must always be greater than side C');

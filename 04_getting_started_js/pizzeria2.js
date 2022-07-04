@@ -45,7 +45,7 @@ class Cook {
         this.pendingOrders.push(newPizza);
         this.pendingOrders.at(-1).ready(this.readyCallback);
 
-        console.log(`NEW order: ${newPizza.getId()} --- ${newPizza.pizza.name}\t${this.pendingOrders.length} order(s) in queue`)
+        console.log(`NEW order: ${newPizza.getId()} --- ${newPizza.pizza.name}\t${this.pendingOrders.length} order(s) in queue`);
     }
 
     startCooking () {
@@ -58,7 +58,7 @@ class Cook {
                 this.pendingOrders[0]
             );
 
-            console.log(`STARTED order: ${this.pendingOrders[0].getId()} --- ${this.pendingOrders[0].pizza.name}`)
+            console.log(`STARTED order: ${this.pendingOrders[0].getId()} --- ${this.pendingOrders[0].pizza.name}`);
         }
     }
     
@@ -67,7 +67,7 @@ class Cook {
         this.isBusy = false;
         this.readyOrders.push(order);
 
-        console.log(`READY order: ${order.getId()} --- ${pizza.name}\tTotal price ${this.caclulateTotalPrice()} for ${this.readyOrders.length} pizza(s)`)
+        console.log(`READY order: ${order.getId()} --- ${pizza.name}\tTotal price ${this.caclulateTotalPrice()} for ${this.readyOrders.length} pizza(s)`);
     }
 
     caclulateTotalPrice () {

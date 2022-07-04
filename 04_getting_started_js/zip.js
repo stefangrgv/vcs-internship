@@ -5,10 +5,10 @@ var zip = function () {
     var currentArray = [];
     args.forEach(function (arg) {
       currentArray = currentArray.concat(arg[i]);
-    })
+    });
     return currentArray;
   });
-}
+};
 
 console.log(zip([1, 2, 3], [4, 5, 6]));
 // [ [1, 4], [2, 4], [3, 6] ]

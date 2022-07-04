@@ -4,7 +4,7 @@ var find = function (predicate, arr) {
 
 var p = function (x) {
   return x > 3;
-}
+};
 
 var arr1 = [0,10,12];
 var arr2 = [1,2,3];
