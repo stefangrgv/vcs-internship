@@ -5,7 +5,7 @@ var queue = {
         if (this._eventQueue.eventName === undefined) {
             this._eventQueue[eventName] = [];
         }
-        this._eventQueue[eventName] = [...this._eventQueue[eventName], callback]
+        this._eventQueue[eventName] = [...this._eventQueue[eventName], callback];
     },
 
     remove (eventName) {
@@ -15,11 +15,11 @@ var queue = {
     trigger (eventName) {
         this._eventQueue[eventName].forEach(fn => fn());
     }
-}
+};
 
 // checking functionality
 queue.on('PANIC_EVENT', function () {
-    console.log('PANIC_EVENT HAPPENED!')
+    console.log('PANIC_EVENT HAPPENED!');
 });
 
 queue.on('PANIC_EVENT', function () {
@@ -30,6 +30,6 @@ queue.on('NOT_A_PANIC_EVENT', function () {
     console.log('ABSOLUTELY NO PANIC!!!');
 });
 
-queue.trigger('PANIC_EVENT')
-queue.remove('PANIC_EVENT')
-queue.trigger('NOT_A_PANIC_EVENT')
+queue.trigger('PANIC_EVENT');
+queue.remove('PANIC_EVENT');
+queue.trigger('NOT_A_PANIC_EVENT');
