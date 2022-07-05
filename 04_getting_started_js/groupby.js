@@ -22,7 +22,7 @@ var groupBy = function (groupingFunction, arr) {
     if (groupedArr.hasOwnProperty(currentKey)) { // eslint-disable-line no-prototype-builtins
       groupedArr[currentKey] = groupedArr[currentKey].concat(element);
     } else {
-      groupedArr[currentKey] = [element]
+      groupedArr[currentKey] = [element];
     }
 
     return groupedArr;

@@ -32,7 +32,7 @@ Array.prototype.range = function (from, to) {
 };
 
 Array.prototype.sum = function () {
-  return this.reduce( (a, b) => a + b, 0)
+  return this.reduce( (a, b) => a + b, 0);
 };
 
 Array.prototype.average = function () {

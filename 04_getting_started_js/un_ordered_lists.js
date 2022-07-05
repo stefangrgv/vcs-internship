@@ -2,7 +2,7 @@ var ul = function (items) {
   return '<ul>\n' + items
                       .map(item => `\t<li>${item['label']}</li>\n`)
                       .join('')
-                    + '</ul>'
+                    + '</ul>';
 };
 
 
@@ -10,7 +10,7 @@ var ol = function (items) {
   return '<ol>\n' + items
                       .map(item => `\t<li>${item['label']}</li>\n`)
                       .join('')
-                    + '</ol>'
+                    + '</ol>';
 };
 
 

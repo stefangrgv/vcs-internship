@@ -37,7 +37,7 @@ Point.prototype.equals = function (other) {
         throw Error('Error: method equals() requires an argument of type Point');
     }
     return (this.x === other.x) && (this.y === other.y);
-}
+};
 
 var point1 = new Point(0,2);
 point1.xInc();

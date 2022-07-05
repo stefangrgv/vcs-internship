@@ -18,6 +18,6 @@ var students = [{
 
 var pluck = function (property, arr) {
   return arr.map(element => element[property]);
-}
+};
 
 console.log(pluck('name', students));

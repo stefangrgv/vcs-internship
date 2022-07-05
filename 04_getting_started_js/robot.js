@@ -34,7 +34,7 @@ class Point {
 
 Point.prototype.toString = function () {
     return `Point @ ${this._x}, ${this._y}`;
-}
+};
 
 class Robot {
     constructor (startPoint) {

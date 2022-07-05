@@ -28,7 +28,7 @@ var correctResult = { c: 4,
   y: 1,
   p: 1,
   f: 1,
-  d: 1 }
+  d: 1 };
 
-console.log(charsHistogram(str))
+console.log(charsHistogram(str));
 console.assert(Object.entries(charsHistogram(str)).toString() === Object.entries(correctResult).toString());

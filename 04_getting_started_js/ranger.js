@@ -6,4 +6,4 @@ var range = function (from, to) {
   return range(from, to - 1).concat(to);
 };
 
-console.log(range(1,10))
+console.log(range(1,10));
