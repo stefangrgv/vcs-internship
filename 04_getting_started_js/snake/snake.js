@@ -175,11 +175,10 @@ function Snake (board) {
         _observers.push(fn);
     }
 
-    function unsubscribe (obj) {
+    function unsubscribe (toRemove) {
         _observers = _observers.filter(obs => {
-            if (obs !== obj) {
-                console.log(obs, 'and', obj, 'are different')
-                return obj;
+            if (obs !== toRemove) {
+                return obs;
             }
         });
     }
@@ -271,10 +270,9 @@ function Apple (board, snake) {
     function check (snake) {
         let snakeHead = snake.getHead();
         if ((snakeHead[0] === getPosition()[0]) && (snakeHead[1] === getPosition()[1])) {
-            console.log(this)
-            alert('eat me raw')
-            snake.unsubscribe(this); // where do we go now...
-            board.removeApple();
+            snake.unsubscribe(this);
+            board.removeApple(this);
+            alert('eaten apple logic goes here!');
         }
     }
 
@@ -293,16 +291,15 @@ snake.subscribe(snake);
 function tick () {
     snake.move();
 
-    board.draw();
-    snake.draw();
-
     if ((board.getApples().length < 3) && (Math.floor(Math.random() * 10) > 5)) {
         let apple = new Apple(board, snake);
         board.addApple(apple);
         snake.subscribe(apple);
     }
 
+    board.draw();
     board.drawApples();
+    snake.draw();
 
     snake.notify(snake);
 }
