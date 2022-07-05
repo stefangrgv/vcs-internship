@@ -9,6 +9,7 @@ function Board (level) {
     let _width = 35;
     let _height = 35;
     let _borders = [];
+    let _apples = [];
     
     canvas.setAttribute('width', `${_width * pixelSize}px`);
     canvas.setAttribute('height', `${_height * pixelSize}px`);
@@ -34,7 +35,7 @@ function Board (level) {
         _borders.map((el) => {
             ctx.fillStyle = 'rgb(120, 0, 100)';
             ctx.fillRect(el[0] * pixelSize, el[1] * pixelSize, pixelSize, pixelSize);            
-        })
+        });
     }
 
     function generateBorders () {
@@ -43,16 +44,55 @@ function Board (level) {
                 /*
                 level 1 : the border coincides with the limits of the <canvas>
                 */
-                let top_border = new Array(_width).fill([0, 0]).map((el, ind) => [el[0] + ind, el[1]]);
-                let bot_border = new Array(_width).fill([0, _height - 1]).map((el, ind) => [el[0] + ind, el[1]]);
-                let lef_border = new Array(_height).fill([0, 0]).map((el, ind) => [el[0], el[1] + ind]);
-                let rig_border = new Array(_width).fill([_width - 1, 0]).map((el, ind) => [el[0], el[1] + ind]);
-                _borders = [...top_border, ...bot_border, ...lef_border, ...rig_border]
+                let topBorder = new Array(_width).fill([0, 0]).map((el, ind) => [el[0] + ind, el[1]]);
+                let botBorder = new Array(_width).fill([0, _height - 1]).map((el, ind) => [el[0] + ind, el[1]]);
+                let lefBorder = new Array(_height).fill([0, 0]).map((el, ind) => [el[0], el[1] + ind]);
+                let rigBorder = new Array(_width).fill([_width - 1, 0]).map((el, ind) => [el[0], el[1] + ind]);
+                _borders = [...topBorder, ...botBorder, ...lefBorder, ...rigBorder];
                 break;
         }
     }
 
-    return {draw: draw, getH: getH, getW: getW};
+    function getBorders () {
+        return _borders;
+    }
+ 
+    function addApple (apple) {
+        _apples.push(apple);
+    }
+
+    function removeApple (apple) {
+        _apples = _apples.filter((el) => el !== apple);
+    }
+
+    function getApplePositions () {
+        if (_apples.length > 0) {
+            return _apples.reduce((result, ap) => {
+                result.push(ap.getPosition());
+                return result;
+            }, []);
+        }
+        return [];
+    }
+
+    function drawApples () {
+        _apples.forEach((ap) => ap.draw());
+    }
+
+    function getNumberApples () {
+        return _apples.length;
+    }
+
+    return {draw: draw,
+            getH: getH,
+            getW: getW,
+            getBorders: getBorders,
+            addApple: addApple,
+            removeApple: removeApple,
+            getApplePositions: getApplePositions,
+            drawApples: drawApples,
+            getNumberApples: getNumberApples
+        };
 }
 
 function Snake (board) {
@@ -60,6 +100,7 @@ function Snake (board) {
     let _speed = 1;
     let _direction;
     let _directionChanged = false;
+    let _observers = [];
 
     spawn();
     setDirection('r');
@@ -72,7 +113,7 @@ function Snake (board) {
     }
 
     function setDirection (d) {
-        if (!_directionChanged){
+        if (!_directionChanged) {
             _direction = d;
             _directionChanged = true;
        }
@@ -101,15 +142,7 @@ function Snake (board) {
         _tail.shift();
         _directionChanged = false;
     }
-
-    function debug_alertTail () {
-        console.log(_tail);
-    }
     
-    function getLength () {
-        return _tail.length();
-    }
-
     function draw () {
         _tail.forEach((el) => {
             ctx.fillStyle = 'rgb(0, 200, 50)';
@@ -117,21 +150,140 @@ function Snake (board) {
         });
     }
 
-    return {draw: draw, move: move, setDirection: setDirection, getDirection: getDirection, directionChanged: _directionChanged, debug_alertTail: debug_alertTail};
+    function getHead () {
+        return _tail.at(-1);
+    }
+
+    function getTail () {
+        return _tail.slice(0, -1);
+    }
+
+    function subscribe (fn) {
+        _observers.push(fn);
+    }
+
+    function unsubscribe (fn) {
+        _observers = _observers.filter(o => o !== fn);
+    }
+
+    function notify () {
+        let self = this;
+        _observers.forEach(o => o(self.getHead()));
+    }
+
+    return {directionChanged: _directionChanged,
+            draw: draw,
+            move: move,
+            getHead: getHead,
+            getTail: getTail,
+            setDirection: setDirection,
+            getDirection: getDirection,
+            subscribe: subscribe,
+            unsubscribe: unsubscribe,
+            notify: notify};
+}
+
+function Apple (board, snake) {
+    let _appleType = _generateType();
+    let _position  = _generatePosition();
+
+    draw();
+
+    function draw () {
+        ctx.fillStyle = 'rgb(255, 0, 0)';
+        ctx.fillRect(_position[0] * pixelSize, _position[1] * pixelSize, pixelSize, pixelSize);
+    }
+
+    function _generateType () {
+        /*
+        randomly generate the type of apple
+            0 : speed  +
+            1 : speed  -
+            2 : length +
+            3 : length -
+        */
+        switch (Math.floor(Math.random())) {
+            case 0:
+                return 's+';
+            case 1:
+                return 's-';
+            case 2:
+                return 'l+';
+            case 3:
+                return 'l-';
+        }
+    }
+
+    function _getTakenPostitions () {
+        return JSON.stringify([...board.getBorders(), ...board.getApplePositions(), ...snake.getTail(), ...snake.getHead()]);
+    }
+
+    function _generatePosition () {
+        let x = Math.floor(Math.random() * board.getW());
+        let y = Math.floor(Math.random() * board.getH());
+
+        // check if the position is occupied
+        if (!_getTakenPostitions().includes(JSON.stringify([x, y]))) {
+            return [x, y];
+        }
+        return _generatePosition();
+    }
+
+    function getPosition () {
+        return _position;
+    }
+
+    return {
+        draw: draw,
+        getPosition: getPosition,
+    };
+}
+
+function Checks (b, s) {
+    function checkBorders () {
+        b.getBorders().forEach(function (el) {
+            if ((s.getHead()[0] === el[0]) && (s.getHead()[1] === el[1])) {
+                alert('W A S T E D');
+            }
+        });
+    }
+
+    function checkSnake () {
+        s.getTail().forEach(function (el) {
+            if ((s.getHead()[0] === el[0]) && (s.getHead()[1] === el[1])) {
+                alert('All we had to do was follow the damn train, CJ');
+            }
+        });
+    }
+
+    return {
+        checkBorders: checkBorders,
+        checkSnake: checkSnake,
+    };
 }
 
 let board = Board(level);
 board.draw();
 
 let snake = Snake(board);
-snake.debug_alertTail();
-snake.draw();
+let checks = Checks(board, snake);
+snake.subscribe(checks.checkBorders);
+snake.subscribe(checks.checkSnake);
 
+snake.draw();
 function tick () {
     snake.move();
 
     board.draw();
     snake.draw();
+
+    if ((board.getNumberApples() < 3) && (Math.floor(Math.random() * 10) > 8)) {
+        board.addApple(new Apple(board, snake));
+    }
+
+    board.drawApples();
+
+    snake.notify();
 }
 
 document.addEventListener('keydown', (event) => {
