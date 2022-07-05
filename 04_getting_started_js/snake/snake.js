@@ -58,20 +58,28 @@ function Snake (board) {
     }
 
     function move () {
+        _tail.push(JSON.parse(JSON.stringify(_tail.at(-1))));
         switch (_direction) {
+            case 'd':
+                _tail[_tail.length - 1][1] += 1;
+                break;
+            case 'u':
+                _tail[_tail.length - 1][1] -= 1;
+                break;
+            case 'l':
+                _tail[_tail.length - 1][0] -= 1;
+                break;                
             case 'r':
-                _tail.push(JSON.parse(JSON.stringify(_tail.at(-1))));
                 _tail[_tail.length - 1][0] += 1;
-            default:
-                _tail.shift();
-                debug_alertTail();
                 break;
         }
+        _tail.shift();
     }
 
     function debug_alertTail () {
         console.log(_tail);
     }
+    
     function getLength () {
         return _tail.length();
     }
