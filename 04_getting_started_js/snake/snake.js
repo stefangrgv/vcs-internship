@@ -1,6 +1,6 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const pixelSize = 20;
+const pixelSize = 25;
 
 let level = 1;
 
@@ -11,6 +11,12 @@ function Board (level) {
     let _borders = [];
     let _apples = [];
     
+    // textures
+    let grass = new Image();
+    grass.src = 'img/grass.png';
+    let wall = new Image();
+    wall.src = 'img/wall.png';
+
     canvas.setAttribute('width', `${_width * pixelSize}px`);
     canvas.setAttribute('height', `${_height * pixelSize}px`);
     
@@ -27,14 +33,11 @@ function Board (level) {
     function draw () {
         // draw the background
         ctx.clearRect(0, 0, _height * pixelSize, _width * pixelSize);
-
-        ctx.fillStyle = 'rgba(0, 0, 100, 0.25)';
-        ctx.fillRect(0, 0, _height * pixelSize, _width * pixelSize);
+        ctx.drawImage(grass, 0, 0, _height * pixelSize, _width * pixelSize);
 
         // draw the borders
-        _borders.map((el) => {
-            ctx.fillStyle = 'rgb(120, 0, 100)';
-            ctx.fillRect(el[0] * pixelSize, el[1] * pixelSize, pixelSize, pixelSize);            
+        _borders.map((el) => {       
+            ctx.drawImage(wall, el[0] * pixelSize, el[1] * pixelSize, pixelSize, pixelSize);
         });
     }
 
@@ -65,6 +68,10 @@ function Board (level) {
         _apples = _apples.filter((el) => el !== apple);
     }
 
+    function getApples (apple) {
+        return _apples;
+    }
+
     function getApplePositions () {
         if (_apples.length > 0) {
             return _apples.reduce((result, ap) => {
@@ -79,8 +86,13 @@ function Board (level) {
         _apples.forEach((ap) => ap.draw());
     }
 
-    function getNumberApples () {
-        return _apples.length;
+    function check (snake) {
+        let snakeHead = snake.getHead();
+        getBorders().forEach(function (el) {
+            if ((snakeHead[0] === el[0]) && (snakeHead[1] === el[1])) {
+                alert('W A S T E D');
+            }
+        })
     }
 
     return {draw: draw,
@@ -91,7 +103,8 @@ function Board (level) {
             removeApple: removeApple,
             getApplePositions: getApplePositions,
             drawApples: drawApples,
-            getNumberApples: getNumberApples
+            getApples: getApples,
+            check: check
         };
 }
 
@@ -142,7 +155,7 @@ function Snake (board) {
         _tail.shift();
         _directionChanged = false;
     }
-    
+
     function draw () {
         _tail.forEach((el) => {
             ctx.fillStyle = 'rgb(0, 200, 50)';
@@ -162,13 +175,30 @@ function Snake (board) {
         _observers.push(fn);
     }
 
-    function unsubscribe (fn) {
-        _observers = _observers.filter(o => o !== fn);
+    function unsubscribe (obj) {
+        _observers = _observers.filter(obs => {
+            if (obs !== obj) {
+                console.log(obs, 'and', obj, 'are different')
+                return obj;
+            }
+        });
     }
 
-    function notify () {
-        let self = this;
-        _observers.forEach(o => o(self.getHead()));
+    function notify (snake) {
+        _observers.forEach(obs => obs.check(snake));
+    }
+
+    function getSubs () {
+        return _observers;
+    }
+
+    function check (snake) {
+        let snakeHead = snake.getHead();
+        getTail().forEach(function (el) {
+            if ((snakeHead[0] === el[0]) && (snakeHead[1] === el[1])) {
+                alert('All we had to do was follow the damn train, CJ');
+            }
+        });
     }
 
     return {directionChanged: _directionChanged,
@@ -180,18 +210,23 @@ function Snake (board) {
             getDirection: getDirection,
             subscribe: subscribe,
             unsubscribe: unsubscribe,
-            notify: notify};
+            notify: notify,
+            getSubs: getSubs,
+            check: check};
 }
 
 function Apple (board, snake) {
     let _appleType = _generateType();
     let _position  = _generatePosition();
 
+    // textures
+    redApple = new Image();
+    redApple.src = 'img/jabolko(red)-128.png';//'img/redApple.png';
+
     draw();
 
     function draw () {
-        ctx.fillStyle = 'rgb(255, 0, 0)';
-        ctx.fillRect(_position[0] * pixelSize, _position[1] * pixelSize, pixelSize, pixelSize);
+        ctx.drawImage(redApple, _position[0] * pixelSize, _position[1] * pixelSize, pixelSize, pixelSize);
     }
 
     function _generateType () {
@@ -233,57 +268,43 @@ function Apple (board, snake) {
         return _position;
     }
 
+    function check (snake) {
+        let snakeHead = snake.getHead();
+        if ((snakeHead[0] === getPosition()[0]) && (snakeHead[1] === getPosition()[1])) {
+            console.log(this)
+            alert('eat me raw')
+            snake.unsubscribe(this); // where do we go now...
+            board.removeApple();
+        }
+    }
+
     return {
         draw: draw,
         getPosition: getPosition,
-    };
-}
-
-function Checks (b, s) {
-    function checkBorders () {
-        b.getBorders().forEach(function (el) {
-            if ((s.getHead()[0] === el[0]) && (s.getHead()[1] === el[1])) {
-                alert('W A S T E D');
-            }
-        });
-    }
-
-    function checkSnake () {
-        s.getTail().forEach(function (el) {
-            if ((s.getHead()[0] === el[0]) && (s.getHead()[1] === el[1])) {
-                alert('All we had to do was follow the damn train, CJ');
-            }
-        });
-    }
-
-    return {
-        checkBorders: checkBorders,
-        checkSnake: checkSnake,
+        check: check
     };
 }
 
 let board = Board(level);
-board.draw();
-
 let snake = Snake(board);
-let checks = Checks(board, snake);
-snake.subscribe(checks.checkBorders);
-snake.subscribe(checks.checkSnake);
+snake.subscribe(board);
+snake.subscribe(snake);
 
-snake.draw();
 function tick () {
     snake.move();
 
     board.draw();
     snake.draw();
 
-    if ((board.getNumberApples() < 3) && (Math.floor(Math.random() * 10) > 8)) {
-        board.addApple(new Apple(board, snake));
+    if ((board.getApples().length < 3) && (Math.floor(Math.random() * 10) > 5)) {
+        let apple = new Apple(board, snake);
+        board.addApple(apple);
+        snake.subscribe(apple);
     }
 
     board.drawApples();
 
-    snake.notify();
+    snake.notify(snake);
 }
 
 document.addEventListener('keydown', (event) => {
@@ -312,4 +333,6 @@ document.addEventListener('keydown', (event) => {
     }
   }, false);
 
+board.draw();
+snake.draw();
 setInterval(tick, 250);
