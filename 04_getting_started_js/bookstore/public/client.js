@@ -100,8 +100,8 @@ function renderPage (books) {
     });
 }
 
-function runClient () {
+function drawBooks () {
     $.get('http://127.0.0.1:3000/books/', (books) => renderPage(books));
 }
 
-runClient();
+drawBooks();
