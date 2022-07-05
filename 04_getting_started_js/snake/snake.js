@@ -13,6 +13,8 @@ function Board (level) {
     canvas.setAttribute('width', `${_width * pixelSize}px`);
     canvas.setAttribute('height', `${_height * pixelSize}px`);
     
+    generateBorders();
+
     function getW () {
         return _width;
     }
@@ -22,15 +24,30 @@ function Board (level) {
     }
 
     function draw () {
+        // draw the background
         ctx.clearRect(0, 0, _height * pixelSize, _width * pixelSize);
 
         ctx.fillStyle = 'rgba(0, 0, 100, 0.25)';
         ctx.fillRect(0, 0, _height * pixelSize, _width * pixelSize);
+
+        // draw the borders
+        _borders.map((el) => {
+            ctx.fillStyle = 'rgb(120, 0, 100)';
+            ctx.fillRect(el[0] * pixelSize, el[1] * pixelSize, pixelSize, pixelSize);            
+        })
     }
 
     function generateBorders () {
         switch (level) {
             case 1:
+                /*
+                level 1 : the border coincides with the limits of the <canvas>
+                */
+                let top_border = new Array(_width).fill([0, 0]).map((el, ind) => [el[0] + ind, el[1]]);
+                let bot_border = new Array(_width).fill([0, _height - 1]).map((el, ind) => [el[0] + ind, el[1]]);
+                let lef_border = new Array(_height).fill([0, 0]).map((el, ind) => [el[0], el[1] + ind]);
+                let rig_border = new Array(_width).fill([_width - 1, 0]).map((el, ind) => [el[0], el[1] + ind]);
+                _borders = [...top_border, ...bot_border, ...lef_border, ...rig_border]
                 break;
         }
     }
@@ -42,6 +59,7 @@ function Snake (board) {
     let _tail = [];
     let _speed = 1;
     let _direction;
+    let _directionChanged = false;
 
     spawn();
     setDirection('r');
@@ -54,7 +72,14 @@ function Snake (board) {
     }
 
     function setDirection (d) {
-        _direction = d;
+        if (!_directionChanged){
+            _direction = d;
+            _directionChanged = true;
+       }
+    }
+
+    function getDirection () {
+        return _direction;
     }
 
     function move () {
@@ -74,6 +99,7 @@ function Snake (board) {
                 break;
         }
         _tail.shift();
+        _directionChanged = false;
     }
 
     function debug_alertTail () {
@@ -91,7 +117,7 @@ function Snake (board) {
         });
     }
 
-    return {draw: draw, move: move, debug_alertTail: debug_alertTail};
+    return {draw: draw, move: move, setDirection: setDirection, getDirection: getDirection, directionChanged: _directionChanged, debug_alertTail: debug_alertTail};
 }
 
 let board = Board(level);
@@ -107,5 +133,31 @@ function tick () {
     board.draw();
     snake.draw();
 }
+
+document.addEventListener('keydown', (event) => {
+    let code = event.code;
+    switch (code) {
+        case 'ArrowUp':
+            if (snake.getDirection() != 'd') {
+                snake.setDirection('u');
+            }
+            break;
+        case 'ArrowDown':
+            if (snake.getDirection() != 'u') {
+                snake.setDirection('d');
+            }
+            break;
+        case 'ArrowLeft':
+            if (snake.getDirection() != 'r') {
+                snake.setDirection('l');
+            }
+            break;
+        case 'ArrowRight':
+            if (snake.getDirection() != 'l') {
+                snake.setDirection('r');
+            }
+            break;
+    }
+  }, false);
 
 setInterval(tick, 250);
