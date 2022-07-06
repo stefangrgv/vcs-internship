@@ -1,26 +1,23 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const pixelSize = 25;
+const pixelSize = 40;
 
-let level = 1;
-
-
-function Board (level) {
-    let _width = 35;
-    let _height = 35;
+function Board () {
+    let _width = 15;
+    let _height = 15;
     let _borders = [];
     let _apples = [];
     
     // textures
-    let grass = new Image();
-    grass.src = 'img/grass.png';
+    let bg = new Image();
+    bg.src = 'img/ground.jpg';
     let wall = new Image();
     wall.src = 'img/wall.png';
 
     canvas.setAttribute('width', `${_width * pixelSize}px`);
     canvas.setAttribute('height', `${_height * pixelSize}px`);
     
-    generateBorders();
+    _generateBorders();
 
     function getW () {
         return _width;
@@ -33,7 +30,7 @@ function Board (level) {
     function draw () {
         // draw the background
         ctx.clearRect(0, 0, _height * pixelSize, _width * pixelSize);
-        ctx.drawImage(grass, 0, 0, _height * pixelSize, _width * pixelSize);
+        ctx.drawImage(bg, 0, 0, _height * pixelSize, _width * pixelSize);
 
         // draw the borders
         _borders.map((el) => {       
@@ -41,19 +38,12 @@ function Board (level) {
         });
     }
 
-    function generateBorders () {
-        switch (level) {
-            case 1:
-                /*
-                level 1 : the border coincides with the limits of the <canvas>
-                */
-                let topBorder = new Array(_width).fill([0, 0]).map((el, ind) => [el[0] + ind, el[1]]);
-                let botBorder = new Array(_width).fill([0, _height - 1]).map((el, ind) => [el[0] + ind, el[1]]);
-                let lefBorder = new Array(_height).fill([0, 0]).map((el, ind) => [el[0], el[1] + ind]);
-                let rigBorder = new Array(_width).fill([_width - 1, 0]).map((el, ind) => [el[0], el[1] + ind]);
-                _borders = [...topBorder, ...botBorder, ...lefBorder, ...rigBorder];
-                break;
-        }
+    function _generateBorders () {
+        let topBorder = new Array(_width).fill([0, 0]).map((el, ind) => [el[0] + ind, el[1]]);
+        let botBorder = new Array(_width).fill([0, _height - 1]).map((el, ind) => [el[0] + ind, el[1]]);
+        let lefBorder = new Array(_height).fill([0, 0]).map((el, ind) => [el[0], el[1] + ind]);
+        let rigBorder = new Array(_width).fill([_width - 1, 0]).map((el, ind) => [el[0], el[1] + ind]);
+        _borders = [...topBorder, ...botBorder, ...lefBorder, ...rigBorder];
     }
 
     function getBorders () {
@@ -68,7 +58,7 @@ function Board (level) {
         _apples = _apples.filter((el) => el !== apple);
     }
 
-    function getApples (apple) {
+    function getApples () {
         return _apples;
     }
 
@@ -89,10 +79,10 @@ function Board (level) {
     function check (snake) {
         let snakeHead = snake.getHead();
         getBorders().forEach(function (el) {
-            if ((snakeHead[0] === el[0]) && (snakeHead[1] === el[1])) {
-                alert('W A S T E D');
+            if ((snakeHead[0] === el[0]) && (snakeHead[1] === el[1]) && snake.isAlive()) {
+                snake.kill();
             }
-        })
+        });
     }
 
     return {draw: draw,
@@ -114,6 +104,10 @@ function Snake (board) {
     let _direction;
     let _directionChanged = false;
     let _observers = [];
+    let _ate = 0;
+    let _alive = true;
+    let _spriteSheet = new Image();
+    _spriteSheet.src = 'img/snakeSprite.png';
 
     spawn();
     setDirection('r');
@@ -136,6 +130,10 @@ function Snake (board) {
         return _direction;
     }
 
+    function getSpeed () {
+        return _speed;
+    }
+
     function move () {
         _tail.push(JSON.parse(JSON.stringify(_tail.at(-1))));
         switch (_direction) {
@@ -152,14 +150,121 @@ function Snake (board) {
                 _tail[_tail.length - 1][0] += 1;
                 break;
         }
-        _tail.shift();
+        _ate > 0 ? _ate-- : _tail.shift(); // make the snake grow
         _directionChanged = false;
     }
 
+    function isAlive () {
+        return _alive;
+    }
+
+    function kill () {
+        _alive = false;
+    }
+
+    function _getTailAdjacent (ind, towards) {
+        // locate where the next part of the tail is (towards 'head' or 'tail')
+        // this is needed to know which sprite to use and how to rotate it when drawing
+        let next;
+        (towards === 'head') ? next = ind + 1 : next = ind - 1;
+        let dx = _tail[ind][0] - _tail[next][0];
+        let dy = _tail[ind][1] - _tail[next][1];
+        
+        if (dx === 0) {
+            if (dy === 1) {
+                return 'above';
+            }
+            return 'below';
+        }
+
+        if (dx === 1) {
+            return 'left';
+        }
+
+        if (dx === -1) {
+            return 'right';
+        }
+    }
+
     function draw () {
-        _tail.forEach((el) => {
-            ctx.fillStyle = 'rgb(0, 200, 50)';
-            ctx.fillRect(el[0] * pixelSize, el[1] * pixelSize, pixelSize, pixelSize);
+        _tail.forEach((el, ind) => {
+            let spritex = 0; // the location of the sprite in the .png
+            let spritey = 0; // the location of the sprite in the .png
+            let rotAngle = 0; // angle at which to rotate the sprite depending on where the snake is going
+            let shiftx = 0; // ctx.rotate displaces the image, this is used to account for it
+            let shifty = 0; // ctx.rotate displaces the image, this is used to account for it
+
+            ctx.save();
+            if (ind === _tail.length - 1) { // draw the head
+                switch (_direction) {
+                    case 'l':
+                        rotAngle = 90;
+                        shiftx = 1;
+                        break;
+                    case 'r':
+                        rotAngle = 270;
+                        shifty = 1;
+                        break;
+                    case 'u':
+                        rotAngle = 180;
+                        shiftx = 1;
+                        shifty = 1;
+                        break;
+                }
+            } else if (ind === 0) { // draw the end of the tail
+                switch (_getTailAdjacent(ind, 'head')) {
+                    case 'left':
+                        rotAngle = -90;
+                        shifty = 1;
+                        break;
+                    case 'right':
+                        rotAngle = 90;
+                        shiftx = 1;
+                        break;
+                    case 'below':
+                        rotAngle = 180;
+                        shiftx = 1;
+                        shifty = 1;
+                        break;
+                }
+                spritex = 44;
+                spritey = 84;
+            } else { // middle of the tail
+                let toTail = _getTailAdjacent(ind, 'tail');
+                let toHead = _getTailAdjacent(ind, 'head');
+                if ((toTail === 'left' || toTail === 'right') && (toHead === 'left' || toHead === 'right')) {
+                    spritex = 84;
+                    spritey = 84;
+                    rotAngle = 90;
+                    shiftx = 1;
+                } else if ((toTail === 'above' || toTail === 'below') && (toHead === 'above' || toHead === 'below')) {
+                    spritex = 84;
+                    spritey = 84;
+                } else if ((toTail === 'above' && toHead === 'left') || (toTail === 'left' && toHead === 'above')) {
+                    spritex = 85;
+                    spritey = 42;
+                } else if ((toTail === 'below' && toHead === 'left') || (toTail === 'left' && toHead === 'below')) {
+                    spritex = 85;
+                    spritey = 42;
+                    rotAngle = -90;
+                    shifty = 1;
+                } else if ((toTail === 'above' && toHead === 'right') || (toTail === 'right' && toHead === 'above')) {
+                    spritex = 85;
+                    spritey = 42;
+                    rotAngle = 90;
+                    shiftx = 1;
+                } else if ((toTail === 'below' && toHead === 'right') || (toTail === 'right' && toHead === 'below')) {
+                    spritex = 85;
+                    spritey = 42;
+                    rotAngle = 180;
+                    shiftx = 1;
+                    shifty = 1;
+                }
+            }
+            ctx.translate((el[0] + shiftx) * pixelSize, (el[1] + shifty) * pixelSize);
+            ctx.rotate(rotAngle * Math.PI / 180);
+            ctx.drawImage(_spriteSheet, spritex, spritey, 40, 40, 0, 0, pixelSize, pixelSize);
+        ctx.restore();
         });
     }
 
@@ -191,11 +296,32 @@ function Snake (board) {
         return _observers;
     }
 
+    function grow () {
+        _ate += 1;
+    }
+
+    function shrink () {
+        Array(5).fill(0).map(() => {
+            _tail.shift();
+            if (_tail.length == 0) {
+                kill();
+            }
+        });
+    }
+
+    function accelerate () {
+        _speed += 1;
+    }
+
+    function decelerate () {
+        (_speed > 1) ? _speed -= 1 : _speed *= 0.5;
+    }
+
     function check (snake) {
         let snakeHead = snake.getHead();
         getTail().forEach(function (el) {
             if ((snakeHead[0] === el[0]) && (snakeHead[1] === el[1])) {
-                alert('All we had to do was follow the damn train, CJ');
+                snake.kill();
             }
         });
     }
@@ -207,45 +333,56 @@ function Snake (board) {
             getTail: getTail,
             setDirection: setDirection,
             getDirection: getDirection,
+            getSpeed: getSpeed,
             subscribe: subscribe,
             unsubscribe: unsubscribe,
             notify: notify,
             getSubs: getSubs,
+            grow: grow,
+            shrink: shrink,
+            accelerate: accelerate,
+            decelerate: decelerate,
+            isAlive: isAlive,
+            kill: kill,
             check: check};
 }
 
 function Apple (board, snake) {
+    let _texture = new Image();
     let _appleType = _generateType();
     let _position  = _generatePosition();
-
-    // textures
-    redApple = new Image();
-    redApple.src = 'img/jabolko(red)-128.png';//'img/redApple.png';
+    let _timeBorn = Date.now();
 
     draw();
 
+
     function draw () {
-        ctx.drawImage(redApple, _position[0] * pixelSize, _position[1] * pixelSize, pixelSize, pixelSize);
+        ctx.drawImage(_texture, _position[0] * pixelSize, _position[1] * pixelSize, pixelSize, pixelSize);
     }
 
     function _generateType () {
         /*
         randomly generate the type of apple
-            0 : speed  +
-            1 : speed  -
-            2 : length +
-            3 : length -
+            s+ : speed  +
+            s- : speed  -
+            l+ : length +
+            l- : length -
         */
-        switch (Math.floor(Math.random())) {
-            case 0:
-                return 's+';
-            case 1:
-                return 's-';
-            case 2:
-                return 'l+';
-            case 3:
-                return 'l-';
+        let random = Math.floor(Math.random() * 10);
+        if (random < 7) {
+            _texture.src = 'img/redApple.png';
+            return 'l+';
         }
+        if (random == 8) {
+            _texture.src = 'img/coffee.png';
+            return 's+';
+        }
+        if (random == 9) {
+            _texture.src = 'img/blueApple.png';
+            return 's-';
+        }
+        _texture.src = 'img/pinkMushroom.png';
+        return 'l-';
     }
 
     function _getTakenPostitions () {
@@ -268,12 +405,35 @@ function Apple (board, snake) {
     }
 
     function check (snake) {
-        let snakeHead = snake.getHead();
-        if ((snakeHead[0] === getPosition()[0]) && (snakeHead[1] === getPosition()[1])) {
+        let snakeHead = snake.getHead(); // may be undefined if you ate an l- apple and the tail shrank to 0 length
+        if ((snakeHead !== undefined) && (snakeHead[0] === getPosition()[0]) && (snakeHead[1] === getPosition()[1])) {
             snake.unsubscribe(this);
             board.removeApple(this);
-            alert('eaten apple logic goes here!');
+            
+            switch (_appleType) {
+                case 'l+':
+                    snake.grow();
+                    break;
+                case 'l-':
+                    snake.shrink();
+                    break;
+                case 's+':
+                    snake.accelerate();
+                    break;
+                case 's-':
+                    snake.decelerate();
+                    break;
+            }
         }
+
+        if (_isDeadApple()) {
+            snake.unsubscribe(this);
+            board.removeApple(this);
+        }
+    }
+
+    function _isDeadApple () {
+        return ((Date.now() - _timeBorn) >= 7000); // apples die every 7 seconds
     }
 
     return {
@@ -281,27 +441,6 @@ function Apple (board, snake) {
         getPosition: getPosition,
         check: check
     };
-}
-
-let board = Board(level);
-let snake = Snake(board);
-snake.subscribe(board);
-snake.subscribe(snake);
-
-function tick () {
-    snake.move();
-
-    if ((board.getApples().length < 3) && (Math.floor(Math.random() * 10) > 5)) {
-        let apple = new Apple(board, snake);
-        board.addApple(apple);
-        snake.subscribe(apple);
-    }
-
-    board.draw();
-    board.drawApples();
-    snake.draw();
-
-    snake.notify(snake);
 }
 
 document.addEventListener('keydown', (event) => {
@@ -330,6 +469,38 @@ document.addEventListener('keydown', (event) => {
     }
   }, false);
 
+let board = Board();
+let snake = Snake(board);
+snake.subscribe(board);
+snake.subscribe(snake);
+
 board.draw();
 snake.draw();
-setInterval(tick, 250);
+
+let apple = new Apple(board, snake);
+board.addApple(apple);
+snake.subscribe(apple);
+
+function tick () {
+    snake.move();
+
+    if ((board.getApples().length < 3) && (Math.floor(Math.random() * 10) > 8)) {
+        apple = new Apple(board, snake);
+        board.addApple(apple);
+        snake.subscribe(apple);
+    }
+
+    board.draw();
+    board.drawApples();
+    snake.draw();
+
+    snake.notify(snake);
+
+    if (snake.isAlive()) {
+        setTimeout(tick, 200 / snake.getSpeed());
+    } else {
+        $('#gameOverModal').modal('show');
+    }
+}
+
+tick();
