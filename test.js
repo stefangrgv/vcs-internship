@@ -1,0 +1,1 @@
+alert('I should have an error');
