@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import $ from 'jquery';
 
 
 class SearchBar extends React.Component {
@@ -75,19 +74,25 @@ class App extends React.Component {
       statusText: <h3>Loading ...</h3>
     })
 
-    $.get(API_URL + '?q=' + input + '&appid=' + API_KEY)
-      .done((data) => {
-        this.setState({
-          weather: data,
-          statusText: <h3>Enter your favourite place</h3>
-        })
-      })
-      .fail(() => {
+    fetch(API_URL + '?q=' + input + '&appid=' + API_KEY)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
         alert('Error: location not found!');
         this.setState({
           statusText: <h3>Enter your favourite place</h3>,
         });
-      });
+        return null;
+      })
+      .then(data => {
+        if (data !== null) {
+          this.setState({
+            weather: data,
+            statusText: <h3>Enter your favourite place</h3>,
+          });
+        }
+      })
   }
 
   render() {
