@@ -21,14 +21,19 @@ class SearchBar extends React.Component {
   render () {
     return (
     <div className='container'>
-      <div className='row justify-content-md-center'>
-        <div className='col-4'>{this.props.statusText}
-        </div>
-      </div>
-      <div className='row justify-content-md-center'>
-        <div className='col-9'><input className='form-control' onChange={this.inputfieldChange} placeholder='Enter location'></input></div>
-        <div className='col-3'><button className='btn btn-success' onClick={this.getData}>Get data</button></div>
-      </div>
+      <table className='weatherTable'>
+        <tbody>
+          <tr>
+            <td colSpan='2'>{this.props.statusText}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr className='tfooter'>
+            <td><input className='form-control' onChange={this.inputfieldChange} placeholder='Enter location'></input></td>
+            <td><button className='btn btn-success' onClick={this.getData}>Get data</button></td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
     )
   }
@@ -43,8 +48,8 @@ class WeatherPanel extends React.Component {
       )
     }
     return (
-      <div className='container-sm'>
-        <center><h3>The weather in {this.props.weather.name}</h3></center>
+      <div className='container'>
+        <h2>The weather in {this.props.weather.name}</h2>
         <ul className='list-group'>
           <li className='list-group-item'><b>Temperature:</b> {(this.props.weather.main.temp - 273.15).toFixed(1)}&#8451; (feels like {(this.props.weather.main.feels_like - 273.15).toFixed(1)})</li>
           <li className='list-group-item'><b>Relative humidity:</b> {this.props.weather.main.humidity}%</li>
@@ -62,7 +67,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       weather: {},
-      statusText: <h3>Enter your favourite place</h3>,
+      statusText: <h2>Enter your favourite place</h2>,
     };
   }
 
@@ -71,7 +76,7 @@ class App extends React.Component {
     const API_KEY = '7a53857e9f4ab6a58c39e507db8c6491'
     
     this.setState({
-      statusText: <h3>Loading ...</h3>
+      statusText: <h2>Loading ...</h2>
     })
 
     fetch(API_URL + '?q=' + input + '&appid=' + API_KEY)
@@ -81,7 +86,7 @@ class App extends React.Component {
         }
         alert('Error: location not found!');
         this.setState({
-          statusText: <h3>Enter your favourite place</h3>,
+          statusText: <h2>Enter your favourite place</h2>,
         });
         return null;
       })
@@ -89,7 +94,7 @@ class App extends React.Component {
         if (data !== null) {
           this.setState({
             weather: data,
-            statusText: <h3>Enter your favourite place</h3>,
+            statusText: <h2>Enter your favourite place</h2>,
           });
         }
       })
@@ -97,19 +102,10 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className='container'>
-        <div className='row row-m justify-content-md-center'>
-        <div className='col-3'>
-          <h1>FancyWeather&copy;</h1>
-        </div>
-      </div>
-
-        <div className='row row-m align-items-start'>
-          <WeatherPanel weather={this.state.weather}/>
-        </div>
-        <div className='row row-m align-items-end'>
-          <SearchBar onSearch={this.getData} statusText={this.state.statusText}/>
-        </div>
+      <div className='header'>
+        <h1>FancyWeather&copy;</h1>
+        <WeatherPanel weather={this.state.weather}/>
+        <SearchBar onSearch={this.getData} statusText={this.state.statusText}/>
       </div>
     )
   }
