@@ -303,7 +303,7 @@ function Snake (board) {
     function shrink () {
         Array(5).fill(0).map(() => {
             _tail.shift();
-            if (_tail.length == 0) {
+            if (_tail.length === 0) {
                 kill();
             }
         });
@@ -373,11 +373,11 @@ function Apple (board, snake) {
             _texture.src = 'img/redApple.png';
             return 'l+';
         }
-        if (random == 8) {
+        if (random === 8) {
             _texture.src = 'img/coffee.png';
             return 's+';
         }
-        if (random == 9) {
+        if (random === 9) {
             _texture.src = 'img/blueApple.png';
             return 's-';
         }
@@ -447,22 +447,22 @@ document.addEventListener('keydown', (event) => {
     let code = event.code;
     switch (code) {
         case 'ArrowUp':
-            if (snake.getDirection() != 'd') {
+            if (snake.getDirection() !== 'd') {
                 snake.setDirection('u');
             }
             break;
         case 'ArrowDown':
-            if (snake.getDirection() != 'u') {
+            if (snake.getDirection() !== 'u') {
                 snake.setDirection('d');
             }
             break;
         case 'ArrowLeft':
-            if (snake.getDirection() != 'r') {
+            if (snake.getDirection() !== 'r') {
                 snake.setDirection('l');
             }
             break;
         case 'ArrowRight':
-            if (snake.getDirection() != 'l') {
+            if (snake.getDirection() !== 'l') {
                 snake.setDirection('r');
             }
             break;
