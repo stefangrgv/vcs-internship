@@ -1,0 +1,31 @@
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding-bottom: 25px;
+}
+
+.header {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding-bottom: 35px;
+}
+
+.weatherTable {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.list-group {
+    text-align: left;
+    margin-inline-start: 35%;
+}
+
+ul {
+    list-style: none;
+}
+
+input {
+    width: 100%;
+}

@@ -1,13 +1,18 @@
 module.exports = {
   'root': true,
   'extends': [
-      'eslint:recommended'
+      'eslint:recommended',
+      'react-app',
+      'react-app/jest'
   ],
   'parserOptions': {
         'requireConfigFile': false,
         'ecmaVersion': 6,
-        'sourceType': 'script',
-        'ecmaFeatures': {}
+        'sourceType': 'module',
+        'ecmaFeatures': {
+          'modules': true
+        },
+        'allowImportExportEverywhere': true
   },
   'rules': {
         'camelcase': ['error', {
