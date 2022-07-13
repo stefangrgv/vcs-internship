@@ -19,6 +19,8 @@
   "homepage": "https://github.com/stefangrgv/vcs-internship#readme",
   "devDependencies": {
     "eslint": "^8.17.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-jest-react": "^0.1.0",
     "nodemon": "^2.0.18"
   },
   "dependencies": {
