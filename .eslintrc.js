@@ -1,7 +1,9 @@
 module.exports = {
   'root': true,
   'extends': [
-      'eslint:recommended'
+      'eslint:recommended',
+      "react-app",
+      "react-app/jest"
   ],
   'parserOptions': {
         'requireConfigFile': false,
