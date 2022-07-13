@@ -11,7 +11,9 @@ class SearchBar extends React.Component {
   }
 
   inputfieldChange = (event) => {
-    this.setState({inputField: event.target.value});
+    this.setState({
+      inputField: event.target.value
+    });
   };
 
   getData = () => {
@@ -53,7 +55,7 @@ class WeatherPanel extends React.Component {
         <ul className='list-group'>
           <li className='list-group-item'><b>Temperature:</b> {(this.props.weather.main.temp - 273.15).toFixed(1)}&#8451; (feels like {(this.props.weather.main.feels_like - 273.15).toFixed(1)})</li>
           <li className='list-group-item'><b>Relative humidity:</b> {this.props.weather.main.humidity}%</li>
-          <li className='list-group-item'><b>Atmospheric ressure:</b> {this.props.weather.main.pressure} hPa</li>
+          <li className='list-group-item'><b>Atmospheric pressure:</b> {this.props.weather.main.pressure} hPa</li>
           <li className='list-group-item'><b>Wind speed:</b> {this.props.weather.wind.speed} m/s</li>
           <li className='list-group-item'><b>Description:</b> {this.props.weather.weather[0].description} ({this.props.weather.clouds.all}% cloud cover)</li>
         </ul>
@@ -72,14 +74,14 @@ class App extends React.Component {
   }
 
   getData = (input) => {
-    const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
-    const API_KEY = '7a53857e9f4ab6a58c39e507db8c6491';
+    const apiUrl = 'https://api.openweathermap.org/data/2.5/weather';
+    const apiKey = '7a53857e9f4ab6a58c39e507db8c6491';
     
     this.setState({
       statusText: <h2>Loading ...</h2>
     });
 
-    fetch(API_URL + '?q=' + input + '&appid=' + API_KEY)
+    fetch(apiUrl + '?q=' + input + '&appid=' + apiKey)
       .then(response => {
         if (response.ok) {
           return response.json();
