@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    {% extends 'main.html' %}
+    {% block content %}
+        <a href="{% url 'create_room' %}">Create room</a>    
+        {% for room in rooms %}
+        <h3> <a href="/rooms/{{room.name}}/">{{ room.name }}</a> </h3>
+        <small> {{ room.host }} </small>
+        <h5> {{ room.description }} </h5>
+        <hr>
+        {% endfor %}
+    {% endblock content %}
+</body>
+</html> 
