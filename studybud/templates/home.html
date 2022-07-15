@@ -10,7 +10,9 @@
     {% block content %}
         <a href="{% url 'create_room' %}">Create room</a>    
         {% for room in rooms %}
-        <h3> <a href="/rooms/{{room.name}}/">{{ room.name }}</a> </h3>
+        <h3> <a href="/rooms/{{ room.name }}/">{{ room.name }}</a> </h3>
+        <a href="{% url 'update_room' room.id %}">Edit room</a>
+        <a href="{% url 'delete_room' room.id %}">Delete room</a>
         <small> {{ room.host }} </small>
         <h5> {{ room.description }} </h5>
         <hr>
