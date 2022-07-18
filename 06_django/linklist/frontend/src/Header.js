@@ -2,7 +2,7 @@ function Header () {
     return (
         <div className="Header">
             <div className="HeaderButtons">
-                <h4> <a href='/app/'>Nov KodjaLink &trade;</a> </h4>
+                <h4> <a href=''>Nov KodjaLink &trade;</a> </h4>
                 <h4> <a href='/login/'>Login</a> </h4>
             </div>
             <div className="HeaderLogo">
