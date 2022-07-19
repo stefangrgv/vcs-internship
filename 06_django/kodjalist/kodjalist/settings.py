@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'links.apps.LinksConfig',
     'rest_framework',
-    'frontend', # enable the frontend app
+    'frontend',
 ]
 
 MIDDLEWARE = [
