@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import React from 'react';
 import axios from 'axios';
@@ -38,7 +37,6 @@ class App extends React.Component {
     const listItems = this.state.links.map((link, n) => <li>{link}<button onClick={() => this.remove(n)}>Remove</button></li>)
     return (
       <div className='kodjalinkContents'>
-        <h3>kodjalink {this.state.kodjalink}</h3>
         <ul>{listItems}</ul>
       </div>
     )
@@ -54,6 +52,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <h3>{this.state.isLoaded ? this.renderLinks() : 'loading...'}</h3>
+        {this.state.isLoaded ? <form><input name="urlInput" type="url" placeholder="https://va6iqtlink.kom"/><input name="urlSubmit" type="submit" value="Dobavi" /></form> : <></>}
       </div>
     );
   }
