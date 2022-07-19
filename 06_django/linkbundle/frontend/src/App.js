@@ -8,29 +8,47 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      kodjalink: document.getElementsByClassName('api_call')[0].id,
       isLoaded: false,
       data: {},
     }
   }
 
   getData () {
-    axios.get('/api/')
+    axios.get(`/api/${this.state.kodjalink}/`)
     .then((response) => {
       this.setState(
-        {isLoaded: true, data: response.data[0]}
+        {isLoaded: true, data: response.data}
       )
+      console.log(response.data)
     })
     .catch((error) => {
       console.log(error);
     });
   }
 
+  renderLinks () {
+    return (
+      <div className='kodjalinkContents'>
+        <h5>kodjalink {this.state.data.id}</h5>
+        <h5>links:</h5>
+        <ul>
+          
+        </ul>
+      </div>
+    )
+  }
+
   render () {
-    this.getData();
+    if (!this.state.isLoaded) {
+      this.getData();
+    }
+
+    console.log(this.state);
 
     return (
       <div className="App">
-        <h3>{this.state.isLoaded ? this.state.data['url'] : 'loading...'}</h3>
+        <h3>{this.state.isLoaded ? this.renderLinks() : 'loading...'}</h3>
       </div>
     );
   }

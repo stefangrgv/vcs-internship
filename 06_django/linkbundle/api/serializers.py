@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from kodjalist.models import Link
+from kodjalink.models import KodjaLink
 
-class LinkSerializer(serializers.ModelSerializer):
+class KodjaLinkSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Link
-        fields = '__all__'
+        model = KodjaLink
+        fields = ['id', 'user', 'links']
