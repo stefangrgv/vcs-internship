@@ -10,31 +10,36 @@ class App extends React.Component {
     this.state = {
       kodjalink: document.getElementsByClassName('api_call')[0].id,
       isLoaded: false,
-      data: {},
     }
+  }
+
+  linksToArray (links) {
+    return links.split(',')
   }
 
   getData () {
     axios.get(`/api/${this.state.kodjalink}/`)
     .then((response) => {
       this.setState(
-        {isLoaded: true, data: response.data}
+        {isLoaded: true, links: this.linksToArray(response.data.links)}
       )
-      console.log(response.data)
     })
     .catch((error) => {
       console.log(error);
     });
   }
 
+  remove (n) {
+    console.log(n)
+    alert(`pls implement me ${n}`)
+  }
+
   renderLinks () {
+    const listItems = this.state.links.map((link, n) => <li>{link}<button onClick={() => this.remove(n)}>Remove</button></li>)
     return (
       <div className='kodjalinkContents'>
-        <h5>kodjalink {this.state.data.id}</h5>
-        <h5>links:</h5>
-        <ul>
-          
-        </ul>
+        <h3>kodjalink {this.state.kodjalink}</h3>
+        <ul>{listItems}</ul>
       </div>
     )
   }
