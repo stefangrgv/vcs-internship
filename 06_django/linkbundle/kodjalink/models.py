@@ -1,20 +1,21 @@
-from operator import mod
 from django.db import models
 from django.contrib import admin
-#import json
+from rest_framework import permissions
 
-class User(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+class Link(models.Model):
+    url = models.URLField(max_length=100, blank=False)
+    #thumbnail = models.ImageField(verbose_name='thumbnail')
+    thumbnail = models.URLField(max_length=100, blank=True, default='')
+    description = models.TextField(max_length=200)
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def __str__(self):
-        return self.name
-
-class KodjaLink(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    links = models.CharField(max_length=1000, blank=True)
+class LinkList(models.Model):
+    owner = models.ForeignKey('auth.User', related_name='linklists', on_delete=models.CASCADE)
+    links = models.ManyToManyField(Link)
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def __str__(self):
         return str(self.id)
     
-admin.site.register(User)
-admin.site.register(KodjaLink)
+admin.site.register(LinkList)
+admin.site.register(Link)
