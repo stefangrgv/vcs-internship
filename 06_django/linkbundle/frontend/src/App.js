@@ -1,6 +1,9 @@
-import './App.css';
 import React from 'react';
 import axios from 'axios';
+
+import './App.css';
+
+REACT ROUTER
 
 
 class App extends React.Component {
@@ -52,7 +55,14 @@ class App extends React.Component {
     return (
       <div className="App">
         <h3>{this.state.isLoaded ? this.renderLinks() : 'loading...'}</h3>
-        {this.state.isLoaded ? <form><input name="urlInput" type="url" placeholder="https://va6iqtlink.kom"/><input name="urlSubmit" type="submit" value="Dobavi" /></form> : <></>}
+        {
+          this.state.isLoaded
+            ? <form>
+                <input name="urlInput" type="url" placeholder="https://va6iqtlink.kom"/>
+                <input name="urlSubmit" type="submit" value="Dobavi" />
+              </form>
+            : <></>
+        }
       </div>
     );
   }
