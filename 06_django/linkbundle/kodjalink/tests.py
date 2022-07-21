@@ -1,11 +1,8 @@
-from django.test import TestCase
-
+from django.contrib.auth.models import User
 from rest_framework.test import APIClient
+import pytest
 
-# Create your tests here.
 
-
-import pytest # install, connetct to django
 
 @pytest.fixture
 def user():
@@ -23,7 +20,7 @@ def signed_in_user(user):
     return client
 
 
-
+@pytest.mark.django_db
 def test_get_my_lists(signed_in_user):
     data = signed_in_user.get(reverse('kl'))
     assert data['lists'] == []

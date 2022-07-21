@@ -1,12 +1,13 @@
 from django.contrib.auth.models import User
-from rest_framework import generics
-from .models import Link, LinkList
-from .serializers import LinkSerializer, LinkListSerializer, UserSerializer
-from rest_framework import permissions
+from rest_framework import permissions, mixins
+from rest_framework.views import APIView
 from .permissions import IsOwnerOrReadOnly
+from .models import LinkList
+from .serializers import LinkListSerializer, UserSerializer
 
+from rest_framework.response import Response
 
-class LinkListView(generics.RetrieveUpdateDestroyAPIView):
+class LinkListView(mixins.ListModelMixin, mixins.CreateModelMixin, APIView):
     queryset = LinkList.objects.all()
     serializer_class = LinkListSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
@@ -14,14 +15,18 @@ class LinkListView(generics.RetrieveUpdateDestroyAPIView):
     def perform_create(self, serializer):
         serializer.save(owner = self.request.user)
 
-class LinkView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = LinkList.objects.all()
-    serializer_class = LinkSerializer
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
-class UserList(generics.ListAPIView):
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+class UserView(mixins.ListModelMixin, mixins.CreateModelMixin, APIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-class UserDetails(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)

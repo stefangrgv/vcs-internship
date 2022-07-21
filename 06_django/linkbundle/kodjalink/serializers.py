@@ -10,12 +10,15 @@ class LinkSerializer(serializers.ModelSerializer):
 class LinkListSerializer(serializers.ModelSerializer):
     class Meta:
         model = LinkList
-        fields = ['id', 'links', 'owner']
+        fields = ['id', 'links', 'owner', 'title']
 
         owner = serializers.ReadOnlyField(source='owner.username')
 
 class UserSerializer(serializers.ModelSerializer):
-    linklists = serializers.PrimaryKeyRelatedField(many=True, queryset=LinkList.objects.all())
+    linklists = LinkListSerializer(many=True)
+    # linklists = serializers.PrimaryKeyRelatedField(many=True, queryset=LinkList.objects.all())
+    # for user in User.objects.all():
+    #     Token.objects.get_or_create(user=user)
 
     class Meta:
         model = User
