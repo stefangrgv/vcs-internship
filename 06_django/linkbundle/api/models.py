@@ -8,5 +8,6 @@ class Link(models.Model):
 
 class LinkList(models.Model):
     owner = models.ForeignKey('auth.User', related_name='linklists', on_delete=models.CASCADE)
-    links = models.ManyToManyField(Link)
+    links = models.ManyToManyField(Link, blank=True)
     title = models.CharField(max_length=200, blank=False)
+    private = models.BooleanField(default=False)
