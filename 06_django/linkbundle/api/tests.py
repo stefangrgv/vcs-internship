@@ -1,6 +1,8 @@
 from django.urls import reverse
 import pytest
-from .testconfig import *
+from .testconfig import (
+    user, anon_user, signed_in_user, link, sample_list,
+    private_user, signed_in_private_user, private_list)
 
 
 @pytest.mark.django_db
