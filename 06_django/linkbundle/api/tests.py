@@ -106,14 +106,6 @@ def test_update_list__anon_user(anon_user, sample_list):
     assert resp.status_code == 401
 
 @pytest.mark.django_db
-def test_create_link(signed_in_user): #and add it to list
-    resp = signed_in_user.post(
-        reverse('link-view-list'),
-        {'url': 'http://abv.bg', 'description': 'email'}
-    )
-    assert resp.status_code == 201
-
-@pytest.mark.django_db
 def test_create_link_anon_user(anon_user):
     resp = anon_user.post(
         reverse('link-view-list'),
