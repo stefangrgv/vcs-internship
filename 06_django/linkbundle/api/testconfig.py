@@ -9,9 +9,11 @@ from .models import Link, LinkList
 def user():
     return User.objects.create(username="yolo", password="1234655")
 
+
 @pytest.fixture
 def anon_user():
     return APIClient()
+
 
 @pytest.fixture
 def signed_in_user(user):
@@ -19,20 +21,24 @@ def signed_in_user(user):
     token, _ = Token.objects.get_or_create(user=user)
     user.save()
     token.save()
-    client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+    client.credentials(HTTP_AUTHORIZATION="Token " + token.key)
     return client
+
 
 @pytest.fixture
 def link():
-    return Link.objects.create(url='http://abv.bg', description='blabla')
+    return Link.objects.create(url="http://abv.bg", description="blabla")
+
 
 @pytest.fixture
 def sample_list(user):
-    return LinkList.objects.create(title='sample_list', owner=user)
+    return LinkList.objects.create(title="sample_list", owner=user)
+
 
 @pytest.fixture
 def private_user():
-    return User.objects.create(username='private_user', password='password')
+    return User.objects.create(username="private_user", password="password")
+
 
 @pytest.fixture
 def signed_in_private_user(private_user):
@@ -40,9 +46,12 @@ def signed_in_private_user(private_user):
     token, _ = Token.objects.get_or_create(user=private_user)
     private_user.save()
     token.save()
-    client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+    client.credentials(HTTP_AUTHORIZATION="Token " + token.key)
     return client
+
 
 @pytest.fixture
 def private_list(private_user):
-    return LinkList.objects.create(title='private_list', owner=private_user, private=True)
+    return LinkList.objects.create(
+        title="private_list", owner=private_user, private=True
+    )

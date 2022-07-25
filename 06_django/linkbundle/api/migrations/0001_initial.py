@@ -15,21 +15,45 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Link',
+            name="Link",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('url', models.URLField(max_length=100)),
-                ('thumbnail', models.URLField(blank=True, default='', max_length=100)),
-                ('description', models.TextField(max_length=200)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("url", models.URLField(max_length=100)),
+                ("thumbnail", models.URLField(
+                    blank=True, default="", max_length=100)),
+                ("description", models.TextField(max_length=200)),
             ],
         ),
         migrations.CreateModel(
-            name='LinkList',
+            name="LinkList",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200)),
-                ('links', models.ManyToManyField(to='api.link')),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='linklists', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=200)),
+                ("links", models.ManyToManyField(to="api.link")),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="linklists",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]
