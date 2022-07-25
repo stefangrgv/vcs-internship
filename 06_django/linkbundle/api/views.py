@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from rest_framework import permissions, mixins, viewsets
+from rest_framework.authtoken.models import Token
 from .models import Link, LinkList
 from .serializers import LinkSerializer, LinkListSerializer, UserSerializer
-from .permissions import IsOwner
+from .permissions import IsMyOwn
 
 class LinkView(
     mixins.CreateModelMixin,
@@ -23,7 +24,7 @@ class LinkListView(
     ):
     queryset = LinkList.objects.all()
     serializer_class = LinkListSerializer
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
+    permission_classes = [IsMyOwn, permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -40,3 +41,6 @@ class UserView(
     ):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    for user in queryset:
+        Token.objects.get_or_create(user=user)
