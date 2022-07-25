@@ -10,12 +10,14 @@ class LinkSerializer(serializers.ModelSerializer):
 
 
 class LinkListSerializer(serializers.ModelSerializer):
+    links = LinkSerializer(many=True)
+    owner = serializers.ReadOnlyField(source="owner.username")
+
     class Meta:
         model = LinkList
         fields = ["id", "links", "owner", "title", "private"]
         read_only_fields = ["owner"]
 
-    owner = serializers.ReadOnlyField(source="owner.username")
 
 
 class UserSerializer(serializers.ModelSerializer):

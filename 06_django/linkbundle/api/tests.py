@@ -1,6 +1,5 @@
 from django.urls import reverse
 import pytest
-from *testconfig import *  # noqa
 
 
 @pytest.mark.django_db
@@ -41,6 +40,7 @@ def test_get_my_private_list(signed_in_private_user, private_list):
     resp = signed_in_private_user.get(
         reverse("list-view-detail", kwargs={"pk": private_list.id})
     )
+    # assert contents
     assert resp.status_code == 200
 
 
@@ -70,12 +70,15 @@ def test_get_my_lists__anon_user(anon_user):
 
 @pytest.mark.django_db
 def test_create_new_list(signed_in_user, link):
+    import pdb; pdb.set_trace()
     resp = signed_in_user.post(
         reverse("list-view-list"),
-        {"links": [link.id], "title": "generic title"}
+        {"links": [link], "title": "generic title"},
+        format='json'
     )
-    assert resp.json()["links"] == [link.id]
-    assert resp.json()["title"] == "generic title"
+    data = resp.json()
+    assert data["links"] == [link]
+    assert data["title"] == "generic title"
     assert resp.status_code == 201
 
 
