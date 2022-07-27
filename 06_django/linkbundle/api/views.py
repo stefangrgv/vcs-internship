@@ -2,16 +2,21 @@ from django.contrib.auth.models import User
 from rest_framework import permissions, mixins, viewsets
 from rest_framework.authtoken.models import Token
 from .models import Link, LinkList
-from .serializers import LinkSerializer, LinkListSerializer, UserSerializer
-from .permissions import IsMyOwn
+from .serializers import \
+    LinkSerializer, LinkListSerializer, UserDetailsSerializer,\
+    UserListSerializer, UserCreateSerializer, UserChangePasswordSerializer
+from .permissions import IsMyOwn, IsMe
 
 
 class LinkView(
-    mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
 ):
     queryset = Link.objects.all()
     serializer_class = LinkSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    lookup_field = 'url'
 
 
 class LinkListView(
@@ -30,16 +35,38 @@ class LinkListView(
         serializer.save(owner=self.request.user)
 
 
-class UserView(
-    mixins.CreateModelMixin,
+class UserDetailsView(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
+    #mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = User.objects.all()
+    serializer_class = UserDetailsSerializer
+    permission_classes = [IsMe]
+    lookup_field = 'username'
+
+class UserListView(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserListSerializer
 
     for user in queryset:
         Token.objects.get_or_create(user=user)
+
+class UserCreateView(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
+
+
+class UserChangePasswordView(
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = UserChangePasswordSerializer
+    permission_classes = [IsMe]

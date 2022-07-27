@@ -1,4 +1,5 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import './App.css';
 
 
@@ -31,13 +32,13 @@ class List extends React.Component {
         isResponseOk: false,
       });
       if (response.status === 401) {
-        throw new Error('I don\'t know you. Please login.')
+        throw new Error('You are not logged in.')
       }
       if (response.status === 403) {
-        throw new Error('Permission denied.')
+        throw new Error('Permission denied: this list is private.')
       }
       if (response.status === 404) {
-        throw new Error('Kodjalink not found!')
+        throw new Error('List not found!')
       }
     })
     .then(data => {

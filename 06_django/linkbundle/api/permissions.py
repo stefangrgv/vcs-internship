@@ -11,6 +11,18 @@ class IsMyOwn(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if ((request.method == "GET" and not obj.private)
-                or (obj.owner == request.user)):
+                or (str(obj.owner) == str(request.user))):
+            return True
+        return False
+
+
+class IsMe(permissions.BasePermission):
+    """
+    Allows only the current user to make changes
+    to their own profile.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        if (str(obj.username) == str(request.user)):
             return True
         return False

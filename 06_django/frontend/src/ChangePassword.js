@@ -1,25 +1,31 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom'
 import './App.css';
 
-class Login extends React.Component {
+class ChangePassword extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            username: '',
-            password: '',
+            oldPassword: '',
+            newPasswordOne: '',
+            newPasswordTwo: '',
         }
     }
 
-    usernameChange (event) {
+    oldPasswordChange (event) {
         this.setState({
-            username: event.target.value,
+            oldPassword: event.target.value,
         });
     }
 
-    passwordChange (event) {
+    newPasswordOneChange (event) {
         this.setState({
-            password: event.target.value,
+            newPasswordOne: event.target.value,
+        });
+    }
+
+    newPasswordTwoChange (event) {
+        this.setState({
+            newPasswordTwo: event.target.value,
         });
     }
 
@@ -43,7 +49,6 @@ class Login extends React.Component {
         .then((data) => {
             localStorage.setItem('kodjalinkUsername', this.state.username);
             localStorage.setItem('kodjalinkUserToken', data.token);
-            window.location.href = '/';
         })
         .catch((error) => {
             console.log('error', error)
@@ -52,30 +57,38 @@ class Login extends React.Component {
 
     render() {
     return (
-        <div className='Login'>
-        <h3>Login</h3>
+        <div className='ChangePassword'>
+        <h3>ChangePassword ###incomplete</h3>
         <span>
-        <h5>Username</h5>
-        <input 
-            name='username'
-            type='text'
-            onChange={this.usernameChange.bind(this)}
-        />
-        </span>
-        <span>
-            <h5>Password</h5>
+            <h5>Enter old password</h5>
             <input 
                 name='password'
                 type='password'
-                onChange={this.passwordChange.bind(this)}
+                onChange={this.oldPasswordChange.bind(this)}
             />
         </span>
         <span>
-            <button onClick={this.submit.bind(this)}>Login</button>
+            <h5>Enter new password</h5>
+            <input 
+                name='password'
+                type='password'
+                onChange={this.newPasswordOneChange.bind(this)}
+            />
+        </span>
+        <span>
+            <h5>Confirm new password</h5>
+            <input 
+                name='password'
+                type='password'
+                onChange={this.newPasswordTwoChange.bind(this)}
+            />
+        </span>
+        <span>
+            <button onClick={this.submit.bind(this)}>Submit</button>
         </span>
       </div>
     )
   }
 }
 
-export default Login;
+export default ChangePassword;
