@@ -6,7 +6,21 @@ class App extends React.Component {
     logout () {
       localStorage.removeItem('kodjalinkUsername');
       localStorage.removeItem('kodjalinkUserToken');
-      window.location.reload(false);
+
+      fetch('http://localhost:8000/auth/logout/', {
+        method: 'POST',
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error in fetching data from server. Check your connection.');
+        }
+      })
+      .then(() => {
+        window.location.reload(false);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
     }
 
     renderUserLoggedIn () {

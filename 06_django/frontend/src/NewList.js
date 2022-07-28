@@ -30,7 +30,7 @@ class NewList extends React.Component {
       method: 'get',
       headers: new Headers({
         'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
-      })
+      }),
     })
     .then((response) => {
       if (response.ok) {

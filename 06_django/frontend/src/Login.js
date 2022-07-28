@@ -24,7 +24,10 @@ class Login extends React.Component {
     }
 
     submit(event) {
-        fetch('http://localhost:8000/auth/', {
+        this.setState({
+            isResponseOk: false,
+        })
+        fetch('http://localhost:8000/auth/login/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -39,14 +42,18 @@ class Login extends React.Component {
             if (response.ok) {
                 return response.json();
             }
+            if (response.status === 400) {
+                throw new Error('Incorrect username or password!')
+            }
+            throw new Error('Error in request to server.')
         })
         .then((data) => {
             localStorage.setItem('kodjalinkUsername', this.state.username);
-            localStorage.setItem('kodjalinkUserToken', data.token);
+            localStorage.setItem('kodjalinkUserToken', data.key);
             window.location.href = '/';
         })
         .catch((error) => {
-            console.log('error', error)
+            alert(error);
         })
     }
 

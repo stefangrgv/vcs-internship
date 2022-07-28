@@ -7,7 +7,7 @@ class List extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      isResponseOk: true,
+      isResponseOk: false,
       isLoaded: false,
     };
   }
@@ -23,8 +23,11 @@ class List extends React.Component {
         'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
       })
     })
-    .then(response => {
+    .then((response) => {
       if (response.ok) {
+        this.setState({
+          isResponseOk: true,
+        });
         return response.json();
       }
       // if response is not ok
@@ -56,7 +59,6 @@ class List extends React.Component {
     .catch((error) => {
       console.log(error)
       this.setState({
-        isResponseOk: false,
         errorMessage: error.message,
       });
     });
