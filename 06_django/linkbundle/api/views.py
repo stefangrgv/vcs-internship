@@ -9,6 +9,7 @@ from .permissions import IsMyOwn, IsMe
 
 
 class LinkView(
+    mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
@@ -16,7 +17,6 @@ class LinkView(
     queryset = Link.objects.all()
     serializer_class = LinkSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    lookup_field = 'url'
 
 
 class LinkListView(
@@ -29,10 +29,7 @@ class LinkListView(
 ):
     queryset = LinkList.objects.all()
     serializer_class = LinkListSerializer
-    permission_classes = [IsMyOwn, permissions.IsAuthenticated]
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    permission_classes = [IsMyOwn, permissions.IsAuthenticated]       
 
 
 class UserDetailsView(
