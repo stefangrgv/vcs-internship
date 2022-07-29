@@ -186,11 +186,10 @@ class List extends React.Component {
     }
     
     this.setState({
-      links: [...this.state.links, {url: parsedURL}],
+      links: [...this.state.links, {url: parsedURL, needsRendering: true}],
     });
 
-    // update the new link with info from the db
-    this.state.links[this.state.links.length - 1] = this.state.allLinks.find((l) => l.url === parsedURL);
+    this.updateLinks();
   }
 
   deleteLink (link) {
@@ -207,9 +206,26 @@ class List extends React.Component {
     }
   }
 
+  updateLinks () {
+    console.log('updating') //tova ne raboti kakto trqbva
+    this.setState({
+      links: this.state.links.map((link) => {
+        console.log(link)
+        // if (link.needsRendering) {
+        //   console.log(link)
+        //   return this.state.allLinks.find(
+        //     (l) => l.url === link.url
+        //   )
+        // }
+        return link;
+      }),
+    })
+  }
+
+
   render() {
     let content = <h5>loading...</h5>
-    
+
     if (this.state.isLoaded) {
       content = (
         <div className='ListContent'>
