@@ -1,6 +1,6 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import './App.css';
+import Modal from './Modal';
+import './Modal.css';
 
 
 class List extends React.Component {
@@ -9,11 +9,20 @@ class List extends React.Component {
     this.state = {
       isResponseOk: false,
       isLoaded: false,
+      isModalDisplayed: false,
+      newURL: '',
+      editedURL: '',
+      allLinks: [],
     };
+
+    this.saveEditedLink = this.saveEditedLink.bind(this);
+    this.changeEditedURL = this.changeEditedURL.bind(this);
+    this.addLink = this.addLink.bind(this);
   }
 
   componentDidMount () {
     this.loadList(window.location.pathname);
+    this.getAllLinks();
   }
 
   loadList (id) {
@@ -44,7 +53,7 @@ class List extends React.Component {
         throw new Error('List not found!')
       }
     })
-    .then(data => {
+    .then((data) => {
       if (data !== null) {
         this.setState({
           id: data.id,
@@ -64,21 +73,176 @@ class List extends React.Component {
     });
   }
 
+  getAllLinks () {
+    fetch('http://localhost:8000/api/links/', {
+      method: 'get',
+      headers: new Headers({
+        'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+      }),
+    })
+    .then((response) => {
+      if (response.ok) {
+        return (response.json());
+      }
+      throw new Error('Error in fetching link data from server!');
+    })
+    .then((data) => {
+      console.log('all links fetched ')
+      this.setState({
+        allLinks: data,
+      });
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+  }
+
+  saveEditedLink () {
+    console.log(this.state.editLink);
+    this.deleteLink(this.state.editLink);
+    this.addLink(this.state.editedURL);
+    this.setState({
+      isModalDisplayed: false,
+      editedLink: null,
+      editedURL: '',
+    });
+  }
+
+  changeEditedURL (event) {
+    this.setState({
+      editedURL: event.target.value,
+    })
+  }
+
+  editLink (link) {
+    this.setState({
+      isModalDisplayed: true,
+      editedURL: '',
+      editedLink: link,
+      modalClassName: 'EditLinkModal',
+      modalBody: (
+        <input
+          onChange = {this.changeEditedURL}
+          placeholder = 'Enter URL'
+        />
+      ),
+      modalHandleSave: this.saveEditedLink,
+    })
+    console.log('editlink', link)
+  }
+
+  inputURLChange (event) {
+    this.setState({
+      newURL: event.target.value,
+    })
+  }
+
+  addLink (index=-1) {
+    // input validation
+    // **********
+    let parsedURL;
+    if (index === -1) {
+      console.log('its -1, im creating new')
+      parsedURL = this.state.newURL.replace('www.', '');
+    } else {
+      console.log(`its ${index}, im editing`)
+      parsedURL = this.state.editedURL.replace('www.', '');
+    }
+    
+    if (!parsedURL.startsWith('http://') && !parsedURL.startsWith('https://')) {
+      parsedURL = 'http://' + parsedURL;
+    }
+    if (parsedURL.endsWith('/')) { 
+      parsedURL = parsedURL.slice(0, -1);
+    }
+    // **********
+    if (this.state.links.find((l) => l.url === parsedURL)) {
+      alert('This link is already in the list');
+      return;
+    }
+
+    if (!this.state.allLinks.find((l) => l.url === parsedURL)) {      
+      fetch('http://localhost:8000/api/links/', {
+        method: 'POST',
+        headers: new Headers({
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+        }),
+        body: JSON.stringify({
+          'url': parsedURL,
+        })
+      })
+      .then((response) => {
+        if (response.ok) {
+          this.getAllLinks();
+          return (response.json());
+        }
+        if (response.status === 400) {
+          throw new Error('Link is not properly formatted')
+        }
+        throw new Error('Error in posting link data to server!');
+      })
+      .catch((error) => alert('Error:' + error))
+    }
+    
+    this.setState({
+      links: [...this.state.links, {url: parsedURL}],
+    });
+
+    // update the new link with info from the db
+    this.state.links[this.state.links.length - 1] = this.state.allLinks.find((l) => l.url === parsedURL);
+  }
+
+  deleteLink (link) {
+    this.setState({
+      links: this.state.links.filter((l) => {
+        return l !== link;
+      }),
+    })
+  }
+
+  askDeleteLink (link) {
+    if (window.confirm('Are you sure you want to delete this link?')) {
+      this.deleteLink(link);
+    }
+  }
+
   render() {
     let content = <h5>loading...</h5>
     
     if (this.state.isLoaded) {
       content = (
         <div className='ListContent'>
-        <h4>Links:</h4>
+        <h3>{this.state.title}</h3>
+        <h5>(created by {this.state.owner})</h5>
         {this.state.links.map((link, n) => {
           return (
-            <div key={link.id}>
+            <div className='LinkInformation' key={link.id}>
               <h4>{`${n+1}. `}<a href={`${link.url}`}>{link.url}</a></h4>
               <h5>{`${link.description}`}</h5>
+              {
+                localStorage.getItem('kodjalinkUsername') === this.state.owner ? 
+                (
+                  <div className='LinkButtons' key={link.id}>
+                    <button onClick={() => this.editLink(link)}>Edit</button>
+                    <button onClick={() => this.askDeleteLink(link)}>Delete</button>
+                  </div>
+                ):
+                <></>
+              }
             </div>
           )
         })}
+         <div className='NewURL'>
+            <h3>Add URL: </h3>
+            <input placeholder='Enter URL' onChange={this.inputURLChange.bind(this)} />
+            <button onClick={() => this.addLink()}>Add</button>
+          </div>
+        <Modal
+          show = {this.state.isModalDisplayed}
+          handleSave = {this.state.modalHandleSave}
+          body = {this.state.modalBody}
+        />
         </div>
       );
     } else if (!this.state.isResponseOk) {

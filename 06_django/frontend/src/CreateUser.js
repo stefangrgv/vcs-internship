@@ -93,7 +93,7 @@ class CreateUser extends React.Component {
                 })
                 .then((response) => {
                     if (response.ok) {
-                        //redirect to user panel
+                        window.location.href = '/myprofile/';
                     } else {
                         throw new Error('Server request failed!');
                     }

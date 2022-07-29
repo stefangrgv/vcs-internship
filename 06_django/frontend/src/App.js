@@ -43,7 +43,6 @@ class App extends React.Component {
 
       return (
         <div className='App'>
-          <h3>KodjaLink</h3>
           <Outlet />
           {userInfo}
         </div>
