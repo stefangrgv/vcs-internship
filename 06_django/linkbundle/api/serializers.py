@@ -4,19 +4,20 @@ from .models import Link, LinkList
 import requests
 from bs4 import BeautifulSoup as bs
 
+
+no_thumbnail = 'https://www.insticc.org/node/TechnicalProgram/\
+56e7352809eb881d8c5546a9bbf8406e.png'
+
+
 class LinkSerializer(serializers.ModelSerializer):
     """
     Serializer for link endpoint.
     """
 
-
     class Meta:
         model = Link
         fields = ["id", "url", "title", "thumbnail", "description"]
 
-
-    no_thumbnial = 'https://www.insticc.org/node/TechnicalProgram/\
-        56e7352809eb881d8c5546a9bbf8406e.png'
 
     def scrape(self, url):
         try:
@@ -49,7 +50,7 @@ class LinkSerializer(serializers.ModelSerializer):
             if len(imgs) > 0:
                 thumbnail = imgs[0]
             else:
-                thumbnail = self.no_thumbnail
+                thumbnail = no_thumbnail
 
             return {'title': title, 'description': description, 'thumbnail': thumbnail}
 
@@ -57,7 +58,7 @@ class LinkSerializer(serializers.ModelSerializer):
             print('\n\n\nError in fetching data from {}: {}\n\n\n'.format(url, e))
             return {
                 'title': url,
-                'thumbnail': self.no_thumbnail,
+                'thumbnail': no_thumbnail,
                 'description': 'No description available (server not reachable)'
             }
 

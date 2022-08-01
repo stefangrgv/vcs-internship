@@ -1,9 +1,9 @@
 import React from 'react';
 import Modal from './Modal';
 import './Modal.css';
+import './App.css'
 
-
-class List extends React.Component {
+class LinkList extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -98,17 +98,24 @@ class List extends React.Component {
     })
   }
 
-  saveEditedLink (n) {
-    this.setState({
+  async saveEditedLink (n) {
+    let newLinks = this.state.links.map((x) => x);
+    newLinks[n] = {
+      url: this.state.editedURL,
+      title: this.state.editedURL,
+      id: n,
+      description: 'loading...',
+      thumbnail: '',
+      needsRendering: true
+    };
+    console.log('saveEditedLink ', newLinks)
+
+    await this.setState({
       isModalDisplayed: false,
-      links: this.state.links.map((link, i) => {
-        if (i === n) {
-          return {url: this.state.editedURL, needsRendering: true};
-        }
-        return link;
-      }),
+      links: newLinks,
       editedURL: '',
     });
+    console.log('state', this.state.links)
 
     this.updateLinks();
   }
@@ -134,30 +141,28 @@ class List extends React.Component {
     })
   }
 
-  inputURLChange (event) {
-    this.setState({
-      newURL: event.target.value,
-    })
-  }
-
-  addLink (index=-1) {
-    // input validation
-    // **********
-    let parsedURL;
-    if (index === -1) {
-      // creating new
-      parsedURL = this.state.newURL.replace('www.', '');
-    } else {
-      // editing
-      parsedURL = this.state.editedURL.replace('www.', '');
-    }
-    
+  formatURL (urlLink) {
+    let parsedURL = urlLink.replace('www.', '');    
     if (!parsedURL.startsWith('http://') && !parsedURL.startsWith('https://')) {
       parsedURL = 'http://' + parsedURL;
     }
     if (parsedURL.endsWith('/')) { 
       parsedURL = parsedURL.slice(0, -1);
     }
+
+    return parsedURL;
+  }
+
+  inputURLChange (event) {
+    this.setState({
+      newURL: event.target.value,
+    })
+  }
+
+  async addLink () {
+    // input validation
+    // **********
+    let parsedURL = this.formatURL(this.state.newURL);
     // **********
     if (this.state.links.find((l) => l.url === parsedURL)) {
       alert('This link is already in the list');
@@ -166,30 +171,10 @@ class List extends React.Component {
 
     // if link is not present in the db, add it
     if (!this.state.allLinks.find((l) => l.url === parsedURL)) {      
-      fetch('http://localhost:8000/api/links/', {
-        method: 'POST',
-        headers: new Headers({
-          'Content-Type': 'application/json',
-          'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
-        }),
-        body: JSON.stringify({
-          'url': parsedURL,
-        })
-      })
-      .then((response) => {
-        if (response.ok) {
-          this.getAllLinks();
-          return (response.json());
-        }
-        if (response.status === 400) {
-          throw new Error('Link is not properly formatted')
-        }
-        throw new Error('Error in posting link data to server!');
-      })
-      .catch((error) => alert('Error:' + error))
+      this.pushLinkToDb(parsedURL);
     }
     
-    this.setState({
+    await this.setState({
       links: [...this.state.links, {url: parsedURL, needsRendering: true}],
       newURL: '',
     });
@@ -211,18 +196,54 @@ class List extends React.Component {
     }
   }
 
-  updateLinks () {
-    console.log('updating') //tova ne raboti kakto trqbva
-    let newLinks = this.state.links.map((link) => {
-        if (link.needsRendering) {
-          console.log(link + 'needs rendering')
-        }
-        return link;
+  fetchLinkFromDb (url) {
+    return this.state.allLinks.find((l) => {
+      return (l.url === this.formatURL(url))
+    })
+  }
+
+  pushLinkToDb (url) {
+    fetch('http://localhost:8000/api/links/', {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+      }),
+      body: JSON.stringify({
+        'url': url,
       })
-    console.log(newLinks);
-    // this.setState({
-    //   links: newLinks,
-    // })
+    })
+    .then((response) => {
+      if (response.ok) {
+        this.getAllLinks();
+        return (response.json());
+      }
+      if (response.status === 400) {
+        throw new Error('Link is not properly formatted')
+      }
+      throw new Error('Error in posting link data to server!');
+    })
+    .catch((error) => alert('Error:' + error))
+  }
+
+  updateLinks () {
+    let newLinks = this.state.links.map((link) => {
+      if (link.needsRendering) {
+        let linkDbEntry = this.fetchLinkFromDb(link.url);
+        console.log('just before if #235, var is ', linkDbEntry)
+        if (linkDbEntry === undefined) {
+          this.pushLinkToDb(link);
+          return link;
+        } else {
+          return linkDbEntry;
+        }
+      }
+      return link;
+    })
+    
+    this.setState({
+      links: newLinks,
+    });
   }
 
   saveLinkList () {
@@ -254,7 +275,7 @@ class List extends React.Component {
     });
   }
 
-  render() {
+  render() {  
     let content = <h5>loading...</h5>
 
     if (this.state.isLoaded) {
@@ -264,9 +285,17 @@ class List extends React.Component {
         <h5>(created by {this.state.owner})</h5>
         {this.state.links.map((link, n) => {
           return (
-            <div className='LinkInformation' key={link.id}>
-              <h4 key={`num${n}`}>{`${n+1}. `}<a key={`url${n}`} href={`${link.url}`}>{link.url}</a></h4>
-              <h5 key={`desc${n}`}>{`${link.description}`}</h5>
+            <div className='LinkInformation' key={'info' + link.id}>
+              <div className='LinkTitle' key={'title' + link.id}> 
+                <h4 key={`num${n}`}>{`${n+1}. `} {link.title}</h4>
+              </div>
+              <div className='LinkImageDescription' key={'desc' + link.id}>
+                <img src={link.thumbnail} height='100px' width='100px' />
+                <h5>{link.description}</h5>
+              </div>
+              <div className='LinkHyperlink' key={'hlink' + link.id}>
+                <h4><a key={`url${n}`} href={`${link.url}`}>{link.url}</a></h4>
+              </div>
               {
                 localStorage.getItem('kodjalinkUsername') === this.state.owner ? 
                 (
@@ -307,4 +336,4 @@ class List extends React.Component {
   }
 }
 
-export default List;
+export default LinkList;
