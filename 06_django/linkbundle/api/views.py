@@ -4,8 +4,12 @@ from rest_framework.authtoken.models import Token
 from .models import Link, LinkList
 from .serializers import \
     LinkSerializer, LinkListSerializer, UserDetailsSerializer,\
-    UserListSerializer, UserCreateSerializer, UserChangePasswordSerializer
+    UserListSerializer, UserCreateSerializer,\
+    UserChangePasswordSerializer
 from .permissions import IsMyOwn, IsMe
+import requests
+import json
+from bs4 import BeautifulSoup as bs
 
 
 class LinkView(
@@ -67,3 +71,27 @@ class UserChangePasswordView(
 ):
     serializer_class = UserChangePasswordSerializer
     permission_classes = [IsMe]
+
+
+# class ScrapedSiteView(
+#     mixins.RetrieveModelMixin,
+#     viewsets.GenericViewSet,
+# ):
+#     queryset = ScrapedSite.objects.all()
+#     serializer_class = ScrapedSiteSerializer
+
+
+# def scrape(request):
+#     response = requests.get(request.url)
+#     soup = bs(response.text, 'html.parser')
+
+#     scraped = ScrapedSite()
+#     scraped.title = ''
+
+#     if type(soup.title) == 'list':
+#         scraped.title = soup.title[0].text
+#     else:
+#         scraped.title = soup.title.text
+
+#     scraped.save()
+#     print(scraped.title)

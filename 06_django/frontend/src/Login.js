@@ -1,5 +1,4 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom'
 import './App.css';
 
 class Login extends React.Component {

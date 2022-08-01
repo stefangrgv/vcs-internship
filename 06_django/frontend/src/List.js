@@ -18,6 +18,7 @@ class List extends React.Component {
     this.saveEditedLink = this.saveEditedLink.bind(this);
     this.changeEditedURL = this.changeEditedURL.bind(this);
     this.addLink = this.addLink.bind(this);
+    this.saveLinkList = this.saveLinkList.bind(this)
   }
 
   componentDidMount () {
@@ -97,15 +98,19 @@ class List extends React.Component {
     })
   }
 
-  saveEditedLink () {
-    console.log(this.state.editLink);
-    this.deleteLink(this.state.editLink);
-    this.addLink(this.state.editedURL);
+  saveEditedLink (n) {
     this.setState({
       isModalDisplayed: false,
-      editedLink: null,
+      links: this.state.links.map((link, i) => {
+        if (i === n) {
+          return {url: this.state.editedURL, needsRendering: true};
+        }
+        return link;
+      }),
       editedURL: '',
     });
+
+    this.updateLinks();
   }
 
   changeEditedURL (event) {
@@ -114,11 +119,10 @@ class List extends React.Component {
     })
   }
 
-  editLink (link) {
+  editLink (n) {
     this.setState({
       isModalDisplayed: true,
       editedURL: '',
-      editedLink: link,
       modalClassName: 'EditLinkModal',
       modalBody: (
         <input
@@ -126,9 +130,8 @@ class List extends React.Component {
           placeholder = 'Enter URL'
         />
       ),
-      modalHandleSave: this.saveEditedLink,
+      modalHandleSave: () => this.saveEditedLink(n),
     })
-    console.log('editlink', link)
   }
 
   inputURLChange (event) {
@@ -142,10 +145,10 @@ class List extends React.Component {
     // **********
     let parsedURL;
     if (index === -1) {
-      console.log('its -1, im creating new')
+      // creating new
       parsedURL = this.state.newURL.replace('www.', '');
     } else {
-      console.log(`its ${index}, im editing`)
+      // editing
       parsedURL = this.state.editedURL.replace('www.', '');
     }
     
@@ -161,6 +164,7 @@ class List extends React.Component {
       return;
     }
 
+    // if link is not present in the db, add it
     if (!this.state.allLinks.find((l) => l.url === parsedURL)) {      
       fetch('http://localhost:8000/api/links/', {
         method: 'POST',
@@ -187,6 +191,7 @@ class List extends React.Component {
     
     this.setState({
       links: [...this.state.links, {url: parsedURL, needsRendering: true}],
+      newURL: '',
     });
 
     this.updateLinks();
@@ -208,20 +213,43 @@ class List extends React.Component {
 
   updateLinks () {
     console.log('updating') //tova ne raboti kakto trqbva
-    this.setState({
-      links: this.state.links.map((link) => {
-        console.log(link)
-        // if (link.needsRendering) {
-        //   console.log(link)
-        //   return this.state.allLinks.find(
-        //     (l) => l.url === link.url
-        //   )
-        // }
+    let newLinks = this.state.links.map((link) => {
         return link;
-      }),
-    })
+      })
+    console.log(newLinks);
+    // this.setState({
+    //   links: newLinks,
+    // })
   }
 
+  saveLinkList () {
+    fetch(`http://localhost:8000/api/lists${window.location.pathname}`, {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+      },
+      body: JSON.stringify({
+        title: this.state.title,
+        links: this.state.links,
+        private: this.state.private,
+      })
+    })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Server request failed!');
+      }
+    })
+    .then((data) => {
+      alert('Saved!')
+      window.location.href = `/${data.id}/`
+    })
+    .catch((error) => {
+      alert(error);
+    });
+  }
 
   render() {
     let content = <h5>loading...</h5>
@@ -234,14 +262,14 @@ class List extends React.Component {
         {this.state.links.map((link, n) => {
           return (
             <div className='LinkInformation' key={link.id}>
-              <h4>{`${n+1}. `}<a href={`${link.url}`}>{link.url}</a></h4>
-              <h5>{`${link.description}`}</h5>
+              <h4 key={`num${n}`}>{`${n+1}. `}<a key={`url${n}`} href={`${link.url}`}>{link.url}</a></h4>
+              <h5 key={`desc${n}`}>{`${link.description}`}</h5>
               {
                 localStorage.getItem('kodjalinkUsername') === this.state.owner ? 
                 (
                   <div className='LinkButtons' key={link.id}>
-                    <button onClick={() => this.editLink(link)}>Edit</button>
-                    <button onClick={() => this.askDeleteLink(link)}>Delete</button>
+                    <button key={`edit${n}`} onClick={() => this.editLink(n)}>Edit</button>
+                    <button key={`del${n}`} onClick={() => this.askDeleteLink(link)}>Delete</button>
                   </div>
                 ):
                 <></>
@@ -253,6 +281,9 @@ class List extends React.Component {
             <h3>Add URL: </h3>
             <input placeholder='Enter URL' onChange={this.inputURLChange.bind(this)} />
             <button onClick={() => this.addLink()}>Add</button>
+          </div>
+          <div className='SaveList'>
+            <button onClick={this.saveLinkList}>Save LinkList</button>
           </div>
         <Modal
           show = {this.state.isModalDisplayed}

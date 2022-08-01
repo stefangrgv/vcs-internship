@@ -120,10 +120,11 @@ class NewList extends React.Component {
 
   getLinkIdInDb (link) {
     let id;
-    // am i using this method correctly?
+    // am i using this method correctly? no, i'm not
     this.state.allLinks.find((l, i) => {
       if (l.url === link) {
-        id = i;
+        return i;
+        //id = i;
       }
     })
     return id;

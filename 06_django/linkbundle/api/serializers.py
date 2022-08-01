@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Link, LinkList
-from collections import OrderedDict
+import requests
+from bs4 import BeautifulSoup as bs
 
 class LinkSerializer(serializers.ModelSerializer):
     """
@@ -11,8 +12,62 @@ class LinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Link
-        fields = ["id", "url", "thumbnail", "description"]
+        fields = ["id", "url", "title", "thumbnail", "description"]
 
+
+    no_thumbnial = 'https://www.insticc.org/node/TechnicalProgram/\
+        56e7352809eb881d8c5546a9bbf8406e.png'
+
+    def scrape(self, url):
+        try:
+            response = requests.get(url)
+            soup = bs(response.text, 'html.parser')
+
+            if type(soup.title) == 'list':
+                title = soup.title[0].text
+            else:
+                title = soup.title.text
+
+            metas = soup.find_all('meta')
+            desc_tags = [
+                meta.attrs['content'] for meta in metas \
+                    if 'name' in meta.attrs and \
+                        meta.attrs['name'] == 'description'
+                ]
+            
+            if len(desc_tags) > 0:
+                description = desc_tags[0]               
+            else:
+                description = 'No description available'
+
+            imgs = [
+                meta.attrs['content'] for meta in metas \
+                    if 'property' in meta.attrs and \
+                        meta.attrs['property'] == 'og:image'
+            ]
+
+            if len(imgs) > 0:
+                thumbnail = imgs[0]
+            else:
+                thumbnail = self.no_thumbnail
+
+            return {'title': title, 'description': description, 'thumbnail': thumbnail}
+
+        except Exception as e:
+            print('\n\n\nError in fetching data from {}: {}\n\n\n'.format(url, e))
+            return {
+                'title': url,
+                'thumbnail': self.no_thumbnail,
+                'description': 'No description available (server not reachable)'
+            }
+
+
+    def create(self, validated_data):
+        scraped_data = self.scrape(validated_data['url'])
+
+        link = Link.objects.create(**validated_data, **scraped_data)
+        
+        return link
 
 
 class LinkListSerializer(serializers.ModelSerializer):
@@ -38,6 +93,18 @@ class LinkListSerializer(serializers.ModelSerializer):
                 Link.objects.get(url=l['url'])
             )
         return linklist
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title')
+        instance.private = validated_data.get('private')
+        instance.links.set([])
+
+        links = validated_data.pop('links')
+        for l in links:
+            instance.links.add(
+                Link.objects.get(url=l['url'])
+            )
+        return instance
 
 
 class UserDetailsSerializer(serializers.ModelSerializer):
@@ -87,3 +154,13 @@ class UserChangePasswordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
+
+
+# class ScrapedSiteSerializer(serializers.ModelSerializer):
+#     """
+#     Serializer for the ScrapedSite model.
+#     """
+
+#     class Meta:
+#         model = ScrapedSite
+#         fileds = '__all__'
