@@ -155,13 +155,3 @@ class UserChangePasswordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-
-
-# class ScrapedSiteSerializer(serializers.ModelSerializer):
-#     """
-#     Serializer for the ScrapedSite model.
-#     """
-
-#     class Meta:
-#         model = ScrapedSite
-#         fileds = '__all__'

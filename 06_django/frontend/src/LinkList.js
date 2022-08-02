@@ -1,148 +1,60 @@
 import React from 'react';
 import Modal from './Modal';
+import {
+  apiSubmitNewList,
+  apiSubmitEdittedList,
+  apiLoadLinkList,
+  apiGetAllLinks,
+  apiPostNewLink,
+} from './apiRequests';
 import './Modal.css';
 import './App.css'
+
 
 class LinkList extends React.Component {
   constructor (props) {
     super(props);
-    this.state = {
-      isResponseOk: false,
-      isLoaded: false,
-      isModalDisplayed: false,
-      newURL: '',
-      editedURL: '',
-      allLinks: [],
-    };
 
-    this.saveEditedLink = this.saveEditedLink.bind(this);
-    this.changeEditedURL = this.changeEditedURL.bind(this);
-    this.addLink = this.addLink.bind(this);
-    this.saveLinkList = this.saveLinkList.bind(this)
-  }
+    if (this.props.mode === 'view' ||
+        this.props.mode === 'edit') {
+      this.state = {
+        linkListId: this.props.mode === 'view' ?
+        window.location.pathname : '/' + window.location.pathname.split('/')[2] + '/', // fix this one
+        isResponseOk: false,
+        isLoaded: false,
+        isModalDisplayed: false,
+        newURL: '',
+        editedURL: '',
+        allLinks: [],
+      }
+    } else if (this.props.mode === 'new') {
+      this.state = {
+        isPrivate: false,
+        links: [],
+        title: '',
+        linkListId: '',
+      }
+    }
+    
+    this.linkSaveEdit = this.linkSaveEdit.bind(this);
+    this.onChangeEditedURL = this.onChangeEditedURL.bind(this);
+    this.linkAdd = this.linkAdd.bind(this);
+    this.linkListSave = this.linkListSave.bind(this);
+    this.onChangeTitle = this.onChangeTitle.bind(this);
+    this.onChangePrivacy = this.onChangePrivacy.bind(this);
+    console.log(this.state)
+  };
 
   componentDidMount () {
-    this.loadList(window.location.pathname);
-    this.getAllLinks();
+    if (this.props.mode !== 'new') {
+      apiLoadLinkList(this);
+    }
+    apiGetAllLinks(this);
   }
 
-  loadList (id) {
-    fetch(`http://localhost:8000/api/lists${id}`, {
-      method: 'get',
-      headers: new Headers({
-        'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
-      })
-    })
-    .then((response) => {
-      if (response.ok) {
-        this.setState({
-          isResponseOk: true,
-        });
-        return response.json();
-      }
-      // if response is not ok
-      this.setState({
-        isResponseOk: false,
-      });
-      if (response.status === 401) {
-        throw new Error('You are not logged in.')
-      }
-      if (response.status === 403) {
-        throw new Error('Permission denied: this list is private.')
-      }
-      if (response.status === 404) {
-        throw new Error('List not found!')
-      }
-    })
-    .then((data) => {
-      if (data !== null) {
-        this.setState({
-          id: data.id,
-          title: data.title,
-          links: data.links,
-          owner: data.owner,
-          private: data.private,
-          isLoaded: true,
-        })
-      }
-    })
-    .catch((error) => {
-      console.log(error)
-      this.setState({
-        errorMessage: error.message,
-      });
-    });
-  }
-
-  getAllLinks () {
-    fetch('http://localhost:8000/api/links/', {
-      method: 'get',
-      headers: new Headers({
-        'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
-      }),
-    })
-    .then((response) => {
-      if (response.ok) {
-        return (response.json());
-      }
-      throw new Error('Error in fetching link data from server!');
-    })
-    .then((data) => {
-      console.log('all links fetched ')
-      this.setState({
-        allLinks: data,
-      });
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-  }
-
-  async saveEditedLink (n) {
-    let newLinks = this.state.links.map((x) => x);
-    newLinks[n] = {
-      url: this.state.editedURL,
-      title: this.state.editedURL,
-      id: n,
-      description: 'loading...',
-      thumbnail: '',
-      needsRendering: true
-    };
-    console.log('saveEditedLink ', newLinks)
-
-    await this.setState({
-      isModalDisplayed: false,
-      links: newLinks,
-      editedURL: '',
-    });
-    console.log('state', this.state.links)
-
-    this.updateLinks();
-  }
-
-  changeEditedURL (event) {
-    this.setState({
-      editedURL: event.target.value,
-    })
-  }
-
-  editLink (n) {
-    this.setState({
-      isModalDisplayed: true,
-      editedURL: '',
-      modalClassName: 'EditLinkModal',
-      modalBody: (
-        <input
-          onChange = {this.changeEditedURL}
-          placeholder = 'Enter URL'
-        />
-      ),
-      modalHandleSave: () => this.saveEditedLink(n),
-    })
-  }
-
-  formatURL (urlLink) {
-    let parsedURL = urlLink.replace('www.', '');    
+  formatURLInput (input) {
+    // Formats the URL to be properly handled by the DB
+    let parsedURL = input.replace('www.', '');    
     if (!parsedURL.startsWith('http://') && !parsedURL.startsWith('https://')) {
       parsedURL = 'http://' + parsedURL;
     }
@@ -153,25 +65,69 @@ class LinkList extends React.Component {
     return parsedURL;
   }
 
-  inputURLChange (event) {
+  //////////////////////////////////////
+  //  REACT ONCHANGE METHODS
+  //////////////////////////////////////
+  onChangeNewURL (event) {
     this.setState({
       newURL: event.target.value,
     })
   }
 
-  async addLink () {
+  onChangeEditedURL (event) {
+    this.setState({
+      editedURL: event.target.value,
+    })
+  }
+
+  onChangeTitle (event) {
+    this.setState({
+      title: event.target.value,
+    })
+  }
+
+  onChangePrivacy () {
+    this.setState({
+      isPrivate: !this.state.isPrivate,
+    })
+  }
+  //////////////////////////////////////
+
+  //////////////////////////////////////
+  //  LINKLIST OPERATIONS:
+  //    SAVE / DELETE
+  //////////////////////////////////////
+  linkListSave () {
+    if (this.state.links.length === 0) {
+      alert('Cannot submit an empty list!')
+      return
+    }
+
+    if (this.props.mode === 'edit') {
+      apiSubmitEdittedList(this)
+    } else {
+      apiSubmitNewList(this);
+    }
+  }
+  //////////////////////////////////////
+
+  //////////////////////////////////////
+  //  LINK OPERATIONS:
+  //    ADD / EDIT / DELETE / GET
+  //////////////////////////////////////
+  async linkAdd () {
     // input validation
     // **********
-    let parsedURL = this.formatURL(this.state.newURL);
-    // **********
+    let parsedURL = this.formatURLInput(this.state.newURL);
     if (this.state.links.find((l) => l.url === parsedURL)) {
       alert('This link is already in the list');
       return;
     }
+    // **********
 
     // if link is not present in the db, add it
     if (!this.state.allLinks.find((l) => l.url === parsedURL)) {      
-      this.pushLinkToDb(parsedURL);
+      apiPostNewLink(this, parsedURL);
     }
     
     await this.setState({
@@ -179,10 +135,10 @@ class LinkList extends React.Component {
       newURL: '',
     });
 
-    this.updateLinks();
+    this.linkUpdateAll();
   }
 
-  deleteLink (link) {
+  linkDelete (link) {
     this.setState({
       links: this.state.links.filter((l) => {
         return l !== link;
@@ -190,49 +146,38 @@ class LinkList extends React.Component {
     })
   }
 
-  askDeleteLink (link) {
+  async linkSaveEdit (n) {
+    let newLinks = this.state.links.map((x) => x);
+    newLinks[n] = {
+      url: this.state.editedURL,
+      title: this.state.editedURL,
+      id: n,
+      description: 'loading...',
+      thumbnail: '',
+      needsRendering: true
+    };
+
+    await this.setState({
+      isModalDisplayed: false,
+      links: newLinks,
+      editedURL: '',
+    });
+
+    this.linkUpdateAll();
+  }
+
+  linkAskDelete (link) {
     if (window.confirm('Are you sure you want to delete this link?')) {
-      this.deleteLink(link);
+      this.linkDelete(link);
     }
   }
 
-  fetchLinkFromDb (url) {
-    return this.state.allLinks.find((l) => {
-      return (l.url === this.formatURL(url))
-    })
-  }
-
-  pushLinkToDb (url) {
-    fetch('http://localhost:8000/api/links/', {
-      method: 'POST',
-      headers: new Headers({
-        'Content-Type': 'application/json',
-        'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
-      }),
-      body: JSON.stringify({
-        'url': url,
-      })
-    })
-    .then((response) => {
-      if (response.ok) {
-        this.getAllLinks();
-        return (response.json());
-      }
-      if (response.status === 400) {
-        throw new Error('Link is not properly formatted')
-      }
-      throw new Error('Error in posting link data to server!');
-    })
-    .catch((error) => alert('Error:' + error))
-  }
-
-  updateLinks () {
+  linkUpdateAll () {
     let newLinks = this.state.links.map((link) => {
       if (link.needsRendering) {
-        let linkDbEntry = this.fetchLinkFromDb(link.url);
-        console.log('just before if #235, var is ', linkDbEntry)
+        let linkDbEntry = this.linkUpdateInfo(link.url);
         if (linkDbEntry === undefined) {
-          this.pushLinkToDb(link);
+          apiPostNewLink(this, link);
           return link;
         } else {
           return linkDbEntry;
@@ -246,77 +191,169 @@ class LinkList extends React.Component {
     });
   }
 
-  saveLinkList () {
-    fetch(`http://localhost:8000/api/lists${window.location.pathname}`, {
-      method: 'put',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
-      },
-      body: JSON.stringify({
-        title: this.state.title,
-        links: this.state.links,
-        private: this.state.private,
-      })
+  linkUpdateInfo (url) {
+    return this.state.allLinks.find((l) => {
+      return (l.url === this.formatURLInput(url))
     })
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error('Server request failed!');
-      }
-    })
-    .then((data) => {
-      alert('Saved!')
-      window.location.href = `/${data.id}/`
-    })
-    .catch((error) => {
-      alert(error);
-    });
   }
+  //////////////////////////////////////
+
+  //////////////////////////////////////
+  //  RENDER PAGE ELEMENTS
+  //////////////////////////////////////
+  renderPrivacy () {
+    if (this.props.mode === 'new' ||
+        this.props.mode === 'edit') {
+      return (
+      <div className='PrivacyPanel'>
+        <h3>Is this a private list: </h3>
+        <input
+          type = 'checkbox'
+          checked = {this.state.isPrivate}
+          onChange = {this.onChangePrivacy}
+        />
+      </div>
+      )
+    } else {
+      return(
+      <div className='PrivacyPanel'>
+        <h3>{
+          this.state.isPrivate ?
+          <i>This list is private.</i> :
+          ''
+        }</h3>
+      </div>
+      )
+    }
+  }
+
+  renderListTitlePanel () {
+    return(
+      this.props.mode === 'new' ? (
+        <div className='ListTitleAndOwnerPanel'>
+          <h3>List title: </h3>
+          <input
+            placeholder='Enter list title'
+            onChange={this.onChangeTitle} />
+        </div>
+      ):
+      (
+        <div className='ListTitleAndOwnerPanel'>
+          <h3>{this.state.title}</h3>
+          <h5>(created by {this.state.owner})</h5>
+          { this.props.mode === 'view' &&
+            this.state.owner === localStorage.getItem('kodjalinkUsername') ?
+            <button 
+              onClick={() => {
+                window.location.href = `/edit${this.state.linkListId}`
+              }}
+            >Edit list</button> :
+            <></>
+          }
+        </div>
+      )
+    )
+  }
+
+  renderLinksPanel () {
+    return (
+      this.state.links.map((link, n) => { return (
+        // link contents: title, description, thumbnail and url
+        <div className='LinkContent' key={'linkContent' + link.id}>
+          <div className='LinkTitle' key={'title' + link.id}> 
+            <h4 key={`num${n}`}>{`${n+1}. `} {link.title}</h4>
+          </div>
+          <div className='LinkImageDescriptionPanel' key={'desc' + link.id}>
+            <img
+              src={link.thumbnail}
+              alt={link.title + ' thumbnail'}
+              height='100px'
+              width='100px' />
+            <h5>{link.description}</h5>
+          </div>
+          <div className='LinkHyperlinkPanel' key={'hlink' + link.id}>
+            <h4><a key={`url${n}`} href={`${link.url}`}>{link.url}</a></h4>
+          </div>
+          {// edit and delete buttons
+            this.props.mode === 'new' ||
+            (this.props.mode === 'edit' &&
+            localStorage.getItem('kodjalinkUsername') === this.state.owner)
+            ? (
+            <div className='LinkButtonsPanel' key={link.id}>
+              <button key={`edit${n}`} onClick={() => this.renderEditLinkModal(n)}>Edit</button>
+              <button key={`del${n}`} onClick={() => this.linkAskDelete(link)}>Delete</button>
+            </div>
+            ): <></>
+          }
+        </div>
+      )})
+    )
+  }
+
+  renderAddURLPanel () {
+    return (this.props.mode !== 'view') ?
+    (
+      <div className='NewURL'>
+        <h3>Add URL: </h3>
+        <input placeholder='Enter URL' onChange={this.onChangeNewURL.bind(this)} />
+        <button onClick={() => this.linkAdd()}>Add</button>
+      </div>
+    ):
+    <></>
+  }
+
+  renderEditLinkModal (n) {
+    this.setState({
+      isModalDisplayed: true,
+      editedURL: '',
+      modalClassName: 'EditLinkModal',
+      modalBody: (
+        <input
+          onChange = {this.onChangeEditedURL}
+          placeholder = 'Enter URL'
+        />
+      ),
+      modalHandleSave: () => this.linkSaveEdit(n),
+    })
+  }
+
+  renderSaveListPanel () {
+    return (
+    (this.props.mode === 'new' ||
+    (this.props.mode === 'edit' &&
+      localStorage.getItem('kodjalinkUsername') === this.state.owner)) ? (
+      <div>
+        <button onClick={this.linkListSave}>Save LinkList</button>
+      </div>
+    ): <></>
+    )
+  }
+
+  renderDeleteListPanel () {
+    return (
+    (this.props.mode === 'edit' &&
+    localStorage.getItem('kodjalinkUsername') === this.state.owner) ? (
+      <div>
+        <button onClick={this.linkListDelete}>Delete LinkList</button>
+      </div>
+    ): <></>
+    )
+  }
+  //////////////////////////////////////
 
   render() {  
     let content = <h5>loading...</h5>
 
-    if (this.state.isLoaded) {
+    if (this.state.isLoaded || this.props.mode === 'new') {
+      console.log(this.state)
       content = (
         <div className='ListContent'>
-        <h3>{this.state.title}</h3>
-        <h5>(created by {this.state.owner})</h5>
-        {this.state.links.map((link, n) => {
-          return (
-            <div className='LinkInformation' key={'info' + link.id}>
-              <div className='LinkTitle' key={'title' + link.id}> 
-                <h4 key={`num${n}`}>{`${n+1}. `} {link.title}</h4>
-              </div>
-              <div className='LinkImageDescription' key={'desc' + link.id}>
-                <img src={link.thumbnail} height='100px' width='100px' />
-                <h5>{link.description}</h5>
-              </div>
-              <div className='LinkHyperlink' key={'hlink' + link.id}>
-                <h4><a key={`url${n}`} href={`${link.url}`}>{link.url}</a></h4>
-              </div>
-              {
-                localStorage.getItem('kodjalinkUsername') === this.state.owner ? 
-                (
-                  <div className='LinkButtons' key={link.id}>
-                    <button key={`edit${n}`} onClick={() => this.editLink(n)}>Edit</button>
-                    <button key={`del${n}`} onClick={() => this.askDeleteLink(link)}>Delete</button>
-                  </div>
-                ):
-                <></>
-              }
-            </div>
-          )
-        })}
-         <div className='NewURL'>
-            <h3>Add URL: </h3>
-            <input placeholder='Enter URL' onChange={this.inputURLChange.bind(this)} />
-            <button onClick={() => this.addLink()}>Add</button>
-          </div>
-          <div className='SaveList'>
-            <button onClick={this.saveLinkList}>Save LinkList</button>
-          </div>
+        {this.renderListTitlePanel()}
+        {this.renderPrivacy()}
+        {this.renderLinksPanel()}
+        {this.renderAddURLPanel()}
+        {this.renderSaveListPanel()}
+        {this.renderDeleteListPanel()}
         <Modal
           show = {this.state.isModalDisplayed}
           handleSave = {this.state.modalHandleSave}

@@ -5,9 +5,9 @@ from urllib.parse import quote
 
 class Link(models.Model):
     url = models.URLField(max_length=100, blank=False)
-    title = models.URLField(max_length=100, null=True, blank=True)
+    title = models.CharField(max_length=100, null=True, blank=True)
     thumbnail = models.URLField(max_length=100, null=True, blank=True, default="")
-    description = models.TextField(max_length=200, null=True, blank=True)
+    description = models.TextField(max_length=400, null=True, blank=True)
 
 class LinkList(models.Model):
     owner = models.ForeignKey(
@@ -16,10 +16,3 @@ class LinkList(models.Model):
     links = models.ManyToManyField(Link)
     title = models.CharField(max_length=200, blank=False)
     private = models.BooleanField(default=False)
-
-
-# class ScrapedSite(models.Model):
-#     title = models.CharField(max_length=200)
-#     description = models.CharField(max_length=300)
-#     thumbnail = models.URLField(max_length=100)
-

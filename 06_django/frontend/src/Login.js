@@ -1,4 +1,7 @@
 import React from 'react';
+import {
+    apiUserLogin
+} from './apiRequests';
 import './App.css';
 
 class Login extends React.Component {
@@ -26,34 +29,7 @@ class Login extends React.Component {
         this.setState({
             isResponseOk: false,
         })
-        fetch('http://localhost:8000/auth/login/', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                'username': this.state.username,
-                'password': this.state.password,
-            })
-        })
-        .then((response) => {
-            if (response.ok) {
-                return response.json();
-            }
-            if (response.status === 400) {
-                throw new Error('Incorrect username or password!')
-            }
-            throw new Error('Error in request to server.')
-        })
-        .then((data) => {
-            localStorage.setItem('kodjalinkUsername', this.state.username);
-            localStorage.setItem('kodjalinkUserToken', data.key);
-            window.location.href = '/';
-        })
-        .catch((error) => {
-            alert(error);
-        })
+        apiUserLogin(this);
     }
 
     render() {
