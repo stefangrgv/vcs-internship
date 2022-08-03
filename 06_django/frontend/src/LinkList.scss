@@ -1,0 +1,110 @@
+@mixin flexJustify() {
+    display: flex;
+    text-align: justify;
+    flex-direction: row;
+}
+
+$linkContentsPadding: 10px;
+$colorGreen:rgb(200, 220, 150);
+$colorGreenSoft:rgb(223, 245, 223);
+
+* {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+}
+
+h3 {
+    font-size: 24px;
+}
+
+h4 {
+    font-size: 20px;
+}
+
+h5 {
+    font-size: 18px;
+    font-weight: 300;
+}
+
+.TitleAndOwnerPanel {
+    background-color: $colorGreenSoft;
+}
+
+.InputField {
+    width: 65%;
+    height: 1.5rem;
+    border: 1px solid;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.LinkTitle {
+    background-color: $colorGreen;    
+}
+
+.LinkListPage {
+    background-color: $colorGreenSoft;
+}
+
+.LinkContent {
+    background-color: $colorGreenSoft;
+    padding: 2px;
+    border: 1px solid;
+    margin-inline-start: 10px;
+    margin-inline-end: 10px;
+}
+
+.LinkImageDescriptionPanel {
+    @include flexJustify();
+}
+
+.LinkHyperlinkPanel {
+    @include flexJustify();
+}
+
+.LinkThumbnail {
+    width: 150px;
+    height: 150px;
+    padding-left: $linkContentsPadding;
+    padding-right: $linkContentsPadding;
+}
+
+.LinkHyperlink {
+    color: firebrick;
+    font-size: 20px;
+    font-weight: 300;
+    padding-left: $linkContentsPadding;
+}
+
+.PrivacyPanel {
+    display: inline-flex;
+}
+
+.NewURLField {
+    display: list-item;
+}
+
+button {
+    color: black;
+    background-color: $colorGreen;
+    border-color: black;
+    width: 150px;
+    height: 30px;
+    font-size: 16px;
+}
+
+.SaveListPanel {
+    margin-top: 20px;
+    border-top: 2px solid;
+}
+
+.SaveListButton {
+    margin-top: 20px;
+}
+
+.DeleteListButton {
+    background-color: rgb(179, 61, 61);
+    color: $colorGreenSoft;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}

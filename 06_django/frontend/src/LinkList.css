@@ -1,0 +1,106 @@
+* {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 16px;
+}
+
+h3 {
+  font-size: 24px;
+}
+
+h4 {
+  font-size: 20px;
+}
+
+h5 {
+  font-size: 18px;
+  font-weight: 300;
+}
+
+.TitleAndOwnerPanel {
+  background-color: rgb(223, 245, 223);
+}
+
+.InputField {
+  width: 65%;
+  height: 1.5rem;
+  border: 1px solid;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.LinkTitle {
+  background-color: rgb(200, 220, 150);
+}
+
+.LinkListPage {
+  background-color: rgb(223, 245, 223);
+}
+
+.LinkContent {
+  background-color: rgb(223, 245, 223);
+  padding: 2px;
+  border: 1px solid;
+  -webkit-margin-start: 10px;
+          margin-inline-start: 10px;
+  -webkit-margin-end: 10px;
+          margin-inline-end: 10px;
+}
+
+.LinkImageDescriptionPanel {
+  display: flex;
+  text-align: justify;
+  flex-direction: row;
+}
+
+.LinkHyperlinkPanel {
+  display: flex;
+  text-align: justify;
+  flex-direction: row;
+}
+
+.LinkThumbnail {
+  width: 150px;
+  height: 150px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.LinkHyperlink {
+  color: firebrick;
+  font-size: 20px;
+  font-weight: 300;
+  padding-left: 10px;
+}
+
+.PrivacyPanel {
+  display: inline-flex;
+}
+
+.NewURLField {
+  display: list-item;
+}
+
+button {
+  color: black;
+  background-color: rgb(200, 220, 150);
+  border-color: black;
+  width: 150px;
+  height: 30px;
+  font-size: 16px;
+}
+
+.SaveListPanel {
+  margin-top: 20px;
+  border-top: 2px solid;
+}
+
+.SaveListButton {
+  margin-top: 20px;
+}
+
+.DeleteListButton {
+  background-color: rgb(179, 61, 61);
+  color: rgb(223, 245, 223);
+  margin-top: 10px;
+  margin-bottom: 20px;
+}/*# sourceMappingURL=LinkList.css.map */

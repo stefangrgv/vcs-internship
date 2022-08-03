@@ -5,7 +5,7 @@ import {
   apiUserLogout,
   apiListDelete,
 } from './apiRequests'
-import './App.css';
+
 
 class UserPanel extends React.Component {
   constructor (props) {

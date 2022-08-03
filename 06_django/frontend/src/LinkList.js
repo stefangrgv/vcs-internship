@@ -10,7 +10,8 @@ import {
 } from './apiRequests';
 import withRouter from './withRouter';
 import './Modal.css';
-import './App.css'
+//import './App.css';
+import './LinkList.css';
 
 
 class LinkList extends React.Component {
@@ -261,11 +262,11 @@ class LinkList extends React.Component {
     } else {
       return(
       <div className='PrivacyPanel'>
-        <h3>{
+        <h4>{
           this.state.isPrivate ?
-          <i>This list is private.</i> :
+          <i>private list</i> :
           ''
-        }</h3>
+        }</h4>
       </div>
       )
     }
@@ -274,22 +275,25 @@ class LinkList extends React.Component {
   renderListTitlePanel () {
     return(
       this.props.mode !== 'view' ? (
-        <div className='ListTitleAndOwnerPanel'>
+        <div className='TitleAndOwnerPanel'>
           <h3>List title: </h3>
           <input
+            className='InputField TitleField'
             placeholder='Enter list title'
             onChange={this.onChangeTitle}
             value = {this.state.title}/>
         </div>
       ):
       (
-        <div className='ListTitleAndOwnerPanel'>
+        <div className='TitleAndOwnerPanel'>
           <h3>{this.state.title}</h3>
           <h5>(created by {this.state.owner})</h5>
           { this.props.mode === 'view' &&
             this.state.owner === localStorage.getItem('kodjalinkUsername') ?
-            <button onClick={() => {
-              window.location.href = `/edit/${this.props.params.id}/`
+            <button 
+              className='btn'
+              onClick={() => {
+                window.location.href = `/edit/${this.props.params.id}/`
             }}>Edit list</button> :
             <></>
           }
@@ -305,25 +309,27 @@ class LinkList extends React.Component {
         <div className='LinkContent' key={'linkContent' + n}>
           <div className='LinkTitle' key={'title' + n}> 
             {link.needsRendering ?
-              (<h4 key={`num${n}`}>{`${n+1}. `} {link.url}</h4>):
-              (<h4 key={`num${n}`}>{`${n+1}. `} {link.title}</h4>)
+              (<h4 key={`num${n}`}> {link.url}</h4>):
+              (<h4 key={`num${n}`}> {link.title}</h4>)
             }
           </div>
           {link.needsRendering ?
             (<></>):
             (
             <div className='LinkImageDescriptionPanel' key={'desc' + n}>
-              <h5>{link.description}</h5>
-              <img
+              <img className='LinkThumbnail'
               src={link.thumbnail}
               alt={link.url + ' thumbnail'}
-              height='100px'
-              width='100px' />
+              />
+              <h5>{link.description}</h5>
             </div>
             )
             }
           <div className='LinkHyperlinkPanel' key={'hlink' + n}>
-            <h4><a key={`url${n}`} href={`${link.url}`}>{link.url}</a></h4>
+            <h4><a
+              className='LinkHyperlink'
+              key={`url${n}`}
+              href={`${link.url}`}>{link.url}</a></h4>
           </div>
           {// edit and delete buttons
             this.props.mode === 'new' ||
@@ -331,8 +337,18 @@ class LinkList extends React.Component {
             localStorage.getItem('kodjalinkUsername') === this.state.owner)
             ? (
             <div className='LinkButtonsPanel' key={'linkbuttons ' + n}>
-              <button key={`edit${n}`} onClick={() => this.renderEditLinkModal(n)}>Edit</button>
-              <button key={`del${n}`} onClick={() => this.linkAskDelete(link)}>Delete</button>
+              <button
+                className='btn'
+                key={`edit${n}`}
+                onClick={
+                  () => this.renderEditLinkModal(n)
+                }>Edit</button>
+              <button
+                className='btn'
+                  key={`del${n}`}
+                  onClick={
+                    () => this.linkAskDelete(link)
+                  }>Delete</button>
             </div>
             ): <></>
           }
@@ -344,13 +360,20 @@ class LinkList extends React.Component {
   renderAddURLPanel () {
     return (this.props.mode !== 'view') ?
     (
-      <div className='NewURL'>
-        <h3>Add URL: </h3>
-        <input
-          placeholder = 'Enter URL'
-          onChange = {this.onChangeNewURL.bind(this)}
-          value = {this.state.newURL} />
-        <button onClick={() => this.linkAdd()}>Add</button>
+      <div className='NewURLPanel'>
+        <div className='NewURLField'>
+          <h4>Add URL: </h4>
+          <input
+            className='InputField AddURLField'
+            placeholder = 'Enter URL'
+            onChange = {this.onChangeNewURL.bind(this)}
+            value = {this.state.newURL} />
+          </div>
+        <button
+          className='btn'
+          onClick={
+            () => this.linkAdd()
+          }>Add</button>
       </div>
     ):
     <></>
@@ -378,8 +401,12 @@ class LinkList extends React.Component {
     (this.props.mode === 'new' ||
     (this.props.mode === 'edit' &&
       localStorage.getItem('kodjalinkUsername') === this.state.owner)) ? (
-      <div>
-        <button onClick={this.linkListSave}>Save LinkList</button>
+      <div className='SaveListPanel'>
+        <button
+         className='btn SaveListButton'
+         onClick={
+          this.linkListSave
+        }>Save LinkList</button>
       </div>
     ): <></>
     )
@@ -390,7 +417,11 @@ class LinkList extends React.Component {
     (this.props.mode === 'edit' &&
     localStorage.getItem('kodjalinkUsername') === this.state.owner) ? (
       <div>
-        <button onClick={() => this.linkListAskDelete() }>Delete LinkList</button>
+        <button
+         className='btn DeleteListButton'
+         onClick={
+          () => this.linkListAskDelete()
+          }>Delete LinkList</button>
       </div>
     ): <></>
     )
@@ -422,7 +453,7 @@ class LinkList extends React.Component {
     }
 
     return (
-      <div className='List'>
+      <div className='LinkListPage'>
         {content}
       </div>
     )
