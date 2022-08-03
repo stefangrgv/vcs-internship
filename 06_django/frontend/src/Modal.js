@@ -9,8 +9,11 @@ class Modal extends React.Component {
           this.props.show ? "modal display-block" : "modal display-none"
         }>
             {this.props.body}
-            <button onClick={this.props.handleSave}>
+            <button onClick={this.props.modalSave}>
                 Save
+            </button>
+            <button onClick={this.props.modalCancel}>
+              Cancel
             </button>
         </div>
     )

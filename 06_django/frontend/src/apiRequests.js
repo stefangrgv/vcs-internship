@@ -26,8 +26,8 @@ export function apiSubmitNewList (obj) {
   });
 }
 
-export function apiSubmitEdittedList (obj) {
-  fetch(`http://localhost:8000/api/lists${obj.state.linkListId}`, {
+export function apiSubmitEditedList (obj) {
+  fetch(`http://localhost:8000/api/lists/${obj.props.params.id}/`, {
         method: 'put',
         headers: {
           'Content-Type': 'application/json',
@@ -48,14 +48,14 @@ export function apiSubmitEdittedList (obj) {
       })
       .then((data) => {
         alert('Saved!')
-        window.location.href = `/${obj.state.linkListId}/`
+        window.location.href = `/${obj.props.params.id}/`
       })
       .catch((error) => {
         alert(error);
       });
 }
 
-export function apiListDelete (obj, id) {
+export function apiListDelete (obj, id, redirectTo = null) {
   fetch(`http://localhost:8000/api/lists/${id}`, {
     method: 'delete',
     headers: new Headers({
@@ -68,6 +68,10 @@ export function apiListDelete (obj, id) {
         isLoaded: false,
     });
     alert('List deleted successfully.');
+    if (redirectTo !== null) {
+      window.location.href = redirectTo;
+      return;
+    }
     return response.json();
   }
   // if response is not ok
@@ -90,7 +94,7 @@ export function apiListDelete (obj, id) {
 }
 
 export function apiLoadLinkList (obj) {
-  fetch(`http://localhost:8000/api/lists${obj.state.linkListId}`, {
+  fetch(`http://localhost:8000/api/lists/${obj.props.params.id}/`, {
     method: 'get',
     headers: new Headers({
       'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
@@ -150,9 +154,9 @@ export function apiGetAllLinks (obj) {
     throw new Error('Error in fetching link data from server!');
   })
   .then((data) => {
-    console.log('all links fetched ')
     obj.setState({
       allLinks: data,
+      isFetchingLinks: false,
     });
   })
   .catch((error) => {
@@ -161,6 +165,7 @@ export function apiGetAllLinks (obj) {
 }
 
 export function apiPostNewLink (obj, url) {
+  console.log('parsedURL api '+ url)
   fetch('http://localhost:8000/api/links/', {
     method: 'POST',
     headers: new Headers({
@@ -181,7 +186,11 @@ export function apiPostNewLink (obj, url) {
     }
     throw new Error('Error in posting link data to server!');
   })
-  .catch((error) => alert(error))
+  .catch((error) => {
+      console.log('apiPostNewLink went boom');
+      alert(error);
+    }
+    )
 }
 
 export function apiUserLogout () {

@@ -5,8 +5,6 @@ import { BrowserRouter,
   Route,
 } from 'react-router-dom';
 import App from './App';
-// import List from './List';
-// import NewList from './NewList';
 import LinkList from './LinkList';
 import Login from './Login';
 import CreateUser from './CreateUser';

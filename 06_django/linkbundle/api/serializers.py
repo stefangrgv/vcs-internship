@@ -96,8 +96,8 @@ class LinkListSerializer(serializers.ModelSerializer):
         return linklist
 
     def update(self, instance, validated_data):
-        instance.title = validated_data.get('title')
-        instance.private = validated_data.get('private')
+        instance.title = validated_data.get('title', instance.title)
+        instance.private = validated_data.get('private', instance.private)
         instance.links.set([])
 
         links = validated_data.pop('links')
@@ -105,6 +105,7 @@ class LinkListSerializer(serializers.ModelSerializer):
             instance.links.add(
                 Link.objects.get(url=l['url'])
             )
+        instance.save()
         return instance
 
 

@@ -2,11 +2,13 @@ import React from 'react';
 import Modal from './Modal';
 import {
   apiSubmitNewList,
-  apiSubmitEdittedList,
+  apiSubmitEditedList,
   apiLoadLinkList,
   apiGetAllLinks,
   apiPostNewLink,
+  apiListDelete,
 } from './apiRequests';
+import withRouter from './withRouter';
 import './Modal.css';
 import './App.css'
 
@@ -18,8 +20,6 @@ class LinkList extends React.Component {
     if (this.props.mode === 'view' ||
         this.props.mode === 'edit') {
       this.state = {
-        linkListId: this.props.mode === 'view' ?
-        window.location.pathname : '/' + window.location.pathname.split('/')[2] + '/', // fix this one
         isResponseOk: false,
         isLoaded: false,
         isModalDisplayed: false,
@@ -32,17 +32,16 @@ class LinkList extends React.Component {
         isPrivate: false,
         links: [],
         title: '',
-        linkListId: '',
+        newURL: '',
       }
     }
     
-    this.linkSaveEdit = this.linkSaveEdit.bind(this);
+    this.modalSave = this.modalSave.bind(this);
     this.onChangeEditedURL = this.onChangeEditedURL.bind(this);
     this.linkAdd = this.linkAdd.bind(this);
     this.linkListSave = this.linkListSave.bind(this);
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangePrivacy = this.onChangePrivacy.bind(this);
-    console.log(this.state)
   };
 
   componentDidMount () {
@@ -50,6 +49,32 @@ class LinkList extends React.Component {
       apiLoadLinkList(this);
     }
     apiGetAllLinks(this);
+  }
+
+  componentDidUpdate () {
+    if (this.state.isLoaded &&
+        this.state.links.find((l) => l.needsRendering &&
+        !this.state.isFetchingLinks)) {
+      let newLinks = this.state.links.map((link) => {
+        if (link.needsRendering) {
+          let linkDbEntry = this.linkUpdateInfo(link.url);
+          if (linkDbEntry === undefined) {
+            this.setState({
+              isFetchingLinks: true,
+            })
+            apiGetAllLinks(this);
+            return link;
+          }
+          return linkDbEntry;
+        } else {
+          return link;
+        }
+      });
+
+      this.setState({
+        links: newLinks,
+      });
+    }
   }
 
   formatURLInput (input) {
@@ -100,13 +125,24 @@ class LinkList extends React.Component {
   linkListSave () {
     if (this.state.links.length === 0) {
       alert('Cannot submit an empty list!')
-      return
+      return null
+    }
+
+    if (this.state.title.replaceAll(' ', '') === '') {
+      alert('Please enter a title!')
+      return null
     }
 
     if (this.props.mode === 'edit') {
-      apiSubmitEdittedList(this)
+      apiSubmitEditedList(this)
     } else {
       apiSubmitNewList(this);
+    }
+  }
+
+  linkListAskDelete (link) {
+    if (window.confirm('Are you sure you want to delete this linklist?')) {
+      apiListDelete(this, this.props.params.id, '/myprofile/');
     }
   }
   //////////////////////////////////////
@@ -115,27 +151,34 @@ class LinkList extends React.Component {
   //  LINK OPERATIONS:
   //    ADD / EDIT / DELETE / GET
   //////////////////////////////////////
-  async linkAdd () {
-    // input validation
-    // **********
-    let parsedURL = this.formatURLInput(this.state.newURL);
-    if (this.state.links.find((l) => l.url === parsedURL)) {
-      alert('This link is already in the list');
-      return;
+  linkValidate (url) {
+    if (url.replaceAll(' ', '') === '') {
+      alert('Please enter a non-empty URL.');
+      return false;
     }
-    // **********
 
-    // if link is not present in the db, add it
-    if (!this.state.allLinks.find((l) => l.url === parsedURL)) {      
-      apiPostNewLink(this, parsedURL);
+    if (this.state.links.find((l) => l.url === this.formatURLInput(url))) {
+      alert('This link is already in the list.');
+      return false;
     }
-    
-    await this.setState({
-      links: [...this.state.links, {url: parsedURL, needsRendering: true}],
-      newURL: '',
-    });
 
-    this.linkUpdateAll();
+    return true;
+  }
+
+  linkAdd () {
+    if (this.linkValidate(this.state.newURL)) {
+      let parsedURL = this.formatURLInput(this.state.newURL)
+
+      this.setState({
+        links: [...this.state.links, {url: parsedURL, needsRendering: true}],
+        newURL: '',
+      });
+
+      // if link is not present in the db, add it
+      if (!this.state.allLinks.find((l) => l.url === parsedURL)) {
+        apiPostNewLink(this, parsedURL);
+      }
+    }
   }
 
   linkDelete (link) {
@@ -146,55 +189,56 @@ class LinkList extends React.Component {
     })
   }
 
-  async linkSaveEdit (n) {
-    let newLinks = this.state.links.map((x) => x);
-    newLinks[n] = {
-      url: this.state.editedURL,
-      title: this.state.editedURL,
-      id: n,
-      description: 'loading...',
-      thumbnail: '',
-      needsRendering: true
-    };
-
-    await this.setState({
-      isModalDisplayed: false,
-      links: newLinks,
-      editedURL: '',
-    });
-
-    this.linkUpdateAll();
-  }
-
   linkAskDelete (link) {
     if (window.confirm('Are you sure you want to delete this link?')) {
       this.linkDelete(link);
     }
   }
 
-  linkUpdateAll () {
-    let newLinks = this.state.links.map((link) => {
-      if (link.needsRendering) {
-        let linkDbEntry = this.linkUpdateInfo(link.url);
-        if (linkDbEntry === undefined) {
-          apiPostNewLink(this, link);
-          return link;
-        } else {
-          return linkDbEntry;
-        }
-      }
-      return link;
-    })
-    
-    this.setState({
-      links: newLinks,
-    });
-  }
-
   linkUpdateInfo (url) {
     return this.state.allLinks.find((l) => {
       return (l.url === this.formatURLInput(url))
     })
+  }
+  //////////////////////////////////////
+
+  //////////////////////////////////////
+  //  EDIT MODAL ONCLICK METHODS
+  //////////////////////////////////////
+  modalSave (n) {
+    if (this.linkValidate(this.state.editedURL)) {
+      let parsedURL = this.formatURLInput(this.state.editedURL);
+      if (!this.state.allLinks.find((l) => l.url === parsedURL)) {
+        apiPostNewLink(this, parsedURL);
+        apiGetAllLinks();
+      }
+
+      let newLinks = this.state.links.map((x) => x);
+      newLinks[n] = {
+        url: this.state.editedURL,
+        title: this.state.editedURL,
+        id: n,
+        description: 'loading...',
+        thumbnail: '',
+        needsRendering: true
+      };
+
+      this.setState({
+        isModalDisplayed: false,
+        links: newLinks,
+        editedURL: '',
+      });
+
+      this.modalInput.value = '';
+    }
+  }
+
+  modalCancel () {
+    this.setState({
+      isModalDisplayed: false,
+      editedURL: '',
+    })
+    this.modalInput.value = '';
   }
   //////////////////////////////////////
 
@@ -229,12 +273,13 @@ class LinkList extends React.Component {
 
   renderListTitlePanel () {
     return(
-      this.props.mode === 'new' ? (
+      this.props.mode !== 'view' ? (
         <div className='ListTitleAndOwnerPanel'>
           <h3>List title: </h3>
           <input
             placeholder='Enter list title'
-            onChange={this.onChangeTitle} />
+            onChange={this.onChangeTitle}
+            value = {this.state.title}/>
         </div>
       ):
       (
@@ -243,11 +288,9 @@ class LinkList extends React.Component {
           <h5>(created by {this.state.owner})</h5>
           { this.props.mode === 'view' &&
             this.state.owner === localStorage.getItem('kodjalinkUsername') ?
-            <button 
-              onClick={() => {
-                window.location.href = `/edit${this.state.linkListId}`
-              }}
-            >Edit list</button> :
+            <button onClick={() => {
+              window.location.href = `/edit/${this.props.params.id}/`
+            }}>Edit list</button> :
             <></>
           }
         </div>
@@ -259,19 +302,27 @@ class LinkList extends React.Component {
     return (
       this.state.links.map((link, n) => { return (
         // link contents: title, description, thumbnail and url
-        <div className='LinkContent' key={'linkContent' + link.id}>
-          <div className='LinkTitle' key={'title' + link.id}> 
-            <h4 key={`num${n}`}>{`${n+1}. `} {link.title}</h4>
+        <div className='LinkContent' key={'linkContent' + n}>
+          <div className='LinkTitle' key={'title' + n}> 
+            {link.needsRendering ?
+              (<h4 key={`num${n}`}>{`${n+1}. `} {link.url}</h4>):
+              (<h4 key={`num${n}`}>{`${n+1}. `} {link.title}</h4>)
+            }
           </div>
-          <div className='LinkImageDescriptionPanel' key={'desc' + link.id}>
-            <img
+          {link.needsRendering ?
+            (<></>):
+            (
+            <div className='LinkImageDescriptionPanel' key={'desc' + n}>
+              <h5>{link.description}</h5>
+              <img
               src={link.thumbnail}
-              alt={link.title + ' thumbnail'}
+              alt={link.url + ' thumbnail'}
               height='100px'
               width='100px' />
-            <h5>{link.description}</h5>
-          </div>
-          <div className='LinkHyperlinkPanel' key={'hlink' + link.id}>
+            </div>
+            )
+            }
+          <div className='LinkHyperlinkPanel' key={'hlink' + n}>
             <h4><a key={`url${n}`} href={`${link.url}`}>{link.url}</a></h4>
           </div>
           {// edit and delete buttons
@@ -279,7 +330,7 @@ class LinkList extends React.Component {
             (this.props.mode === 'edit' &&
             localStorage.getItem('kodjalinkUsername') === this.state.owner)
             ? (
-            <div className='LinkButtonsPanel' key={link.id}>
+            <div className='LinkButtonsPanel' key={'linkbuttons ' + n}>
               <button key={`edit${n}`} onClick={() => this.renderEditLinkModal(n)}>Edit</button>
               <button key={`del${n}`} onClick={() => this.linkAskDelete(link)}>Delete</button>
             </div>
@@ -295,7 +346,10 @@ class LinkList extends React.Component {
     (
       <div className='NewURL'>
         <h3>Add URL: </h3>
-        <input placeholder='Enter URL' onChange={this.onChangeNewURL.bind(this)} />
+        <input
+          placeholder = 'Enter URL'
+          onChange = {this.onChangeNewURL.bind(this)}
+          value = {this.state.newURL} />
         <button onClick={() => this.linkAdd()}>Add</button>
       </div>
     ):
@@ -311,9 +365,11 @@ class LinkList extends React.Component {
         <input
           onChange = {this.onChangeEditedURL}
           placeholder = 'Enter URL'
+          ref = {modalInput => this.modalInput = modalInput}
         />
       ),
-      modalHandleSave: () => this.linkSaveEdit(n),
+      modalSave: () => this.modalSave(n),
+      modalCancel: () => this.modalCancel(),
     })
   }
 
@@ -334,7 +390,7 @@ class LinkList extends React.Component {
     (this.props.mode === 'edit' &&
     localStorage.getItem('kodjalinkUsername') === this.state.owner) ? (
       <div>
-        <button onClick={this.linkListDelete}>Delete LinkList</button>
+        <button onClick={() => this.linkListAskDelete() }>Delete LinkList</button>
       </div>
     ): <></>
     )
@@ -345,7 +401,6 @@ class LinkList extends React.Component {
     let content = <h5>loading...</h5>
 
     if (this.state.isLoaded || this.props.mode === 'new') {
-      console.log(this.state)
       content = (
         <div className='ListContent'>
         {this.renderListTitlePanel()}
@@ -356,7 +411,8 @@ class LinkList extends React.Component {
         {this.renderDeleteListPanel()}
         <Modal
           show = {this.state.isModalDisplayed}
-          handleSave = {this.state.modalHandleSave}
+          modalSave = {this.state.modalSave}
+          modalCancel = {this.state.modalCancel}
           body = {this.state.modalBody}
         />
         </div>
@@ -373,4 +429,4 @@ class LinkList extends React.Component {
   }
 }
 
-export default LinkList;
+export default withRouter(LinkList);

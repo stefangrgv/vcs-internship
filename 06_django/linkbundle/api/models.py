@@ -1,6 +1,5 @@
-from pydoc import describe
+from sqlite3 import Timestamp
 from django.db import models
-from urllib.parse import quote
 
 
 class Link(models.Model):
@@ -9,10 +8,20 @@ class Link(models.Model):
     thumbnail = models.URLField(max_length=100, null=True, blank=True, default="")
     description = models.TextField(max_length=400, null=True, blank=True)
 
+
 class LinkList(models.Model):
     owner = models.ForeignKey(
         "auth.User", related_name="linklists", on_delete=models.CASCADE
     )
-    links = models.ManyToManyField(Link)
+    links = models.ManyToManyField(Link, through='LinkListItem')
     title = models.CharField(max_length=200, blank=False)
     private = models.BooleanField(default=False)
+
+
+class LinkListItem(models.Model):
+    linklist = models.ForeignKey(LinkList, on_delete=models.CASCADE)
+    link = models.ForeignKey(Link, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']
