@@ -194,7 +194,7 @@ export function apiPostNewLink (obj, url) {
 }
 
 export function apiUserLogout () {
-  fetch('http://localhost:8000/auth/logout/', {
+  fetch('http://localhost:8000/api/auth/logout/', {
     method: 'POST',
   })
   .then((response) => {
@@ -203,7 +203,7 @@ export function apiUserLogout () {
     }
   })
   .then(() => {
-    window.location.reload(false);
+    window.location.href = '/';
   })
   .catch((error) => {
     console.error(error);
@@ -233,7 +233,7 @@ export function apiUserGet (obj, username) {
 }
 
 export function apiUserLogin (obj) {
-  fetch('http://localhost:8000/auth/login/', {
+  fetch('http://localhost:8000/api/auth/login/', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -256,9 +256,58 @@ export function apiUserLogin (obj) {
   .then((data) => {
     localStorage.setItem('kodjalinkUsername', obj.state.username);
     localStorage.setItem('kodjalinkUserToken', data.key);
-    window.location.href = '/';
+    window.location.href = '/myprofile/';
   })
   .catch((error) => {
     alert(error);
   })
+}
+
+export function apiFetchAllUsers () {
+  fetch('http://localhost:8000/api/allusers/')
+  .then((response) => {
+    if (response.ok) {
+      return response.json();
+    }
+    throw new Error('Error in fetching data from server! Please check your connection.');
+  })
+  .then((data) => {
+    let names = data.reduce((usernames, user) => {
+      usernames.push(user['username']);
+      return(usernames);
+    }, []);
+    console.log(names)
+    return names
+  })
+  .catch((error) => {
+    alert(error);
+  })
+}
+
+export function apiPostNewUser(obj) {
+  console.log(obj.state)
+  alert()
+  fetch('http://localhost:8000/api/createuser/', {
+    method: 'POST',
+    headers: {
+    'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+    'username': obj.state.username,
+    'password': obj.state.passwordOne,
+    'email': obj.state.email,
+    })
+  })
+  .then((response) => {
+    if (response.ok) {
+      window.location.href = '/login/';
+    } else if (response.status === 400) {
+      throw new Error('A user with that name already exists!');
+    } else {
+      throw new Error('Server request failed!');
+    }
+  })
+  .catch((error) => {
+    alert(error);
+  });
 }

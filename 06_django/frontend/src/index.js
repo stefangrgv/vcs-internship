@@ -10,7 +10,7 @@ import Login from './Login';
 import CreateUser from './CreateUser';
 import UserPanel from './UserPanel';
 import ChangePassword from './ChangePassword'
-import './index.css';
+import './style.css';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -22,11 +22,11 @@ root.render(
           <Route path=':id' element = {<LinkList mode = 'view' />} />
           <Route path='/edit/:id' element = {<LinkList mode = 'edit' />} />
           <Route exact path='new' element = {<LinkList mode='new' />} />
+          <Route path='/login/' element={<Login />} />
+          <Route path='/register/' element={<CreateUser />} /> 
+          <Route path='/myprofile/' element={<UserPanel />} />
+          <Route path='/myprofile/changepassword/' element={<ChangePassword />} />
         </Route>
-        <Route path='/login/' element={<Login />} />
-        <Route path='/register/' element={<CreateUser />} /> 
-        <Route path='/myprofile/' element={<UserPanel />} />
-        <Route path='/myprofile/changepassword/' element={<ChangePassword />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -38,13 +38,13 @@ class LinkListView(
 class UserDetailsView(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
-    #mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = User.objects.all()
     serializer_class = UserDetailsSerializer
     permission_classes = [IsMe]
     lookup_field = 'username'
+
 
 class UserListView(
     mixins.ListModelMixin,
@@ -53,8 +53,6 @@ class UserListView(
     queryset = User.objects.all()
     serializer_class = UserListSerializer
 
-    for user in queryset:
-        Token.objects.get_or_create(user=user)
 
 class UserCreateView(
     mixins.CreateModelMixin,

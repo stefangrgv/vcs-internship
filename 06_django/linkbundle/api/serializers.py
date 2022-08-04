@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Link, LinkList
+from rest_framework.authtoken.models import Token
 import requests
 from bs4 import BeautifulSoup as bs
 
@@ -142,6 +143,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "password", "email"]
+
+    def create(self, validated_data):
+        user = User.objects.create(**validated_data)
+        user.set_password(self.data.get('password'))
+        Token.objects.get_or_create(user=user)
+        user.save()
+        return user
 
 
 class UserChangePasswordSerializer(serializers.ModelSerializer):

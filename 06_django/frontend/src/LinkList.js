@@ -9,9 +9,7 @@ import {
   apiListDelete,
 } from './apiRequests';
 import withRouter from './withRouter';
-import './Modal.css';
-//import './App.css';
-import './LinkList.css';
+import './style.css';
 
 
 class LinkList extends React.Component {
@@ -53,7 +51,7 @@ class LinkList extends React.Component {
   }
 
   componentDidUpdate () {
-    if (this.state.isLoaded &&
+    if ((this.state.isLoaded || this.props.mode === 'new') &&
         this.state.links.find((l) => l.needsRendering &&
         !this.state.isFetchingLinks)) {
       let newLinks = this.state.links.map((link) => {
@@ -250,7 +248,7 @@ class LinkList extends React.Component {
     if (this.props.mode === 'new' ||
         this.props.mode === 'edit') {
       return (
-      <div className='PrivacyPanel'>
+      <div className='privacy-panel'>
         <h3>Is this a private list: </h3>
         <input
           type = 'checkbox'
@@ -261,7 +259,7 @@ class LinkList extends React.Component {
       )
     } else {
       return(
-      <div className='PrivacyPanel'>
+      <div className='privacy-panel'>
         <h4>{
           this.state.isPrivate ?
           <i>private list</i> :
@@ -275,19 +273,19 @@ class LinkList extends React.Component {
   renderListTitlePanel () {
     return(
       this.props.mode !== 'view' ? (
-        <div className='TitleAndOwnerPanel'>
-          <h3>List title: </h3>
+        <div className='list-title'>
+          <h3 className='list-title'>List title: </h3>
           <input
-            className='InputField TitleField'
+            className='input-field TitleField'
             placeholder='Enter list title'
             onChange={this.onChangeTitle}
             value = {this.state.title}/>
         </div>
       ):
       (
-        <div className='TitleAndOwnerPanel'>
-          <h3>{this.state.title}</h3>
-          <h5>(created by {this.state.owner})</h5>
+        <div className='list-title'>
+          <h3 className='list-title'>{this.state.title}</h3>
+          <h5 className='list-title'>(created by {this.state.owner})</h5>
           { this.props.mode === 'view' &&
             this.state.owner === localStorage.getItem('kodjalinkUsername') ?
             <button 
@@ -306,18 +304,18 @@ class LinkList extends React.Component {
     return (
       this.state.links.map((link, n) => { return (
         // link contents: title, description, thumbnail and url
-        <div className='LinkContent' key={'linkContent' + n}>
-          <div className='LinkTitle' key={'title' + n}> 
+        <div className='link-content' key={'link-content' + n}>
+          <div className='link-title' key={'title' + n}> 
             {link.needsRendering ?
-              (<h4 key={`num${n}`}> {link.url}</h4>):
-              (<h4 key={`num${n}`}> {link.title}</h4>)
+              (<h4 className='link-title' key={`num${n}`}> {link.url}</h4>):
+              (<h4 className='link-title' key={`num${n}`}> {link.title}</h4>)
             }
           </div>
           {link.needsRendering ?
             (<></>):
             (
-            <div className='LinkImageDescriptionPanel' key={'desc' + n}>
-              <img className='LinkThumbnail'
+            <div className='link-image-description' key={'desc' + n}>
+              <img className='link-thumbnail'
               src={link.thumbnail}
               alt={link.url + ' thumbnail'}
               />
@@ -325,9 +323,9 @@ class LinkList extends React.Component {
             </div>
             )
             }
-          <div className='LinkHyperlinkPanel' key={'hlink' + n}>
+          <div className='hyperlink-panel' key={'hlink' + n}>
             <h4><a
-              className='LinkHyperlink'
+              className='hyperlink'
               key={`url${n}`}
               href={`${link.url}`}>{link.url}</a></h4>
           </div>
@@ -336,7 +334,7 @@ class LinkList extends React.Component {
             (this.props.mode === 'edit' &&
             localStorage.getItem('kodjalinkUsername') === this.state.owner)
             ? (
-            <div className='LinkButtonsPanel' key={'linkbuttons ' + n}>
+            <div className='links-buttons' key={'links-buttons ' + n}>
               <button
                 className='btn'
                 key={`edit${n}`}
@@ -360,11 +358,11 @@ class LinkList extends React.Component {
   renderAddURLPanel () {
     return (this.props.mode !== 'view') ?
     (
-      <div className='NewURLPanel'>
-        <div className='NewURLField'>
-          <h4>Add URL: </h4>
+      <div className='new-url-field'>
+        <div className='new-url-field'>
+          <h4 className='new-url-field'>Add URL: </h4>
           <input
-            className='InputField AddURLField'
+            className='input-field'
             placeholder = 'Enter URL'
             onChange = {this.onChangeNewURL.bind(this)}
             value = {this.state.newURL} />
@@ -383,9 +381,9 @@ class LinkList extends React.Component {
     this.setState({
       isModalDisplayed: true,
       editedURL: '',
-      modalClassName: 'EditLinkModal',
       modalBody: (
         <input
+          className='input-field'
           onChange = {this.onChangeEditedURL}
           placeholder = 'Enter URL'
           ref = {modalInput => this.modalInput = modalInput}
@@ -401,9 +399,9 @@ class LinkList extends React.Component {
     (this.props.mode === 'new' ||
     (this.props.mode === 'edit' &&
       localStorage.getItem('kodjalinkUsername') === this.state.owner)) ? (
-      <div className='SaveListPanel'>
+      <div className='save-list-panel'>
         <button
-         className='btn SaveListButton'
+         className='btn save-list-btn'
          onClick={
           this.linkListSave
         }>Save LinkList</button>
@@ -418,7 +416,7 @@ class LinkList extends React.Component {
     localStorage.getItem('kodjalinkUsername') === this.state.owner) ? (
       <div>
         <button
-         className='btn DeleteListButton'
+         className='btn delete-list-btn'
          onClick={
           () => this.linkListAskDelete()
           }>Delete LinkList</button>
@@ -433,7 +431,7 @@ class LinkList extends React.Component {
 
     if (this.state.isLoaded || this.props.mode === 'new') {
       content = (
-        <div className='ListContent'>
+        <div className='list-content'>
         {this.renderListTitlePanel()}
         {this.renderPrivacy()}
         {this.renderLinksPanel()}
@@ -453,7 +451,7 @@ class LinkList extends React.Component {
     }
 
     return (
-      <div className='LinkListPage'>
+      <div className='link-list-page'>
         {content}
       </div>
     )

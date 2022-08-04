@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import {
   apiUserLogout
 } from './apiRequests'
-import './App.css';
+import './style.css';
 
 class App extends React.Component {
     logout () {
@@ -13,7 +13,7 @@ class App extends React.Component {
       apiUserLogout();
     }
 
-    renderUserLoggedIn () {
+    renderFooter () {
       if (localStorage.getItem('kodjalinkUsername') === null) {
         return (
           <h4>Viewing as guest. Please {" "}
@@ -23,22 +23,30 @@ class App extends React.Component {
         );
       }
       return (
-        <span>
+        <div className='footer'>
             <h4>Logged in as {" "}
               <b>{localStorage.getItem('kodjalinkUsername')}</b>
             </h4>
-            <h4><a href='/new/'> Create a new linklist</a> {" "}
-             or <a href='/myprofile'> view your profile </a>.</h4>
+            <h4><a
+              className='hyperlink'
+              href='/new/'
+            >Create a new linklist</a>
+            {" "} or <a
+              className='hyperlink'
+              href='/myprofile'
+            >view your profile </a>.</h4>
             <button onClick={this.logout}>Logout</button>
-          </span>
+          </div>
       );
     }
 
     render() {
       return (
         <div className='App'>
+          <h2 className='site-title'>KodjaLink</h2>
+          <h5 className='site-description'>The best website for sharing lists of links.</h5>
           <Outlet />
-          {this.renderUserLoggedIn()}
+          {this.renderFooter()}
         </div>
       )
   }

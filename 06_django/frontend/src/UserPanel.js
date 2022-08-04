@@ -4,7 +4,8 @@ import {
   apiUserGet,
   apiUserLogout,
   apiListDelete,
-} from './apiRequests'
+} from './apiRequests';
+import './style.css';
 
 
 class UserPanel extends React.Component {
@@ -15,9 +16,8 @@ class UserPanel extends React.Component {
     };
   }
 
-  async askDeleteList (id) {
-    const isDeleteConfirmed = await confirm('Are you sure you want to delete this list?');
-    if (isDeleteConfirmed) {
+  askDeleteList (id) {
+    if (window.confirm('Are you sure you want to delete this list?')) {
       apiListDelete(this, id);
     }
   }
@@ -43,27 +43,33 @@ class UserPanel extends React.Component {
     let email;
 
     if (!this.state.isLoaded) {
-      email = <p><i>loading...</i></p>;
       mylists = <p><i>loading...</i></p>;
       apiUserGet(this, localStorage.getItem('kodjalinkUsername'));
     } else {
-      email = <a>{this.state.email}</a>
       if (this.state.linklists.length == 0) {
         mylists = (
-          <div className='mylists'>
+          <div>
               <p>You have no linklists!</p>
             </div>    
         )
       } else {
         mylists = (
-          <div className='mylists'>
-            <ol className='mylists_ol'>
+          <div>
+            <ol className='mylists-list'>
               {this.state.linklists.map((el) => {
                 return (
-                  <li key={el.id}>
-                    <a href={`/${el.id}/`}>{el.title}</a>
-                    <button onClick={() => this.editList(el.id)}>Edit</button>
-                    <button onClick={() => this.askDeleteList(el.id)}>Delete</button>
+                  <li className='mylists-list-item' key={el.id}>
+                    <a className='hyperlink' href={`/${el.id}/`}>{el.title}</a>
+                    <button
+                      className='btn-userpanel-list-edit'
+                      onClick={
+                        () => this.editList(el.id)
+                      }>Edit</button>
+                    <button
+                      className='btn-userpanel-list-delete'
+                      onClick={
+                        () => this.askDeleteList(el.id)
+                      }>Delete</button>
                   </li>
                 )
               })}
@@ -74,23 +80,26 @@ class UserPanel extends React.Component {
     }
 
     return (
-      <div className='UserPanel'>
-      <h2>User Panel</h2>
-      <h3>Username: <b>
-        {localStorage.getItem('kodjalinkUsername')}
-      </b></h3>
-      <button onClick={this.logout}>
-        Logout
-      </button>
-      <h3><a href='/myprofile/changepassword/'>Change password</a></h3>
-      <span>
-          <h3>Email: </h3>{email}
-      </span>
-      <span>
-        <h3>My linklists:</h3>
-        {mylists}
-      </span>
-      <button onClick={this.createNewList}>Create new linklist</button>
+      <div className='userpanel'>
+        <div className='user-info'>
+          <h3 className='user-info'>User Panel</h3>
+          <h4 className='user-info'>Logged in as {" "}
+            {localStorage.getItem('kodjalinkUsername')}
+          </h4>
+          <button onClick={this.logout}>
+            Logout
+          </button>
+          <button onClick={() => {
+            window.location.href = '/myprofile/changepassword/';
+          }}>Change password</button>
+        </div>
+        <div className='mylists-panel'>
+          <h3 className='mylists-panel mylists-title'>My linklists:</h3>
+          {mylists}
+        </div>
+        <button onClick={
+          this.createNewList
+        }>Create new linklist</button>
     </div>
     )
   }
