@@ -19,7 +19,6 @@ class LinkSerializer(serializers.ModelSerializer):
         model = Link
         fields = ["id", "url", "title", "thumbnail", "description"]
 
-
     def scrape(self, url):
         try:
             response = requests.get(url)
@@ -32,20 +31,20 @@ class LinkSerializer(serializers.ModelSerializer):
 
             metas = soup.find_all('meta')
             desc_tags = [
-                meta.attrs['content'] for meta in metas \
-                    if 'name' in meta.attrs and \
-                        meta.attrs['name'] == 'description'
-                ]
-            
+                meta.attrs['content'] for meta in metas
+                if 'name' in meta.attrs and
+                meta.attrs['name'] == 'description'
+            ]
+
             if len(desc_tags) > 0:
-                description = desc_tags[0]               
+                description = desc_tags[0]
             else:
                 description = 'No description available'
 
             imgs = [
-                meta.attrs['content'] for meta in metas \
-                    if 'property' in meta.attrs and \
-                        meta.attrs['property'] == 'og:image'
+                meta.attrs['content'] for meta in metas
+                if 'property' in meta.attrs and
+                meta.attrs['property'] == 'og:image'
             ]
 
             if len(imgs) > 0:
@@ -53,22 +52,26 @@ class LinkSerializer(serializers.ModelSerializer):
             else:
                 thumbnail = no_thumbnail
 
-            return {'title': title, 'description': description, 'thumbnail': thumbnail}
+            return {
+                'title': title,
+                'description': description,
+                'thumbnail': thumbnail
+            }
 
         except Exception as e:
-            print('\n\n\nError in fetching data from {}: {}\n\n\n'.format(url, e))
+            print('Error in fetching data from {}: {}'.format(url, e))
             return {
                 'title': url,
                 'thumbnail': no_thumbnail,
-                'description': 'No description available (server not reachable)'
+                'description':
+                'No description available (server not reachable)'
             }
-
 
     def create(self, validated_data):
         scraped_data = self.scrape(validated_data['url'])
 
         link = Link.objects.create(**validated_data, **scraped_data)
-        
+
         return link
 
 
@@ -79,21 +82,24 @@ class LinkListSerializer(serializers.ModelSerializer):
 
     links = LinkSerializer(many=True, required=False)
     owner = serializers.ReadOnlyField(source="owner.username")
-    
 
     class Meta:
         model = LinkList
         fields = ["id", "links", "owner", "title", "private"]
         read_only_fields = ["owner"]
 
-
     def create(self, validated_data):
         links = validated_data.pop('links')
-        linklist = LinkList.objects.create(owner=self.context['request'].user, **validated_data)
-        for l in links:
+        linklist = LinkList.objects.create(
+            owner=self.context['request'].user,
+            **validated_data
+        )
+
+        for link in links:
             linklist.links.add(
-                Link.objects.get(url=l['url'])
+                Link.objects.get(url=link['url'])
             )
+
         return linklist
 
     def update(self, instance, validated_data):
@@ -102,9 +108,9 @@ class LinkListSerializer(serializers.ModelSerializer):
         instance.links.set([])
 
         links = validated_data.pop('links')
-        for l in links:
+        for link in links:
             instance.links.add(
-                Link.objects.get(url=l['url'])
+                Link.objects.get(url=link['url'])
             )
         instance.save()
         return instance
@@ -117,7 +123,6 @@ class UserDetailsSerializer(serializers.ModelSerializer):
 
     linklists = LinkListSerializer(many=True)
 
-
     class Meta:
         model = User
         fields = ["id", "username", "email", "linklists"]
@@ -128,7 +133,6 @@ class UserListSerializer(serializers.ModelSerializer):
     Serializer for listing all users endpoint.
     """
 
-
     class Meta:
         model = User
         fields = ["username"]
@@ -138,7 +142,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
     """
     Serializer for user creation endpoint.
     """
-
 
     class Meta:
         model = User
@@ -160,7 +163,6 @@ class UserChangePasswordSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(required=True)
     new_password_one = serializers.CharField(required=True)
     new_password_two = serializers.CharField(required=True)
-
 
     class Meta:
         model = User

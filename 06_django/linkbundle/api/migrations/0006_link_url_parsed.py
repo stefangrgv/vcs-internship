@@ -13,7 +13,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='link',
             name='url_parsed',
-            field=models.TextField(default='wasd', editable=False, max_length=300),
+            field=models.TextField(
+                default='wasd',
+                editable=False,
+                max_length=300
+            ),
             preserve_default=False,
         ),
     ]

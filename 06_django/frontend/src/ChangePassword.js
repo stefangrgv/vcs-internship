@@ -1,6 +1,7 @@
 import React from 'react';
+import { apiChangePassword } from './apiRequests';
 import './UserPanel';
-import './style.css'
+import './style.css';
 
 class ChangePassword extends React.Component {
   constructor (props) {
@@ -38,35 +39,10 @@ class ChangePassword extends React.Component {
       alert('New password is required!');
     } else if (this.state.newPasswordOne !== this.state.newPasswordTwo) {
       alert('New passwords don\'t match!');
+    } else if (this.state.newPasswordOne === this.state.oldPassword) {
+      alert('Your new password cannot be the same as your old password.');
     } else {
-      fetch('http://localhost:8000/auth/password/change/', {
-        method: 'POST',
-        headers: new Headers({
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
-          }),
-        body: JSON.stringify({
-          new_password1: this.state.newPasswordOne,
-          new_password2: this.state.newPasswordTwo,
-          old_password: this.state.oldPassword,
-        })
-      })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        if (response.status === 400) {
-          throw new Error('Old password is not correct!');
-        }
-        throw new Error('Error in request to server.');
-      })
-      .then((data) => {
-        alert('Success!')
-      })
-      .catch((error) => {
-        alert(error)
-      })
+      apiChangePassword(this);
     }
   }
 

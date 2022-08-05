@@ -14,10 +14,25 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LinkListItem',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('link', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.link')),
-                ('linklist', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.linklist')),
+                ('id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID'
+                    )),
+                ('timestamp',
+                    models.DateTimeField(auto_now_add=True)),
+                ('link',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='api.link'
+                    )),
+                ('linklist',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='api.linklist'
+                    )),
             ],
             options={
                 'ordering': ['timestamp'],

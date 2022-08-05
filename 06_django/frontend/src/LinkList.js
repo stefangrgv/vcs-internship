@@ -78,15 +78,52 @@ class LinkList extends React.Component {
 
   formatURLInput (input) {
     // Formats the URL to be properly handled by the DB
-    let parsedURL = input.replace('www.', '');    
+    let parsedURL = input.replace('www.', '');
+    while (parsedURL.startsWith('/')) {
+      parsedURL = parsedURL.slice(1);
+    }
+
     if (!parsedURL.startsWith('http://') && !parsedURL.startsWith('https://')) {
       parsedURL = 'http://' + parsedURL;
     }
+
     if (parsedURL.endsWith('/')) { 
       parsedURL = parsedURL.slice(0, -1);
     }
 
     return parsedURL;
+  }
+
+  formatThumbnails () {
+    /* 
+    Formats the URL paths of all the thumbnails in the list.
+    In some cases they are not accepted by the backend unless reformatted.
+    */
+    this.setState({
+      links: this.state.links.map((link) => {
+        let l = link;
+        l['thumbnail'] = this.formatURLInput(link['thumbnail']);
+        return l;
+      }),
+    });
+  }
+
+  trimLinkTitle () {
+    /*
+    Trims the title of the links to ensure it fits the
+    limit enforced in the database (100 symbols).
+    */
+    this.setState({
+      links: this.state.links.map((link) => {
+        if (link['title'].length < 100) {
+          return link;
+        }
+
+        let l = link;
+        l['title'] = l['title'].slice(0, 97) + '...';
+        return l;
+      }),
+    });
   }
 
   //////////////////////////////////////
@@ -131,6 +168,9 @@ class LinkList extends React.Component {
       alert('Please enter a title!')
       return null
     }
+
+    this.formatThumbnails();
+    this.trimLinkTitle();
 
     if (this.props.mode === 'edit') {
       apiSubmitEditedList(this)

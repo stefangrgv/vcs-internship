@@ -89,7 +89,7 @@ export function apiListDelete (obj, id, redirectTo = null) {
   }
   })
   .catch((error) => {
-    console.log(error);
+    alert.log(error);
   });
 }
 
@@ -160,12 +160,11 @@ export function apiGetAllLinks (obj) {
     });
   })
   .catch((error) => {
-    console.error(error)
+    alert.error(error)
   })
 }
 
 export function apiPostNewLink (obj, url) {
-  console.log('parsedURL api '+ url)
   fetch('http://localhost:8000/api/links/', {
     method: 'POST',
     headers: new Headers({
@@ -187,7 +186,6 @@ export function apiPostNewLink (obj, url) {
     throw new Error('Error in posting link data to server!');
   })
   .catch((error) => {
-      console.log('apiPostNewLink went boom');
       alert(error);
     }
     )
@@ -206,7 +204,7 @@ export function apiUserLogout () {
     window.location.href = '/';
   })
   .catch((error) => {
-    console.error(error);
+    alert(error);
   })
 }
 
@@ -276,7 +274,6 @@ export function apiFetchAllUsers () {
       usernames.push(user['username']);
       return(usernames);
     }, []);
-    console.log(names)
     return names
   })
   .catch((error) => {
@@ -285,7 +282,6 @@ export function apiFetchAllUsers () {
 }
 
 export function apiPostNewUser(obj) {
-  console.log(obj.state)
   alert()
   fetch('http://localhost:8000/api/createuser/', {
     method: 'POST',
@@ -310,4 +306,36 @@ export function apiPostNewUser(obj) {
   .catch((error) => {
     alert(error);
   });
+}
+
+export function apiChangePassword(obj) {
+  fetch('http://localhost:8000/api/auth/password/change/', {
+        method: 'POST',
+        headers: new Headers({
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+          }),
+        body: JSON.stringify({
+          new_password1: obj.state.newPasswordOne,
+          new_password2: obj.state.newPasswordTwo,
+          old_password: obj.state.oldPassword,
+        })
+      })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        if (response.status === 400) {
+          throw new Error('Old password is not correct!');
+        }
+        throw new Error('Error in request to server.');
+      })
+      .then((data) => {
+        alert('Success!');
+        window.location.href = '/myprofile/'
+      })
+      .catch((error) => {
+        alert(error)
+      })
 }

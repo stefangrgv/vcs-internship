@@ -70,7 +70,6 @@ def test_get_my_lists__anon_user(anon_user):
 
 @pytest.mark.django_db
 def test_create_new_list(signed_in_user, link):
-    import pdb; pdb.set_trace()
     resp = signed_in_user.post(
         reverse("list-view-list"),
         {"links": [link], "title": "generic title"},

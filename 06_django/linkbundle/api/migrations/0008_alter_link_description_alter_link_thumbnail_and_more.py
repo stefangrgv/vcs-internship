@@ -13,12 +13,23 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='link',
             name='description',
-            field=models.TextField(blank=True, editable=False, max_length=200, null=True),
+            field=models.TextField(
+                blank=True,
+                editable=False,
+                max_length=200,
+                null=True
+            ),
         ),
         migrations.AlterField(
             model_name='link',
             name='thumbnail',
-            field=models.URLField(blank=True, default='', editable=False, max_length=100, null=True),
+            field=models.URLField(
+                blank=True,
+                default='',
+                editable=False,
+                max_length=100,
+                null=True
+            ),
         ),
         migrations.AlterField(
             model_name='link',

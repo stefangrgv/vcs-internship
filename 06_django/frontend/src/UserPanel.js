@@ -1,5 +1,4 @@
 import React from 'react';
-import { confirm } from 'react-confirm-box';
 import {
   apiUserGet,
   apiUserLogout,
@@ -40,13 +39,12 @@ class UserPanel extends React.Component {
 
   render () {
     let mylists;
-    let email;
 
     if (!this.state.isLoaded) {
       mylists = <p><i>loading...</i></p>;
       apiUserGet(this, localStorage.getItem('kodjalinkUsername'));
     } else {
-      if (this.state.linklists.length == 0) {
+      if (this.state.linklists.length === 0) {
         mylists = (
           <div>
               <p>You have no linklists!</p>

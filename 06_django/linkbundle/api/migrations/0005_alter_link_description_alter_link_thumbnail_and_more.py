@@ -13,16 +13,29 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='link',
             name='description',
-            field=models.TextField(blank=True, max_length=200, null=True),
+            field=models.TextField(
+                blank=True,
+                max_length=200,
+                null=True
+            ),
         ),
         migrations.AlterField(
             model_name='link',
             name='thumbnail',
-            field=models.URLField(blank=True, default='', max_length=100, null=True),
+            field=models.URLField(
+                blank=True,
+                default='',
+                max_length=100,
+                null=True
+            ),
         ),
         migrations.AlterField(
             model_name='linklist',
             name='links',
-            field=models.ManyToManyField(blank=True, null=True, to='api.link'),
+            field=models.ManyToManyField(
+                blank=True,
+                null=True,
+                to='api.link'
+            ),
         ),
     ]

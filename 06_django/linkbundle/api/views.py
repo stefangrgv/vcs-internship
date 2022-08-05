@@ -1,14 +1,11 @@
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 from rest_framework import permissions, mixins, viewsets
-from rest_framework.authtoken.models import Token
 from .models import Link, LinkList
 from .serializers import \
     LinkSerializer, LinkListSerializer, UserDetailsSerializer,\
     UserListSerializer, UserCreateSerializer,\
     UserChangePasswordSerializer
 from .permissions import IsMyOwn, IsMe
-from rest_framework.response import Response
 
 
 class LinkView(
@@ -32,7 +29,7 @@ class LinkListView(
 ):
     queryset = LinkList.objects.all()
     serializer_class = LinkListSerializer
-    permission_classes = [IsMyOwn, permissions.IsAuthenticated]       
+    permission_classes = [IsMyOwn, permissions.IsAuthenticated]
 
 
 class UserDetailsView(
