@@ -1,8 +1,13 @@
 import React from 'react';
 import './App.css';
 
+export function closeModal (obj) {
+  obj.setState( {
+    isModalDisplayed: false,
+  } )
+}
 
-class Modal extends React.Component {
+export class Modal extends React.Component {
   render () {
     return(
         <div className={
@@ -10,17 +15,21 @@ class Modal extends React.Component {
         }>
           <div className='modal-main'>
             {this.props.body}
-            <button onClick={this.props.modalSave}>
-                Save
+            <button
+              onClick = {this.props.modalYesMethod}
+              className = 'btn modal-btn'>
+                {this.props.modalYesText}
             </button>
-            <button onClick={this.props.modalCancel}>
-              Cancel
-            </button>
+            {
+              this.props.modalNoText ?
+                <button
+                  onClick={this.props.modalNoMethod}
+                  className = 'btn modal-btn'>
+                    {this.props.modalNoText}
+                </button> : <></>
+            }
           </div>
         </div>
     )
   }
 }
-
-
-export default Modal;

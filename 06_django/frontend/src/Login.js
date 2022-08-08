@@ -11,6 +11,10 @@ class Login extends React.Component {
       username: '',
       password: '',
     }
+
+    this.usernameChange = this.usernameChange.bind(this);
+    this.passwordChange = this.passwordChange.bind(this);
+    this.submit = this.submit.bind(this);
   }
 
   usernameChange (event) {
@@ -42,7 +46,7 @@ class Login extends React.Component {
           className='username-password-input-field'
           name='username'
           type='text'
-          onChange={this.usernameChange.bind(this)}
+          onChange={this.usernameChange}
         />
         </div>
         <div className='named-input'>
@@ -51,10 +55,10 @@ class Login extends React.Component {
             className='username-password-input-field'
             name='password'
             type='password'
-            onChange={this.passwordChange.bind(this)}
+            onChange={this.passwordChange}
           />
         </div>
-        <button onClick={this.submit.bind(this)}>Login</button>
+        <button onClick={this.submit}>Login</button>
       </div>
     )
   }

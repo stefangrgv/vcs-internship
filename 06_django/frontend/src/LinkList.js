@@ -1,5 +1,7 @@
 import React from 'react';
-import Modal from './Modal';
+import { Modal, closeModal } from './Modal';
+import withRouter from './withRouter';
+import { Link } from 'react-router-dom';
 import {
   apiSubmitNewList,
   apiSubmitEditedList,
@@ -8,17 +10,17 @@ import {
   apiPostNewLink,
   apiListDelete,
 } from './apiRequests';
-import withRouter from './withRouter';
 import './style.css';
 
 
 class LinkList extends React.Component {
   constructor (props) {
     super(props);
-
+    
     if (this.props.mode === 'view' ||
         this.props.mode === 'edit') {
       this.state = {
+        notNew: true,
         isResponseOk: false,
         isLoaded: false,
         isModalDisplayed: false,
@@ -41,6 +43,7 @@ class LinkList extends React.Component {
     this.linkListSave = this.linkListSave.bind(this);
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangePrivacy = this.onChangePrivacy.bind(this);
+    this.onChangeNewURL = this.onChangeNewURL.bind(this);
   };
 
   componentDidMount () {
@@ -159,13 +162,14 @@ class LinkList extends React.Component {
   //    SAVE / DELETE
   //////////////////////////////////////
   linkListSave () {
-    if (this.state.links.length === 0) {
-      alert('Cannot submit an empty list!')
-      return null
-    }
-
     if (this.state.title.replaceAll(' ', '') === '') {
-      alert('Please enter a title!')
+      this.setState({
+        isModalDisplayed: true,
+        modalYesMethod: () => closeModal(this),
+        modalYesText: 'OK',
+        modalBody: 'Please enter a title!',
+        modalNoText: '',
+      });
       return null
     }
 
@@ -180,9 +184,17 @@ class LinkList extends React.Component {
   }
 
   linkListAskDelete (link) {
-    if (window.confirm('Are you sure you want to delete this linklist?')) {
-      apiListDelete(this, this.props.params.id, '/myprofile/');
-    }
+    this.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => {
+        apiListDelete(this, this.props.params.id, '/myprofile/');
+        closeModal(this);
+      },
+      modalYesText: 'Yes',
+      modalBody: 'Are you sure you want to delete this linklist?',
+      modalNoText: 'No',
+      modalNoMethod: () => closeModal(this),
+    });
   }
   //////////////////////////////////////
 
@@ -192,12 +204,24 @@ class LinkList extends React.Component {
   //////////////////////////////////////
   linkValidate (url) {
     if (url.replaceAll(' ', '') === '') {
-      alert('Please enter a non-empty URL.');
+      this.setState({
+        isModalDisplayed: true,
+        modalYesMethod: () => closeModal(this),
+        modalYesText: 'OK',
+        modalBody: 'Please enter a non-empty URL.',
+        modalNoText: '',
+      });
       return false;
     }
 
     if (this.state.links.find((l) => l.url === this.formatURLInput(url))) {
-      alert('This link is already in the list.');
+      this.setState({
+        isModalDisplayed: true,
+        modalYesMethod: () => closeModal(this),
+        modalYesText: 'OK',
+        modalBody: 'This link is already in the list.',
+        modalNoText: '',
+      });
       return false;
     }
 
@@ -229,9 +253,17 @@ class LinkList extends React.Component {
   }
 
   linkAskDelete (link) {
-    if (window.confirm('Are you sure you want to delete this link?')) {
-      this.linkDelete(link);
-    }
+    this.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => {
+        this.linkDelete(link);
+        closeModal(this);
+      },
+      modalYesText: 'Yes',
+      modalBody: 'Are you sure you want to delete this link?',
+      modalNoText: 'No',
+      modalNoMethod: () => closeModal(this),
+    });
   }
 
   linkUpdateInfo (url) {
@@ -249,7 +281,7 @@ class LinkList extends React.Component {
       let parsedURL = this.formatURLInput(this.state.editedURL);
       if (!this.state.allLinks.find((l) => l.url === parsedURL)) {
         apiPostNewLink(this, parsedURL);
-        apiGetAllLinks();
+        apiGetAllLinks(this);
       }
 
       let newLinks = this.state.links.map((x) => x);
@@ -327,7 +359,7 @@ class LinkList extends React.Component {
           <h3 className='list-title'>{this.state.title}</h3>
           <h5 className='list-title'>(created by {this.state.owner})</h5>
           { this.props.mode === 'view' &&
-            this.state.owner === localStorage.getItem('kodjalinkUsername') ?
+            this.state.owner === this.props.user.username ?
             <button 
               className='btn'
               onClick={() => {
@@ -364,15 +396,16 @@ class LinkList extends React.Component {
             )
             }
           <div className='hyperlink-panel' key={'hlink' + n}>
-            <h4><a
+            <h4><Link 
               className='hyperlink'
               key={`url${n}`}
-              href={`${link.url}`}>{link.url}</a></h4>
+              to = {`/redirect/${encodeURIComponent(link.url)}`}
+              target = '_blank'>{link.url}</Link></h4>
           </div>
           {// edit and delete buttons
             this.props.mode === 'new' ||
             (this.props.mode === 'edit' &&
-            localStorage.getItem('kodjalinkUsername') === this.state.owner)
+              this.props.user.username === this.state.owner)
             ? (
             <div className='links-buttons' key={'links-buttons ' + n}>
               <button
@@ -382,7 +415,7 @@ class LinkList extends React.Component {
                   () => this.renderEditLinkModal(n)
                 }>Edit</button>
               <button
-                className='btn'
+                className='btn btn-delete'
                   key={`del${n}`}
                   onClick={
                     () => this.linkAskDelete(link)
@@ -404,7 +437,7 @@ class LinkList extends React.Component {
           <input
             className='input-field'
             placeholder = 'Enter URL'
-            onChange = {this.onChangeNewURL.bind(this)}
+            onChange = {this.onChangeNewURL}
             value = {this.state.newURL} />
           </div>
         <button
@@ -420,6 +453,10 @@ class LinkList extends React.Component {
   renderEditLinkModal (n) {
     this.setState({
       isModalDisplayed: true,
+      modalYesMethod: () => this.modalSave(n),
+      modalYesText: 'Save',
+      modalNoMethod: () => this.modalCancel(),
+      modalNoText: 'Cancel',
       editedURL: '',
       modalBody: (
         <input
@@ -429,8 +466,6 @@ class LinkList extends React.Component {
           ref = {modalInput => this.modalInput = modalInput}
         />
       ),
-      modalSave: () => this.modalSave(n),
-      modalCancel: () => this.modalCancel(),
     })
   }
 
@@ -438,7 +473,7 @@ class LinkList extends React.Component {
     return (
     (this.props.mode === 'new' ||
     (this.props.mode === 'edit' &&
-      localStorage.getItem('kodjalinkUsername') === this.state.owner)) ? (
+      this.props.user.username === this.state.owner)) ? (
       <div className='save-list-panel'>
         <button
          className='btn save-list-btn'
@@ -453,7 +488,7 @@ class LinkList extends React.Component {
   renderDeleteListPanel () {
     return (
     (this.props.mode === 'edit' &&
-    localStorage.getItem('kodjalinkUsername') === this.state.owner) ? (
+      this.props.user.username === this.state.owner) ? (
       <div>
         <button
          className='btn delete-list-btn'
@@ -480,8 +515,10 @@ class LinkList extends React.Component {
         {this.renderDeleteListPanel()}
         <Modal
           show = {this.state.isModalDisplayed}
-          modalSave = {this.state.modalSave}
-          modalCancel = {this.state.modalCancel}
+          modalYesMethod = {this.state.modalYesMethod}
+          modalYesText = {this.state.modalYesText}
+          modalNoMethod = {this.state.modalNoMethod}
+          modalNoText = {this.state.modalNoText}
           body = {this.state.modalBody}
         />
         </div>

@@ -1,7 +1,9 @@
 import React from 'react';
 import { apiChangePassword } from './apiRequests';
 import './UserPanel';
+import { Modal, closeModal } from './Modal';
 import './style.css';
+
 
 class ChangePassword extends React.Component {
   constructor (props) {
@@ -11,6 +13,11 @@ class ChangePassword extends React.Component {
       newPasswordOne: '',
       newPasswordTwo: '',
     }
+
+    this.oldPasswordChange = this.oldPasswordChange.bind(this);
+    this.newPasswordOneChange = this.newPasswordOneChange.bind(this);
+    this.newPasswordTwoChange = this.newPasswordTwoChange.bind(this);
+    this.submit = this.submit.bind(this);
   }
 
   oldPasswordChange (event) {
@@ -33,14 +40,34 @@ class ChangePassword extends React.Component {
 
   submit(event) {
     if (this.state.oldPassword === '') {
-      alert('Old password is required!');
+      this.setState({
+        isModalDisplayed: true,
+        modalYesMethod: () => closeModal(this),
+        modalYesText: 'OK',
+        modalBody: 'Old password is required!',
+      });
     } else if (this.state.newPasswordOne === '' ||
           this.state.newPasswordTwo === '') {
-      alert('New password is required!');
+            this.setState({
+              isModalDisplayed: true,
+              modalYesMethod: () => closeModal(this),
+              modalYesText: 'OK',
+              modalBody: 'New password is required!'
+            });
     } else if (this.state.newPasswordOne !== this.state.newPasswordTwo) {
-      alert('New passwords don\'t match!');
+      this.setState({
+        isModalDisplayed: true,
+        modalYesMethod: () => closeModal(this),
+        modalYesText: 'OK',
+        modalBody: 'New passwords don\'t match!'
+      });
     } else if (this.state.newPasswordOne === this.state.oldPassword) {
-      alert('Your new password cannot be the same as your old password.');
+      this.setState({
+        isModalDisplayed: true,
+        modalYesMethod: () => closeModal(this),
+        modalYesText: 'OK',
+        modalBody: 'Your new password cannot be the same as your old password.'
+      });
     } else {
       apiChangePassword(this);
     }
@@ -56,7 +83,7 @@ class ChangePassword extends React.Component {
         className='username-password-input-field'
         name='password'
         type='password'
-        onChange={this.oldPasswordChange.bind(this)}
+        onChange={this.oldPasswordChange}
       />
     </div>
     <div className='named-input'>
@@ -65,7 +92,7 @@ class ChangePassword extends React.Component {
         className='username-password-input-field'
         name='password'
         type='password'
-        onChange={this.newPasswordOneChange.bind(this)}
+        onChange={this.newPasswordOneChange}
       />
     </div>
     <div className='named-input'>
@@ -74,12 +101,20 @@ class ChangePassword extends React.Component {
         className='username-password-input-field'
         name='password'
         type='password'
-        onChange={this.newPasswordTwoChange.bind(this)}
+        onChange={this.newPasswordTwoChange}
       />
     </div>
-      <button onClick={this.submit.bind(this)}>
+      <button onClick={this.submit}>
         Submit
       </button>
+     <Modal
+        show = {this.state.isModalDisplayed}
+        modalYesMethod = {this.state.modalYesMethod}
+        modalYesText = {this.state.modalYesText}
+        modalNoMethod = {this.state.modalNoMethod}
+        modalNoText = {this.state.modalNoText}
+        body = {this.state.modalBody}
+      />
   </div>
   )
   }

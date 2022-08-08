@@ -1,9 +1,11 @@
+import { closeModal } from "./Modal";
+
 export function apiSubmitNewList (obj) {
   fetch('http://localhost:8000/api/lists/', {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+      'Authorization': 'Token ' + obj.props.user.token,
     },
     body: JSON.stringify({
       title: obj.state.title,
@@ -19,10 +21,15 @@ export function apiSubmitNewList (obj) {
     }
   })
   .then((data) => {
-    window.location.href = `/${data.id}/`
+    window.location.href = `/list/${data.id}/`
   })
   .catch((error) => {
-    alert(error);
+    obj.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => closeModal(obj),
+      modalYesText: 'OK',
+      modalBody: error.message,
+    });
   });
 }
 
@@ -31,7 +38,7 @@ export function apiSubmitEditedList (obj) {
         method: 'put',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+          'Authorization': 'Token ' + obj.props.user.token,
         },
         body: JSON.stringify({
           title: obj.state.title,
@@ -47,11 +54,20 @@ export function apiSubmitEditedList (obj) {
         }
       })
       .then((data) => {
-        alert('Saved!')
-        window.location.href = `/${obj.props.params.id}/`
+        obj.setState({
+          isModalDisplayed: true,
+          modalYesMethod: () => window.location.href = `/list/${obj.props.params.id}/`,
+          modalYesText: 'OK',
+          modalBody: 'Success!',
+        });
       })
       .catch((error) => {
-        alert(error);
+        obj.setState({
+          isModalDisplayed: true,
+          modalYesMethod: () => closeModal(obj),
+          modalYesText: 'OK',
+          modalBody: error.message,
+        });
       });
 }
 
@@ -59,7 +75,7 @@ export function apiListDelete (obj, id, redirectTo = null) {
   fetch(`http://localhost:8000/api/lists/${id}`, {
     method: 'delete',
     headers: new Headers({
-      'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+      'Authorization': 'Token ' + obj.props.user.token,
     })
   })
   .then(response => {
@@ -67,7 +83,12 @@ export function apiListDelete (obj, id, redirectTo = null) {
     obj.setState({
         isLoaded: false,
     });
-    alert('List deleted successfully.');
+    obj.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => closeModal(obj),
+      modalYesText: 'OK',
+      modalBody: 'List deleted successfully.',
+    });
     if (redirectTo !== null) {
       window.location.href = redirectTo;
       return;
@@ -89,15 +110,21 @@ export function apiListDelete (obj, id, redirectTo = null) {
   }
   })
   .catch((error) => {
-    alert.log(error);
+    obj.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => closeModal(obj),
+      modalYesText: 'OK',
+      modalBody: error.message,
+    });
   });
 }
 
 export function apiLoadLinkList (obj) {
+  console.log(obj.props)
   fetch(`http://localhost:8000/api/lists/${obj.props.params.id}/`, {
     method: 'get',
     headers: new Headers({
-      'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+      'Authorization': 'Token ' + obj.props.user.token,
     })
   })
   .then((response) => {
@@ -133,7 +160,6 @@ export function apiLoadLinkList (obj) {
     }
   })
   .catch((error) => {
-    console.log(error)
     obj.setState({
       errorMessage: error.message,
     });
@@ -144,7 +170,7 @@ export function apiGetAllLinks (obj) {
   fetch('http://localhost:8000/api/links/', {
     method: 'get',
     headers: new Headers({
-      'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+      'Authorization': 'Token ' + obj.props.user.token,
     }),
   })
   .then((response) => {
@@ -160,7 +186,12 @@ export function apiGetAllLinks (obj) {
     });
   })
   .catch((error) => {
-    alert.error(error)
+    obj.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => closeModal(obj),
+      modalYesText: 'OK',
+      modalBody: error.message,
+    });
   })
 }
 
@@ -169,7 +200,7 @@ export function apiPostNewLink (obj, url) {
     method: 'POST',
     headers: new Headers({
       'Content-Type': 'application/json',
-      'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+      'Authorization': 'Token ' + obj.props.user.token,
     }),
     body: JSON.stringify({
       'url': url,
@@ -186,12 +217,16 @@ export function apiPostNewLink (obj, url) {
     throw new Error('Error in posting link data to server!');
   })
   .catch((error) => {
-      alert(error);
-    }
-    )
+    obj.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => closeModal(obj),
+      modalYesText: 'OK',
+      modalBody: error.message,
+    });
+  })
 }
 
-export function apiUserLogout () {
+export function apiUserLogout (obj) {
   fetch('http://localhost:8000/api/auth/logout/', {
     method: 'POST',
   })
@@ -204,15 +239,20 @@ export function apiUserLogout () {
     window.location.href = '/';
   })
   .catch((error) => {
-    alert(error);
+    obj.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => closeModal(obj),
+      modalYesText: 'OK',
+      modalBody: error.message,
+    });
   })
 }
 
-export function apiUserGet (obj, username) {
-  fetch(`http://localhost:8000/api/user/${username}/`, {
+export function apiUserGet (obj) {
+  fetch(`http://localhost:8000/api/user/${obj.props.user.username}/`, {
     method: 'get',
     headers: new Headers({
-      'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+      'Authorization': 'Token ' + obj.props.user.token,
     })
   })
   .then((response) => {
@@ -257,11 +297,16 @@ export function apiUserLogin (obj) {
     window.location.href = '/myprofile/';
   })
   .catch((error) => {
-    alert(error);
+    obj.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => closeModal(obj),
+      modalYesText: 'OK',
+      modalBody: error.message,
+    });
   })
 }
 
-export function apiFetchAllUsers () {
+export function apiFetchAllUsers (obj) {
   fetch('http://localhost:8000/api/allusers/')
   .then((response) => {
     if (response.ok) {
@@ -277,12 +322,16 @@ export function apiFetchAllUsers () {
     return names
   })
   .catch((error) => {
-    alert(error);
+    obj.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => closeModal(obj),
+      modalYesText: 'OK',
+      modalBody: error.message,
+    });
   })
 }
 
 export function apiPostNewUser(obj) {
-  alert()
   fetch('http://localhost:8000/api/createuser/', {
     method: 'POST',
     headers: {
@@ -304,7 +353,12 @@ export function apiPostNewUser(obj) {
     }
   })
   .catch((error) => {
-    alert(error);
+    obj.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => closeModal(obj),
+      modalYesText: 'OK',
+      modalBody: error.message,
+    });
   });
 }
 
@@ -314,7 +368,7 @@ export function apiChangePassword(obj) {
         headers: new Headers({
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': 'Token ' + localStorage.getItem('kodjalinkUserToken'),
+          'Authorization': 'Token ' + obj.props.user.token,
           }),
         body: JSON.stringify({
           new_password1: obj.state.newPasswordOne,
@@ -332,10 +386,22 @@ export function apiChangePassword(obj) {
         throw new Error('Error in request to server.');
       })
       .then((data) => {
-        alert('Success!');
-        window.location.href = '/myprofile/'
+        obj.setState({
+          isModalDisplayed: true,
+          modalYesMethod: () => {
+            closeModal(obj);
+            window.location.href = '/myprofile/';
+          },
+          modalYesText: 'OK',
+          modalBody: 'Success!',
+        });
       })
       .catch((error) => {
-        alert(error)
+        obj.setState({
+          isModalDisplayed: true,
+          modalYesMethod: () => closeModal(obj),
+          modalYesText: 'OK',
+          modalBody: error.message,
+        });
       })
 }

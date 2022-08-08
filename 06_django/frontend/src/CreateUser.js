@@ -2,6 +2,7 @@ import React from 'react';
 import {
   apiPostNewUser,
 } from './apiRequests';
+import { Modal, closeModal } from './Modal';
 import './App.css';
 
 
@@ -14,6 +15,12 @@ class CreateUser extends React.Component {
       passwordTwo: '',
       email: '',
     }
+
+    this.usernameChange = this.usernameChange.bind(this);
+    this.passwordOneChange = this.passwordOneChange.bind(this);
+    this.passwordTwoChange = this.passwordTwoChange.bind(this);
+    this.emailChange = this.emailChange.bind(this);
+    this.submit = this.submit.bind(this);
   }
 
   usernameChange (event) {
@@ -74,7 +81,7 @@ class CreateUser extends React.Component {
           className='username-password-input-field'
           name='username'
           type='text'
-          onChange={this.usernameChange.bind(this)}
+          onChange={this.usernameChange}
         />
       </div>
       <div className='named-input'>
@@ -83,7 +90,7 @@ class CreateUser extends React.Component {
         className='username-password-input-field'
         name='password'
         type='password'
-        onChange={this.passwordOneChange.bind(this)}
+        onChange={this.passwordOneChange}
         />
       </div>
       <div className='named-input'>
@@ -92,7 +99,7 @@ class CreateUser extends React.Component {
         className='username-password-input-field'
         name='password'
         type='password'
-        onChange={this.passwordTwoChange.bind(this)}
+        onChange={this.passwordTwoChange}
         />
       </div>
       <div className='named-input'>
@@ -101,12 +108,20 @@ class CreateUser extends React.Component {
         className='username-password-input-field' 
         name='email'
         type='text'
-        onChange={this.emailChange.bind(this)}
+        onChange={this.emailChange}
         />
         {passwordInfo}
         {emailInfo}
       </div>
-        <button onClick={this.submit.bind(this)}>Register</button>
+        <button onClick={this.submit}>Register</button>
+        <Modal
+          show = {this.state.isModalDisplayed}
+          modalYesMethod = {this.state.modalYesMethod}
+          modalYesText = {this.state.modalYesText}
+          modalNoMethod = {this.state.modalNoMethod}
+          modalNoText = {this.state.modalNoText}
+          body = {this.state.modalBody}
+        />
       </div>
     )
   }

@@ -9,6 +9,8 @@
 
 $linkContentsPadding: 10px;
 $list-buttons-width: 100px;
+$height-input-buttons: 1.5rem;
+
 
 * {
     font-family: 'Times New Roman', Times, serif;
@@ -22,7 +24,8 @@ $list-buttons-width: 100px;
 
 .input-field {
     width: 65%;
-    height: 1.5rem;
+    max-width: 750px;
+    height: $height-input-buttons;
     border: 1px solid;
     text-align: center;
     margin-bottom: 10px;
@@ -36,7 +39,7 @@ $list-buttons-width: 100px;
 }
 
 .link-content {
-    background-color: colors.$bgcolor2;
+    background-color: colors.$bgcolor1;
     padding: 2px;
     border: 1px solid;
     margin-inline-start: 10px;
@@ -68,7 +71,7 @@ $list-buttons-width: 100px;
 }
 
 .hyperlink {
-    color: firebrick;
+    color: colors.$bgcolor3;
     font-size: 20px;
     font-weight: 300;
     padding-left: $linkContentsPadding;
@@ -94,7 +97,7 @@ $list-buttons-width: 100px;
 
 .delete-list-btn {
     background-color: colors.$bgcolor3;
-    color: colors.$bgcolor4;
+    color: colors.$bgcolor2;
     margin-top: 10px;
     margin-bottom: 20px;
 }
@@ -146,10 +149,9 @@ $list-buttons-width: 100px;
     width: $list-buttons-width;
 }
 
-.btn-userpanel-list-delete {
-    width: $list-buttons-width;
+.btn-delete {
     background-color: colors.$bgcolor3;
-    color: colors.$bgcolor4;
+    color: colors.$bgcolor2;
 }
 
 .app-panel {
@@ -180,7 +182,7 @@ $list-buttons-width: 100px;
 }
 
 .username-password-input-field {
-    background-color: colors.$bgcolor4;
+    background-color: colors.$bgcolor5;
 }
 
 .error-message {
@@ -204,6 +206,8 @@ $list-buttons-width: 100px;
     top:50%;
     left:50%;
     transform: translate(-50%,-50%);
+    display: flex;
+    align-items: baseline;
 }
   
 .display-block {
@@ -216,7 +220,7 @@ $list-buttons-width: 100px;
   
 .site-title {
     font-size: 28px;
-    margin: 0px;
+    margin: 1rem;
 }
 
 .site-description {
@@ -231,4 +235,35 @@ $list-buttons-width: 100px;
 .footer {
     margin-top: 2px;
     border-top: 2px solid black;
+}
+
+.navbar {
+    display: flex;
+    padding-left: 1%;
+    padding-right: 1%;
+    justify-content: space-between;
+    align-items: center;
+    background-color: colors.$bgcolor4;
+    height: 50px;
+}
+
+.navbar-text {
+    background-color: transparent;
+}
+
+.navbar-hyperlink {
+    font-size: 22px;
+    color: colors.$bgcolor2;
+    background-color: transparent;   
+}
+
+.btn-logout {
+    background-color: colors.$bgcolor2;
+    width: 60px;
+    margin-left: 0.5rem;
+}
+
+.modal-btn {
+    width: 75px;
+    height: $height-input-buttons;
 }

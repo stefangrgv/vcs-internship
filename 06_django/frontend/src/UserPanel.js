@@ -1,9 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   apiUserGet,
   apiUserLogout,
   apiListDelete,
 } from './apiRequests';
+import { Modal, closeModal } from './Modal';
 import './style.css';
 
 
@@ -12,13 +14,22 @@ class UserPanel extends React.Component {
     super(props);
     this.state = {
       isLoaded: false,
+      isModalDisplayed: false,
     };
   }
 
   askDeleteList (id) {
-    if (window.confirm('Are you sure you want to delete this list?')) {
-      apiListDelete(this, id);
-    }
+    this.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => {
+        apiListDelete(this, id);
+        closeModal(this);
+      },
+      modalYesText: 'Yes',
+      modalBody: 'Are you sure you want to delete this linklist?',
+      modalNoText: 'No',
+      modalNoMethod: () => closeModal(this),
+    });
   }
 
   editList (id) {
@@ -26,14 +37,14 @@ class UserPanel extends React.Component {
   }
 
   createNewList () {
-    window.location.href = '/new/';
+    window.location.href = '/list/new/';
   }
 
   logout () {
     localStorage.removeItem('kodjalinkUsername');
     localStorage.removeItem('kodjalinkUserToken');
 
-    apiUserLogout();
+    apiUserLogout(this);
     window.location.href = '/login/';
   }
 
@@ -42,7 +53,7 @@ class UserPanel extends React.Component {
 
     if (!this.state.isLoaded) {
       mylists = <p><i>loading...</i></p>;
-      apiUserGet(this, localStorage.getItem('kodjalinkUsername'));
+      apiUserGet(this);
     } else {
       if (this.state.linklists.length === 0) {
         mylists = (
@@ -57,14 +68,17 @@ class UserPanel extends React.Component {
               {this.state.linklists.map((el) => {
                 return (
                   <li className='mylists-list-item' key={el.id}>
-                    <a className='hyperlink' href={`/${el.id}/`}>{el.title}</a>
+                    <Link
+                      className='hyperlink'
+                      to={`/list/${el.id}/`}
+                    >{el.title}</Link>
                     <button
                       className='btn-userpanel-list-edit'
                       onClick={
                         () => this.editList(el.id)
                       }>Edit</button>
                     <button
-                      className='btn-userpanel-list-delete'
+                      className='btn btn-delete'
                       onClick={
                         () => this.askDeleteList(el.id)
                       }>Delete</button>
@@ -81,12 +95,6 @@ class UserPanel extends React.Component {
       <div className='userpanel'>
         <div className='user-info'>
           <h3 className='user-info'>User Panel</h3>
-          <h4 className='user-info'>Logged in as {" "}
-            {localStorage.getItem('kodjalinkUsername')}
-          </h4>
-          <button onClick={this.logout}>
-            Logout
-          </button>
           <button onClick={() => {
             window.location.href = '/myprofile/changepassword/';
           }}>Change password</button>
@@ -98,6 +106,14 @@ class UserPanel extends React.Component {
         <button onClick={
           this.createNewList
         }>Create new linklist</button>
+        <Modal
+          show = {this.state.isModalDisplayed}
+          modalYesMethod = {this.state.modalYesMethod}
+          modalYesText = {this.state.modalYesText}
+          modalNoMethod = {this.state.modalNoMethod}
+          modalNoText = {this.state.modalNoText}
+          body = {this.state.modalBody}
+        />
     </div>
     )
   }
