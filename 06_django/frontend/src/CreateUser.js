@@ -3,7 +3,7 @@ import {
   apiPostNewUser,
 } from './apiRequests';
 import { Modal, closeModal } from './Modal';
-import './App.css';
+import './style.css';
 
 
 class CreateUser extends React.Component {

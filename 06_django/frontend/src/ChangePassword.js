@@ -77,35 +77,37 @@ class ChangePassword extends React.Component {
   return (
     <div className='app-panel'>
     <h3>Change Password for {localStorage.getItem('kodjalinkUsername')}</h3>
-    <div className='named-input'>
+    <div className='prompt-and-input-field'>
       <h5>Enter old password</h5>
       <input
-        className='username-password-input-field'
+        className='input-field username-password-input-field'
         name='password'
         type='password'
         onChange={this.oldPasswordChange}
       />
     </div>
-    <div className='named-input'>
+    <div className='prompt-and-input-field'>
       <h5>Enter new password</h5>
       <input
-        className='username-password-input-field'
+        className='input-field username-password-input-field'
         name='password'
         type='password'
         onChange={this.newPasswordOneChange}
       />
     </div>
-    <div className='named-input'>
+    <div className='prompt-and-input-field'>
       <h5>Confirm new password</h5>
       <input
-        className='username-password-input-field'
+        className='input-field username-password-input-field'
         name='password'
         type='password'
         onChange={this.newPasswordTwoChange}
       />
     </div>
-      <button onClick={this.submit}>
-        Submit
+      <button
+        className='btn'
+        onClick={this.submit}
+      >Submit
       </button>
      <Modal
         show = {this.state.isModalDisplayed}

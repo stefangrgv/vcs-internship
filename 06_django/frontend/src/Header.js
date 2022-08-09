@@ -10,22 +10,31 @@ class Header extends React.Component {
 
   renderNewButton () {
     if (this.props.user.username !== null) {
-      return <h4 className='navbar-text'><Link
-        className='navbar-hyperlink'
-        to='/list/new'
-      >New linklist</Link></h4>
+      return (
+      <div className='navbar navbar-middle'>
+        <h4 className='navbar-text'><Link
+          reloadDocument
+          className='navbar-hyperlink'
+          to='/list/new'
+        >New linklist</Link></h4>
+      </div>
+      )
     }
   }
 
   renderGreeting () {
     if (this.props.user.username === null) {
-      return <h4 className='navbar-text'>Hello, guest! Please <Link
-        className='navbar-hyperlink'
-        to='/register/'
-        >register</Link> or <Link
+      return (
+      <div className='navbar navbar-username'>
+        <h4 className='navbar-text'>Hello, guest! Please <Link
           className='navbar-hyperlink'
-          to='/login'
+          to='/register/'
+          >register</Link> or <Link
+            className='navbar-hyperlink'
+            to='/login'
         >login</Link>.</h4>
+      </div>
+      )
     }
     return (
       <div className='navbar navbar-username'>

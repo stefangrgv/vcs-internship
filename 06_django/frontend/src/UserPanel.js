@@ -73,7 +73,7 @@ class UserPanel extends React.Component {
                       to={`/list/${el.id}/`}
                     >{el.title}</Link>
                     <button
-                      className='btn-userpanel-list-edit'
+                      className='btn'
                       onClick={
                         () => this.editList(el.id)
                       }>Edit</button>
@@ -92,18 +92,22 @@ class UserPanel extends React.Component {
     }
 
     return (
-      <div className='userpanel'>
+      <div className='panel user-panel'>
         <div className='user-info'>
           <h3 className='user-info'>User Panel</h3>
-          <button onClick={() => {
+          <button
+            className='btn btn-large'
+            onClick={() => {
             window.location.href = '/myprofile/changepassword/';
           }}>Change password</button>
         </div>
         <div className='mylists-panel'>
-          <h3 className='mylists-panel mylists-title'>My linklists:</h3>
+          <h3 className='mylists-panel mylists-title'>My linklists</h3>
           {mylists}
         </div>
-        <button onClick={
+        <button
+          className='btn btn-large'
+          onClick={
           this.createNewList
         }>Create new linklist</button>
         <Modal

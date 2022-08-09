@@ -2,6 +2,7 @@ import React from 'react';
 import {
   apiUserLogin,
 } from './apiRequests';
+import { Modal } from './Modal';
 import './style.css';
 
 class Login extends React.Component {
@@ -39,26 +40,37 @@ class Login extends React.Component {
   render() {
     return (
       <div className='login-panel'>
-        <h3 className='login-title'>Login</h3>
-        <div className='named-input'>
+        <h3 className='panel-title'>Login</h3>
+        <div className='prompt-and-input-field'>
           <h5>Username</h5>
           <input 
-          className='username-password-input-field'
+          className='input-field username-password-input-field'
           name='username'
           type='text'
           onChange={this.usernameChange}
         />
         </div>
-        <div className='named-input'>
+        <div className='prompt-and-input-field'>
           <h5>Password</h5>
           <input
-            className='username-password-input-field'
+            className='input-field username-password-input-field'
             name='password'
             type='password'
             onChange={this.passwordChange}
           />
         </div>
-        <button onClick={this.submit}>Login</button>
+        <button 
+          className = 'btn'
+          onClick={this.submit}
+        >Login</button>
+        <Modal
+          show = {this.state.isModalDisplayed}
+          modalYesMethod = {this.state.modalYesMethod}
+          modalYesText = {this.state.modalYesText}
+          modalNoMethod = {this.state.modalNoMethod}
+          modalNoText = {this.state.modalNoText}
+          body = {this.state.modalBody}
+        />
       </div>
     )
   }

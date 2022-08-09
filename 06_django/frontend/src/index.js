@@ -4,6 +4,7 @@ import { BrowserRouter,
   Routes,
   Route,
 } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 import App from './App';
 import Home from './Home';
 import LinkList from './LinkList';
@@ -29,7 +30,7 @@ class User {
   logout () {
     localStorage.removeItem('kodjalinkUsername');
     localStorage.removeItem('kodjalinkUserToken');
-
+    
     apiUserLogout();
   }
 }
@@ -41,16 +42,59 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<App user={user} />} >
-          <Route exact path='/' element={<Home user={user} />} />
-          <Route path='/list/:id' element = {<LinkList user={user} mode = 'view' />} />
-          <Route path='/edit/:id' element = {<LinkList user={user} mode = 'edit' />} />
-          <Route exact path='/list/new/' element = {<LinkList user={user} mode='new' />} />
-          <Route path='/redirect/:url' element = {<Redirect user={user} />} />
-          <Route exact path='/login/' element={<Login user={user} />} />
-          <Route exact path='/register/' element={<CreateUser user={user} />} /> 
-          <Route exact path='/myprofile/' element={<UserPanel user={user} />} />
-          <Route exact path='/myprofile/changepassword/' element={<ChangePassword user={user} />} />
+        <Route
+          path='/'
+          element = {<App
+          user = {user}
+          history = {createBrowserHistory()} />} >
+          <Route
+            exact path='/'
+            element = {<Home
+              user = {user} 
+              history = {createBrowserHistory()} />} />
+          <Route
+            path = '/list/:id'
+            element = {<LinkList
+              user = {user}
+              mode = 'view'
+              history = {createBrowserHistory()} />} />
+          <Route
+            path = '/edit/:id'
+            element = {<LinkList
+              user = {user}
+              mode = 'edit'
+              history = {createBrowserHistory()} />} />
+          <Route
+            exact path = '/list/new/'
+            element = {<LinkList
+              user = {user}
+              mode = 'new'
+              history = {createBrowserHistory()} />} />
+          <Route
+            path = '/redirect/:url'
+            element = {<Redirect
+              user = {user}
+              history = {createBrowserHistory()} />} />
+          <Route
+            exact path = '/login/'
+            element = {<Login
+              user = {user}
+              history = {createBrowserHistory()} />} />
+          <Route
+            exact path = '/register/'
+            element = {<CreateUser
+              user = {user}
+              history = {createBrowserHistory()} />} /> 
+          <Route
+            exact path = '/myprofile/'
+            element = {<UserPanel
+              user = {user}
+              history = {createBrowserHistory()} />} />
+          <Route
+            exact path = '/myprofile/changepassword/'
+            element = {<ChangePassword
+              user={user}
+              history = {createBrowserHistory()} />} />
         </Route>
       </Routes>
     </BrowserRouter>

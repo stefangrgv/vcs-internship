@@ -320,7 +320,7 @@ class LinkList extends React.Component {
     if (this.props.mode === 'new' ||
         this.props.mode === 'edit') {
       return (
-      <div className='privacy-panel'>
+      <div className='panel privacy-panel'>
         <h3>Is this a private list: </h3>
         <input
           type = 'checkbox'
@@ -331,7 +331,7 @@ class LinkList extends React.Component {
       )
     } else {
       return(
-      <div className='privacy-panel'>
+      <div className='panel privacy-panel'>
         <h4>{
           this.state.isPrivate ?
           <i>private list</i> :
@@ -345,25 +345,27 @@ class LinkList extends React.Component {
   renderListTitlePanel () {
     return(
       this.props.mode !== 'view' ? (
-        <div className='list-title'>
-          <h3 className='list-title'>List title: </h3>
+        <div className='panel list-title'>
+          <h3>List title: </h3>
           <input
-            className='input-field TitleField'
+            className='input-field input-field-large'
             placeholder='Enter list title'
             onChange={this.onChangeTitle}
             value = {this.state.title}/>
         </div>
       ):
       (
-        <div className='list-title'>
-          <h3 className='list-title'>{this.state.title}</h3>
-          <h5 className='list-title'>(created by {this.state.owner})</h5>
+        <div className='panel list-title'>
+          <h3>{this.state.title}</h3>
+          <h5>(created by {this.state.owner})</h5>
           { this.props.mode === 'view' &&
             this.state.owner === this.props.user.username ?
             <button 
               className='btn'
               onClick={() => {
-                window.location.href = `/edit/${this.props.params.id}/`
+                this.props.history.push(`/edit/${this.props.params.id}/`);
+                this.props.history.go(`/edit/${this.props.params.id}/`);
+                //window.location.href = `/edit/${this.props.params.id}/`
             }}>Edit list</button> :
             <></>
           }
@@ -379,14 +381,14 @@ class LinkList extends React.Component {
         <div className='link-content' key={'link-content' + n}>
           <div className='link-title' key={'title' + n}> 
             {link.needsRendering ?
-              (<h4 className='link-title' key={`num${n}`}> {link.url}</h4>):
-              (<h4 className='link-title' key={`num${n}`}> {link.title}</h4>)
+              (<h4 key={`num${n}`}> {link.url}</h4>):
+              (<h4 key={`num${n}`}> {link.title}</h4>)
             }
           </div>
           {link.needsRendering ?
             (<></>):
             (
-            <div className='link-image-description' key={'desc' + n}>
+            <div className='link-description' key={'desc' + n}>
               <img className='link-thumbnail'
               src={link.thumbnail}
               alt={link.url + ' thumbnail'}
@@ -395,7 +397,7 @@ class LinkList extends React.Component {
             </div>
             )
             }
-          <div className='hyperlink-panel' key={'hlink' + n}>
+          <div className='link-hyperlink' key={'hlink' + n}>
             <h4><Link 
               className='hyperlink'
               key={`url${n}`}
@@ -431,20 +433,18 @@ class LinkList extends React.Component {
   renderAddURLPanel () {
     return (this.props.mode !== 'view') ?
     (
-      <div className='new-url-field'>
-        <div className='new-url-field'>
-          <h4 className='new-url-field'>Add URL: </h4>
-          <input
-            className='input-field'
-            placeholder = 'Enter URL'
-            onChange = {this.onChangeNewURL}
-            value = {this.state.newURL} />
-          </div>
-        <button
-          className='btn'
-          onClick={
-            () => this.linkAdd()
-          }>Add</button>
+      <div className='panel new-url-field'>
+        <h4>Add URL: </h4>
+        <input
+          className='input-field input-field-large'
+          placeholder = 'Enter URL'
+          onChange = {this.onChangeNewURL}
+          value = {this.state.newURL} />
+      <button
+        className='btn'
+        onClick={
+          () => this.linkAdd()
+        }>Add</button>
       </div>
     ):
     <></>
@@ -474,9 +474,9 @@ class LinkList extends React.Component {
     (this.props.mode === 'new' ||
     (this.props.mode === 'edit' &&
       this.props.user.username === this.state.owner)) ? (
-      <div className='save-list-panel'>
+      <div className='panel save-list-panel'>
         <button
-         className='btn save-list-btn'
+         className='btn btn-large'
          onClick={
           this.linkListSave
         }>Save LinkList</button>
@@ -489,12 +489,12 @@ class LinkList extends React.Component {
     return (
     (this.props.mode === 'edit' &&
       this.props.user.username === this.state.owner) ? (
-      <div>
+      <div className='panel'>
         <button
-         className='btn delete-list-btn'
+         className='btn btn-large btn-delete'
          onClick={
           () => this.linkListAskDelete()
-          }>Delete LinkList</button>
+        }>Delete LinkList</button>
       </div>
     ): <></>
     )

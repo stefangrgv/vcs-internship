@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import './style.css';
 
 export function closeModal (obj) {
   obj.setState( {
@@ -17,14 +17,14 @@ export class Modal extends React.Component {
             {this.props.body}
             <button
               onClick = {this.props.modalYesMethod}
-              className = 'btn modal-btn'>
+              className = 'btn btn-modal'>
                 {this.props.modalYesText}
             </button>
             {
               this.props.modalNoText ?
                 <button
                   onClick={this.props.modalNoMethod}
-                  className = 'btn modal-btn'>
+                  className = 'btn btn-modal'>
                     {this.props.modalNoText}
                 </button> : <></>
             }
