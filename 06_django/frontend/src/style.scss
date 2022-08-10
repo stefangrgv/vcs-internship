@@ -16,12 +16,7 @@ $height-input-buttons: 1.5rem;
 * {
     font-family: 'Times New Roman', Times, serif;
     font-size: 16px;
-    background-color: colors.$bgcolor2;
-}
-
-.list-title {
-    background-color: colors.$bgcolor1;
-    margin: 0.15rem;
+    background-color: colors.$white;
 }
 
 /////////////////////////////////////////
@@ -47,7 +42,9 @@ $height-input-buttons: 1.5rem;
 }
 
 .title-and-owner-panel {
-    background-color: colors.$bgcolor1;
+    background-color: colors.$bgcolor-title-panel;
+    margin: 0.15rem;
+    text-align: center;
 }
 
 .privacy-panel {
@@ -71,8 +68,15 @@ $height-input-buttons: 1.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
     margin-top: 20px;
-    background-color: colors.$bgcolor2;
+    margin-bottom: 1rem;
+    background-color: colors.$bgcolor-title-panel;
+}
+
+.mylists-list {
+    width: 99%;
+    background-color: colors.$bgcolor-panel-contents;
 }
 
 /////////////////////////////////////////
@@ -81,7 +85,7 @@ $height-input-buttons: 1.5rem;
 
 .btn {
     color: black;
-    background-color: colors.$bgcolor5;
+    background-color: colors.$bgcolor-panel-contents;
     border-color: black;
     width: $btn-width;
     height: $btn-height;
@@ -94,12 +98,11 @@ $height-input-buttons: 1.5rem;
 }
 
 .btn-delete {
-    background-color: colors.$bgcolor3;
+    background-color: colors.$color-red;
     color: black;
 }
 
 .btn-logout {
-    background-color: colors.$bgcolor5;
     width: $btn-width;
     margin-left: 0.5rem;
 }
@@ -107,7 +110,7 @@ $height-input-buttons: 1.5rem;
 .btn-modal {
     width: 75px;
     height: $height-input-buttons;
-    background-color: colors.$bgcolor1;
+    background-color: colors.$bgcolor-panel-heading;
 }
 
 /////////////////////////////////////////
@@ -117,14 +120,14 @@ $height-input-buttons: 1.5rem;
 
 .link-title {
     text-align: center;
-    background-color: colors.$bgcolor1;
+    background-color: colors.$bgcolor-panel-heading;
     margin: 0.15rem;
     padding-top: 0.15rem;
     padding-bottom: 0.15rem;
 }
 
 .link-content {
-    background-color: colors.$bgcolor2;
+    background-color: colors.$bgcolor-panel-contents;
     border: 1px solid;
     margin-bottom: 1rem;
 }
@@ -135,6 +138,7 @@ $height-input-buttons: 1.5rem;
 }
 
 .link-thumbnail {
+    background-color: colors.$bgcolor-panel-contents;
     width: 150px;
     height: 150px;
     padding-left: $linkContentsPadding;
@@ -153,13 +157,13 @@ $height-input-buttons: 1.5rem;
     align-items: center;
     align-content: center;
     padding-left: 1rem;
-    background-color: colors.$bgcolor4;
+    background-color: colors.$bgcolor-navbar;
     height: 3.5rem;
 }
 
 .navbar-text {
     background-color: transparent;
-    color: colors.$bgcolor5;
+    color: colors.$bgcolor-panel-contents;
 }
 
 .navbar-middle {
@@ -175,14 +179,15 @@ $height-input-buttons: 1.5rem;
 
 .navbar-hyperlink {
     font-size: 22px;
-    color: colors.$bgcolor2;
+    color: colors.$white;
     background-color: transparent;   
     text-decoration: none;
+    height: 100%;
 }
 
 .navbar-hyperlink:hover {
-    background-color: colors.$bgcolor1;
-    color: colors.$bgcolor4;
+    background-color: colors.$bgcolor-panel-heading;
+    color: colors.$bgcolor-panel-contents;
 }
 
 /////////////////////////////////////////
@@ -199,7 +204,7 @@ $height-input-buttons: 1.5rem;
   
 .modal-main {
     position:fixed;
-    background: colors.$bgcolor2;
+    background: colors.$bgcolor-panel-contents;
     width: 25%;
     height: auto;
     top:50%;
@@ -218,7 +223,7 @@ $height-input-buttons: 1.5rem;
 /////////////////////////////////////////
 
 .new-url-field {
-    background-color: colors.$bgcolor1;
+    background-color: colors.$bgcolor-panel-heading;
     padding-top: 0.05rem;
 }
 
@@ -233,16 +238,21 @@ $height-input-buttons: 1.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: colors.$bgcolor1;
+    background-color: colors.$bgcolor-panel-heading;
     width: 100%;
     padding-bottom: 0.75rem;
 }
 
 .mylists-list-item {
     display: grid;
-    grid-template-columns: 3fr 0.5fr 0.5fr;
-    gap: 0.5rem;
-    align-items: baseline;
+    grid-auto-flow: column;
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    //gap: 0.5rem;
+    border-top: 1px solid colors.$bgcolor-navbar;
+    border-bottom: 1px solid colors.$bgcolor-navbar;
+    padding: 0.1rem;
 }
 
 @media only screen and (max-width: 750px) {
@@ -253,7 +263,7 @@ $height-input-buttons: 1.5rem;
 }
 
 .login-title {
-    background-color: colors.$bgcolor1;
+    background-color: colors.$bgcolor-panel-heading;
     width: 100%;
     margin: 0.15rem;
     padding-top: 1rem;
@@ -293,7 +303,7 @@ $height-input-buttons: 1.5rem;
 /////////////////////////////////////////
 
 .hyperlink {
-    color: colors.$bgcolor3;
+    color: colors.$color-red;
     font-size: 20px;
     font-weight: 300;
     padding-left: $linkContentsPadding;
@@ -302,7 +312,7 @@ $height-input-buttons: 1.5rem;
 }
 
 .hyperlink:hover {
-    color: colors.$bgcolor4;
+    color: colors.$bgcolor-navbar;
 }
 
 .input-field {
@@ -328,11 +338,11 @@ $height-input-buttons: 1.5rem;
 }
 
 .username-password-input-field {
-    background-color: colors.$bgcolor5;
+    background-color: colors.$bgcolor-panel-contents;
 }
 
 .error-message {
-    color: colors.$bgcolor3;
+    color: colors.$color-red;
 }
 
 .home {

@@ -329,23 +329,13 @@ class LinkList extends React.Component {
         />
       </div>
       )
-    } else {
-      return(
-      <div className='panel privacy-panel'>
-        <h4>{
-          this.state.isPrivate ?
-          <i>private list</i> :
-          ''
-        }</h4>
-      </div>
-      )
     }
   }
 
   renderListTitlePanel () {
     return(
       this.props.mode !== 'view' ? (
-        <div className='panel list-title'>
+        <div className='panel title-and-owner-panel'>
           <h3>List title: </h3>
           <input
             className='input-field input-field-large'
@@ -355,18 +345,23 @@ class LinkList extends React.Component {
         </div>
       ):
       (
-        <div className='panel list-title'>
+        <div className='panel title-and-owner-panel'>
           <h3>{this.state.title}</h3>
-          <h5>(created by {this.state.owner})</h5>
           { this.props.mode === 'view' &&
             this.state.owner === this.props.user.username ?
-            <button 
-              className='btn'
-              onClick={() => {
-                this.props.history.push(`/edit/${this.props.params.id}/`);
-                this.props.history.go(`/edit/${this.props.params.id}/`);
-                //window.location.href = `/edit/${this.props.params.id}/`
-            }}>Edit list</button> :
+            <div>
+              <h4>{
+              this.state.isPrivate ?
+              <i>private list</i> : ''
+              }</h4>
+              <button 
+                className='btn'
+                onClick={() => {
+                  this.props.history.push(`/edit/${this.props.params.id}/`);
+                  this.props.history.go(`/edit/${this.props.params.id}/`);
+                  //window.location.href = `/edit/${this.props.params.id}/`
+              }}>Edit list</button>
+            </div> :
             <></>
           }
         </div>

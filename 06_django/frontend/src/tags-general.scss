@@ -21,6 +21,10 @@ h5 {
     background-color: inherit;
 }
 
-div {
+div, i, ol, li {
     background-color: inherit;
+}
+
+ol {
+    padding-left: 0;
 }

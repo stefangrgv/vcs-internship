@@ -8,6 +8,7 @@ import {
 import { Modal, closeModal } from './Modal';
 import './style.css';
 
+const domainName = 'http://localhost:3000';
 
 class UserPanel extends React.Component {
   constructor (props) {
@@ -40,6 +41,27 @@ class UserPanel extends React.Component {
     window.location.href = '/list/new/';
   }
 
+  shareList (id) {
+    this.setState({
+      isModalDisplayed: true,
+      modalYesMethod: () => {
+        closeModal(this);
+      },
+      modalYesText: 'OK',
+      modalBody: (
+        <div className='modal-share-list'>
+          <h3>Link:</h3>
+          <input
+            className='modal-share-input'
+            value = {`${domainName}/list/${id}/`}
+            disabled = {true}
+          ></input>
+        </div>
+      ),
+      modalNoText: '',
+    });
+  }
+
   logout () {
     localStorage.removeItem('kodjalinkUsername');
     localStorage.removeItem('kodjalinkUserToken');
@@ -57,14 +79,14 @@ class UserPanel extends React.Component {
     } else {
       if (this.state.linklists.length === 0) {
         mylists = (
-          <div>
+          <div className='mylists-list'>
               <p>You have no linklists!</p>
             </div>    
         )
       } else {
         mylists = (
-          <div>
-            <ol className='mylists-list'>
+          <div className='mylists-list'>
+            <ol>
               {this.state.linklists.map((el) => {
                 return (
                   <li className='mylists-list-item' key={el.id}>
@@ -72,6 +94,11 @@ class UserPanel extends React.Component {
                       className='hyperlink'
                       to={`/list/${el.id}/`}
                     >{el.title}</Link>
+                    <button
+                      className = 'btn'
+                      onClick = {() => this.shareList(el.id) }>
+                      Share
+                    </button>
                     <button
                       className='btn'
                       onClick={
@@ -94,15 +121,10 @@ class UserPanel extends React.Component {
     return (
       <div className='panel user-panel'>
         <div className='user-info'>
-          <h3 className='user-info'>User Panel</h3>
-          <button
-            className='btn btn-large'
-            onClick={() => {
-            window.location.href = '/myprofile/changepassword/';
-          }}>Change password</button>
+          <h3>User Panel</h3>
         </div>
-        <div className='mylists-panel'>
-          <h3 className='mylists-panel mylists-title'>My linklists</h3>
+        <div className='panel mylists-panel'>
+          <h3>My linklists</h3>
           {mylists}
         </div>
         <button
@@ -110,6 +132,11 @@ class UserPanel extends React.Component {
           onClick={
           this.createNewList
         }>Create new linklist</button>
+        <button
+            className='btn btn-large'
+            onClick={() => {
+            window.location.href = '/myprofile/changepassword/';
+          }}>Change password</button>
         <Modal
           show = {this.state.isModalDisplayed}
           modalYesMethod = {this.state.modalYesMethod}

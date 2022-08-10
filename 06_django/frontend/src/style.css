@@ -19,19 +19,18 @@ h5 {
   background-color: inherit;
 }
 
-div {
+div, i, ol, li {
   background-color: inherit;
+}
+
+ol {
+  padding-left: 0;
 }
 
 * {
   font-family: "Times New Roman", Times, serif;
   font-size: 16px;
-  background-color: #EFE2BA;
-}
-
-.list-title {
-  background-color: #D79922;
-  margin: 0.15rem;
+  background-color: #fcf5e4;
 }
 
 .panel {
@@ -54,7 +53,9 @@ div {
 }
 
 .title-and-owner-panel {
-  background-color: #D79922;
+  background-color: #90C8AC;
+  margin: 0.15rem;
+  text-align: center;
 }
 
 .privacy-panel {
@@ -78,13 +79,20 @@ div {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
   margin-top: 20px;
-  background-color: #EFE2BA;
+  margin-bottom: 1rem;
+  background-color: #90C8AC;
+}
+
+.mylists-list {
+  width: 99%;
+  background-color: #F5F0BB;
 }
 
 .btn {
   color: black;
-  background-color: #C5CBE3;
+  background-color: #F5F0BB;
   border-color: black;
   width: 6.5rem;
   height: 1.75rem;
@@ -97,12 +105,11 @@ div {
 }
 
 .btn-delete {
-  background-color: #F13C20;
+  background-color: #f8654f;
   color: black;
 }
 
 .btn-logout {
-  background-color: #C5CBE3;
   width: 6.5rem;
   margin-left: 0.5rem;
 }
@@ -110,19 +117,19 @@ div {
 .btn-modal {
   width: 75px;
   height: 1.5rem;
-  background-color: #D79922;
+  background-color: #C4DFAA;
 }
 
 .link-title {
   text-align: center;
-  background-color: #D79922;
+  background-color: #C4DFAA;
   margin: 0.15rem;
   padding-top: 0.15rem;
   padding-bottom: 0.15rem;
 }
 
 .link-content {
-  background-color: #EFE2BA;
+  background-color: #F5F0BB;
   border: 1px solid;
   margin-bottom: 1rem;
 }
@@ -135,6 +142,7 @@ div {
 }
 
 .link-thumbnail {
+  background-color: #F5F0BB;
   width: 150px;
   height: 150px;
   padding-left: 0.75rem;
@@ -153,13 +161,13 @@ div {
   align-items: center;
   align-content: center;
   padding-left: 1rem;
-  background-color: #4056A1;
+  background-color: #73A9AD;
   height: 3.5rem;
 }
 
 .navbar-text {
   background-color: transparent;
-  color: #C5CBE3;
+  color: #F5F0BB;
 }
 
 .navbar-middle {
@@ -175,14 +183,15 @@ div {
 
 .navbar-hyperlink {
   font-size: 22px;
-  color: #EFE2BA;
+  color: #fcf5e4;
   background-color: transparent;
   text-decoration: none;
+  height: 100%;
 }
 
 .navbar-hyperlink:hover {
-  background-color: #D79922;
-  color: #4056A1;
+  background-color: #C4DFAA;
+  color: #F5F0BB;
 }
 
 .modal {
@@ -196,7 +205,7 @@ div {
 
 .modal-main {
   position: fixed;
-  background: #EFE2BA;
+  background: #F5F0BB;
   width: 25%;
   height: auto;
   top: 50%;
@@ -213,7 +222,7 @@ div {
 }
 
 .new-url-field {
-  background-color: #D79922;
+  background-color: #C4DFAA;
   padding-top: 0.05rem;
 }
 
@@ -228,16 +237,20 @@ div {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #D79922;
+  background-color: #C4DFAA;
   width: 100%;
   padding-bottom: 0.75rem;
 }
 
 .mylists-list-item {
   display: grid;
-  grid-template-columns: 3fr 0.5fr 0.5fr;
-  gap: 0.5rem;
-  align-items: baseline;
+  grid-auto-flow: column;
+  justify-items: center;
+  align-items: center;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  border-top: 1px solid #73A9AD;
+  border-bottom: 1px solid #73A9AD;
+  padding: 0.1rem;
 }
 
 @media only screen and (max-width: 750px) {
@@ -247,7 +260,7 @@ div {
   }
 }
 .login-title {
-  background-color: #D79922;
+  background-color: #C4DFAA;
   width: 100%;
   margin: 0.15rem;
   padding-top: 1rem;
@@ -283,7 +296,7 @@ div {
 }
 
 .hyperlink {
-  color: #F13C20;
+  color: #f8654f;
   font-size: 20px;
   font-weight: 300;
   padding-left: 0.75rem;
@@ -292,7 +305,7 @@ div {
 }
 
 .hyperlink:hover {
-  color: #4056A1;
+  color: #73A9AD;
 }
 
 .input-field {
@@ -320,11 +333,11 @@ div {
 }
 
 .username-password-input-field {
-  background-color: #C5CBE3;
+  background-color: #F5F0BB;
 }
 
 .error-message {
-  color: #F13C20;
+  color: #f8654f;
 }
 
 .home {
