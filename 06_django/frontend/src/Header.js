@@ -20,6 +20,9 @@ class Header extends React.Component {
       </div>
       )
     }
+    return (
+      <div className='navbar navbar-middle'></div>
+    )
   }
 
   renderGreeting () {

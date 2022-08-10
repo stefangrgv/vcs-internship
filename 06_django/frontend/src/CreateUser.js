@@ -73,39 +73,39 @@ class CreateUser extends React.Component {
     let emailInfo = this.isEmailOk() ? <></> : <h4 className='error-message'><b>Please enter a valid email.</b></h4>;
 
     return (
-      <div className='app-panel'>
+      <div className='register-panel'>
         <h3>Register new user</h3>
-      <div className='named-input'>
+      <div className='prompt-and-input-field'>
         <h5>Username</h5>
         <input 
-          className='username-password-input-field'
+          className='input-field username-password-input-field'
           name='username'
           type='text'
           onChange={this.usernameChange}
         />
       </div>
-      <div className='named-input'>
+      <div className='prompt-and-input-field'>
         <h5>Password</h5>
         <input 
-        className='username-password-input-field'
+        className='input-field username-password-input-field'
         name='password'
         type='password'
         onChange={this.passwordOneChange}
         />
       </div>
-      <div className='named-input'>
+      <div className='prompt-and-input-field'>
         <h5>Repeat password</h5>
         <input
-        className='username-password-input-field'
+        className='input-field username-password-input-field'
         name='password'
         type='password'
         onChange={this.passwordTwoChange}
         />
       </div>
-      <div className='named-input'>
+      <div className='prompt-and-input-field'>
         <h5>Email</h5>
         <input
-        className='username-password-input-field' 
+        className='input-field username-password-input-field' 
         name='email'
         type='text'
         onChange={this.emailChange}
@@ -113,7 +113,10 @@ class CreateUser extends React.Component {
         {passwordInfo}
         {emailInfo}
       </div>
-        <button onClick={this.submit}>Register</button>
+        <button
+          className='btn'
+          onClick={this.submit}
+        >Register</button>
         <Modal
           show = {this.state.isModalDisplayed}
           modalYesMethod = {this.state.modalYesMethod}

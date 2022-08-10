@@ -40,7 +40,7 @@ class Login extends React.Component {
   render() {
     return (
       <div className='login-panel'>
-        <h3 className='panel-title'>Login</h3>
+        <h3>Login</h3>
         <div className='prompt-and-input-field'>
           <h5>Username</h5>
           <input 

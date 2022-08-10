@@ -24,12 +24,63 @@ div, i, ol, li {
 }
 
 ol {
-  padding-left: 0;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
+input[type=checkbox] {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+@-webkit-keyframes blink-btn {
+  0% {
+    background-color: #C4DFAA;
+  }
+  50% {
+    background-color: #F5F0BB;
+  }
+  100% {
+    background-color: #C4DFAA;
+  }
+}
+
+@keyframes blink-btn {
+  0% {
+    background-color: #C4DFAA;
+  }
+  50% {
+    background-color: #F5F0BB;
+  }
+  100% {
+    background-color: #C4DFAA;
+  }
+}
+@-webkit-keyframes blink-btn-delete {
+  0% {
+    background-color: #fcf5e4;
+  }
+  50% {
+    background-color: #f8654f;
+  }
+  100% {
+    background-color: #fcf5e4;
+  }
+}
+@keyframes blink-btn-delete {
+  0% {
+    background-color: #fcf5e4;
+  }
+  50% {
+    background-color: #f8654f;
+  }
+  100% {
+    background-color: #fcf5e4;
+  }
+}
 * {
   font-family: "Times New Roman", Times, serif;
-  font-size: 16px;
   background-color: #fcf5e4;
 }
 
@@ -47,6 +98,12 @@ ol {
 }
 
 .login-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.register-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -79,6 +136,7 @@ ol {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   width: 100%;
   margin-top: 20px;
   margin-bottom: 1rem;
@@ -96,8 +154,13 @@ ol {
   border-color: black;
   width: 6.5rem;
   height: 1.75rem;
-  font-size: 18px;
+  font-size: 1.2rem;
   border-radius: 0.25rem;
+}
+
+.btn:hover {
+  -webkit-animation: blink-btn 1s infinite;
+          animation: blink-btn 1s infinite;
 }
 
 .btn-large {
@@ -109,6 +172,11 @@ ol {
   color: black;
 }
 
+.btn-delete:hover {
+  -webkit-animation: blink-btn-delete 1s infinite;
+          animation: blink-btn-delete 1s infinite;
+}
+
 .btn-logout {
   width: 6.5rem;
   margin-left: 0.5rem;
@@ -116,7 +184,7 @@ ol {
 
 .btn-modal {
   width: 75px;
-  height: 1.5rem;
+  height: 1.75rem;
   background-color: #C4DFAA;
 }
 
@@ -173,6 +241,7 @@ ol {
 .navbar-middle {
   display: flex;
   justify-content: center;
+  padding: 0;
 }
 
 .navbar-username {
@@ -182,7 +251,7 @@ ol {
 }
 
 .navbar-hyperlink {
-  font-size: 22px;
+  font-size: 1.5rem;
   color: #fcf5e4;
   background-color: transparent;
   text-decoration: none;
@@ -190,8 +259,10 @@ ol {
 }
 
 .navbar-hyperlink:hover {
-  background-color: #C4DFAA;
-  color: #F5F0BB;
+  color: #73A9AD;
+  border-radius: 0.5rem;
+  -webkit-animation: blink-btn 1s infinite;
+          animation: blink-btn 1s infinite;
 }
 
 .modal {
@@ -206,7 +277,7 @@ ol {
 .modal-main {
   position: fixed;
   background: #F5F0BB;
-  width: 25%;
+  width: 50%;
   height: auto;
   top: 50%;
   left: 50%;
@@ -219,6 +290,14 @@ ol {
   border: 1px solid black;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+}
+
+.modal-share-list {
+  display: flex;
+  height: 1.5rem;
+  align-items: center;
+  -moz-column-gap: 1rem;
+       column-gap: 1rem;
 }
 
 .new-url-field {
@@ -234,12 +313,9 @@ ol {
 }
 
 .user-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  text-align: center;
   background-color: #C4DFAA;
   width: 100%;
-  padding-bottom: 0.75rem;
 }
 
 .mylists-list-item {
@@ -248,17 +324,10 @@ ol {
   justify-items: center;
   align-items: center;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  border-top: 1px solid #73A9AD;
-  border-bottom: 1px solid #73A9AD;
+  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);
   padding: 0.1rem;
 }
 
-@media only screen and (max-width: 750px) {
-  .mylists-list-item {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-}
 .login-title {
   background-color: #C4DFAA;
   width: 100%;
@@ -277,12 +346,12 @@ ol {
 }
 
 .site-title {
-  font-size: 28px;
+  font-size: 1.75rem;
   margin: 1rem;
 }
 
 .site-description {
-  font-size: 14px;
+  font-size: 1.5rem;
   font-style: italic;
   margin-top: 0.5rem;
   margin-bottom: 0px;
@@ -297,7 +366,7 @@ ol {
 
 .hyperlink {
   color: #f8654f;
-  font-size: 20px;
+  font-size: 1.2rem;
   font-weight: 300;
   padding-left: 0.75rem;
   text-decoration: none;
@@ -311,23 +380,27 @@ ol {
 .input-field {
   width: 16.25rem;
   max-width: 750px;
-  height: 1.5rem;
+  height: 1.75rem;
   border: 1px solid;
   text-align: center;
   border-radius: 0.25rem;
+  font-size: 1.5rem;
 }
 
 .input-field-large {
   width: 32.5rem;
 }
 
+@media only screen and (max-width: 750px) {
+  .mylists-list-item {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
 .prompt-and-input-field {
   display: grid;
   grid-template-columns: 1fr 2fr;
   align-items: center;
-  align-self: stretch;
-  -webkit-padding-start: 25%;
-          padding-inline-start: 25%;
   -moz-column-gap: 1rem;
        column-gap: 1rem;
 }
@@ -342,4 +415,8 @@ ol {
 
 .home {
   text-align: center;
+}
+
+.img-page-not-found {
+  width: 100%;
 }/*# sourceMappingURL=style.css.map */

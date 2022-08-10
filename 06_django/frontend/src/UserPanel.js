@@ -50,9 +50,9 @@ class UserPanel extends React.Component {
       modalYesText: 'OK',
       modalBody: (
         <div className='modal-share-list'>
-          <h3>Link:</h3>
+          <h4>Link:</h4>
           <input
-            className='modal-share-input'
+            className='input-field input-field-large'
             value = {`${domainName}/list/${id}/`}
             disabled = {true}
           ></input>
@@ -74,13 +74,13 @@ class UserPanel extends React.Component {
     let mylists;
 
     if (!this.state.isLoaded) {
-      mylists = <p><i>loading...</i></p>;
+      mylists = <h4>loading...</h4>;
       apiUserGet(this);
     } else {
       if (this.state.linklists.length === 0) {
         mylists = (
           <div className='mylists-list'>
-              <p>You have no linklists!</p>
+              <h4>You have no linklists!</h4>
             </div>    
         )
       } else {

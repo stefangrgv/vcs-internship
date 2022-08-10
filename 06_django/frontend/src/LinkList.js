@@ -455,7 +455,7 @@ class LinkList extends React.Component {
       editedURL: '',
       modalBody: (
         <input
-          className='input-field'
+          className='input-field input-field-large'
           onChange = {this.onChangeEditedURL}
           placeholder = 'Enter URL'
           ref = {modalInput => this.modalInput = modalInput}

@@ -13,6 +13,7 @@ import CreateUser from './CreateUser';
 import UserPanel from './UserPanel';
 import ChangePassword from './ChangePassword'
 import Redirect from './Redirect';
+import PageNotFound from './PageNotFound';
 import { apiUserLogout } from './apiRequests';
 import './style.css';
 
@@ -95,7 +96,12 @@ root.render(
             element = {<ChangePassword
               user={user}
               history = {createBrowserHistory()} />} />
-        </Route>
+            <Route
+              exact path='*'
+              element = {<PageNotFound
+                user = {user} 
+                history = {createBrowserHistory()} />} />
+          </Route>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -15,7 +15,9 @@ export class Modal extends React.Component {
         }>
           <div className='modal-main'>
             {this.props.body}
+            <div className='modal-buttons'>
             <button
+              autoFocus
               onClick = {this.props.modalYesMethod}
               className = 'btn btn-modal'>
                 {this.props.modalYesText}
@@ -28,6 +30,7 @@ export class Modal extends React.Component {
                     {this.props.modalNoText}
                 </button> : <></>
             }
+            </div>
           </div>
         </div>
     )
