@@ -104,12 +104,6 @@
   width: 32.5rem;
 }
 
-@media only screen and (max-width: 750px) {
-  .mylists-list-item {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-}
 .prompt-and-input-field {
   width: 100%;
   -moz-column-gap: 1rem;
@@ -312,7 +306,7 @@ input[type=checkbox] {
   flex-direction: row;
 }
 
-.navbar {
+.navbar, .navbar-guest {
   height: 3.5rem;
   padding-left: 1rem;
   border-bottom: 1px solid black;
@@ -325,6 +319,10 @@ input[type=checkbox] {
   position: sticky;
   top: 0;
   z-index: 99999;
+}
+
+.navbar-guest {
+  grid-template-columns: 1fr 2fr;
 }
 
 .navbar-text {
@@ -451,4 +449,17 @@ input[type=checkbox] {
 .footer {
   margin-top: 2px;
   border-top: 2px solid black;
+}
+
+@media only screen and (max-width: 600px) {
+  .mylists-list-item {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .credentials-panel {
+    width: 100%;
+  }
+  .navbar-hyperlink, .navbar-text {
+    font-size: 100%;
+  }
 }/*# sourceMappingURL=style.css.map */

@@ -4,6 +4,18 @@ import './style.css';
 
 
 class Header extends React.Component {
+  renderTitle () {
+    return (
+    <div className='navbar-text'>
+      <h4><Link
+        className='navbar-hyperlink'
+        to='/'>
+        KodjaLink&copy;
+      </Link></h4>
+    </div>
+    )
+  }
+
   renderNewButton () {
     if (this.props.user.username !== null) {
       return (
@@ -16,9 +28,6 @@ class Header extends React.Component {
       </div>
       )
     }
-    return (
-      <div className='navbar navbar-middle'></div>
-    )
   }
 
   renderGreeting () {
@@ -50,14 +59,11 @@ class Header extends React.Component {
   }
 
   render () {
+    let navbarType;
+    (this.props.user.username === null) ? navbarType = 'navbar-guest' : navbarType = 'navbar';
     return (
-      <nav className='navbar'>
-        <h4 className='navbar-text'>
-          <Link
-            className='navbar-hyperlink'
-            to='/'>
-            KodjaLink&copy;
-          </Link></h4>
+      <nav className={navbarType}>
+        {this.renderTitle()}
         {this.renderNewButton()}
         {this.renderGreeting()}
       </nav>

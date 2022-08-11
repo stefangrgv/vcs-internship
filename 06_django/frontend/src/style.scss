@@ -1,5 +1,6 @@
 @use 'colors';
 
+$fontsize: 1rem;
 $linkContentsPadding: 0.75rem;
 $btn-width: 6.5rem;
 $btn-height: 1.75rem;
@@ -50,7 +51,7 @@ $width-input-buttons: 5rem;
 
 .hyperlink {
     padding-left: $linkContentsPadding;
-    font-size: 1.2rem;
+    font-size: 1.2*$fontsize;
     font-weight: 300;
     color: colors.$color-red;
     background-color: transparent;
@@ -67,20 +68,12 @@ $width-input-buttons: 5rem;
     height: $height-input-buttons;
     border: 1px solid;
     border-radius: 0.25rem;
-    font-size: 1.5rem;
+    font-size: 1.5*$fontsize;
     text-align: center;
 }
 
 .input-field-large {
     width: 5*$btn-width;
-}
-
-
-@media only screen and (max-width: 750px) {
-    .mylists-list-item {
-        display: grid;
-        grid-template-columns: 1fr;
-    }
 }
 
 .prompt-and-input-field {
@@ -106,7 +99,7 @@ $width-input-buttons: 5rem;
 .error-message {
     margin: 1rem;
     color: colors.$color-red;
-    font-size: 1.75rem;
+    font-size: 1.75*$fontsize;
     text-align: center;
 }
 
@@ -132,22 +125,22 @@ $width-input-buttons: 5rem;
 }
 
 h2 {
-    font-size: 1.75rem;
+    font-size: 1.75*$fontsize;
     background-color: inherit;
 }
 
 h3 {
-    font-size: 1.5rem;
+    font-size: 1.5*$fontsize;
     background-color: inherit;
 }
 
 h4 {
-    font-size: 1.25rem;
+    font-size: 1.25*$fontsize;
     background-color: inherit;
 }
 
 h5 {
-    font-size: 1rem;
+    font-size: 1*$fontsize;
     font-weight: 300;
     background-color: inherit;
 }
@@ -214,7 +207,7 @@ input[type=checkbox] {
 .btn {
     width: $btn-width;
     height: $btn-height;
-    font-size: 1.2rem;
+    font-size: 1.2*$fontsize;
     border-radius: 0.25rem;
     color: black;
     background-color: colors.$bgcolor-btn;
@@ -305,6 +298,11 @@ input[type=checkbox] {
     z-index: 99999;
 }
 
+.navbar-guest {
+    @extend .navbar;
+    grid-template-columns: 1fr 2fr;
+}
+
 .navbar-text {
     background-color: transparent;
     color: colors.$bgcolor-panel-contents;
@@ -324,7 +322,7 @@ input[type=checkbox] {
 
 .navbar-hyperlink {
     height: 100%;
-    font-size: 1.5rem;
+    font-size: 1.5*$fontsize;
     color: colors.$color-white;
     background-color: transparent;   
     text-decoration: none;
@@ -421,7 +419,7 @@ input[type=checkbox] {
   
 .site-title {
     margin: 1rem;
-    font-size: 1.75rem;
+    font-size: 1.75*$fontsize;
 }
 
 .site-description {
@@ -429,11 +427,26 @@ input[type=checkbox] {
     margin-bottom: 0;
     padding-bottom: 1.5rem;
     border-bottom: 2px solid black;
-    font-size: 1.5rem;
+    font-size: 1.5*$fontsize;
     font-style: italic;
 }
 
 .footer {
     margin-top: 2px;
     border-top: 2px solid black;
+}
+
+@media only screen and (max-width: 600px) {
+    .mylists-list-item {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .credentials-panel {
+        width: 100%;
+    }
+
+    .navbar-hyperlink, .navbar-text {
+        font-size: 100%;
+    }
 }
