@@ -11,7 +11,7 @@ class IsMyOwn(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if ((request.method == "GET" and not obj.private)
-                or (str(obj.owner) == str(request.user))):
+                or (obj.owner == request.user)):
             return True
         return False
 
@@ -23,6 +23,6 @@ class IsMe(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        if (str(obj.username) == str(request.user)):
+        if obj.username == request.user.username:
             return True
         return False

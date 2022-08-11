@@ -39,25 +39,27 @@ class Login extends React.Component {
 
   render() {
     return (
-      <div className='login-panel'>
+      <div className='panel'>
         <h3>Login</h3>
-        <div className='prompt-and-input-field'>
-          <h5>Username</h5>
-          <input 
-          className='input-field username-password-input-field'
-          name='username'
-          type='text'
-          onChange={this.usernameChange}
-        />
-        </div>
-        <div className='prompt-and-input-field'>
-          <h5>Password</h5>
-          <input
+        <div className='credentials-panel'>
+          <div className='prompt-and-input-field'>
+            <h5>Username</h5>
+            <input 
             className='input-field username-password-input-field'
-            name='password'
-            type='password'
-            onChange={this.passwordChange}
+            name='username'
+            type='text'
+            onChange={this.usernameChange}
           />
+          </div>
+          <div className='prompt-and-input-field'>
+            <h5>Password</h5>
+            <input
+              className='input-field username-password-input-field'
+              name='password'
+              type='password'
+              onChange={this.passwordChange}
+            />
+          </div>
         </div>
         <button 
           className = 'btn'

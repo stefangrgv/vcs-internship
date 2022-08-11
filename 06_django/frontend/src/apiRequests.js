@@ -1,10 +1,11 @@
 import axios from "axios";
 import { closeModal } from "./Modal";
 
-const domainName = 'http://localhost:8000';
+const serverPort = 8000;
+const serverAddress = `${window.location.protocol}//${window.location.hostname}:${serverPort}`;
 
 export function apiSubmitNewList (obj) {
-  axios.post(`${domainName}/api/lists/`, {
+  axios.post(`${serverAddress}/api/lists/`, {
       title: obj.state.title,
       links: obj.state.links,
       private: obj.state.isPrivate,
@@ -28,7 +29,7 @@ export function apiSubmitNewList (obj) {
 
 export function apiSubmitEditedList (obj) {
   axios.put(
-    `${domainName}/api/lists/${obj.props.params.id}/`, {
+    `${serverAddress}/api/lists/${obj.props.params.id}/`, {
       title: obj.state.title,
       links: obj.state.links,
       private: obj.state.isPrivate,
@@ -58,7 +59,7 @@ export function apiSubmitEditedList (obj) {
 
 export function apiListDelete (obj, id, redirectTo = null) {
   axios.delete(
-    `${domainName}/api/lists/${id}`,
+    `${serverAddress}/api/lists/${id}`,
     { headers: {
         'Authorization': `Token ${obj.props.user.token}`,
     }}
@@ -97,7 +98,7 @@ export function apiListDelete (obj, id, redirectTo = null) {
 
 export function apiLoadLinkList (obj) {
   axios.get(
-    `${domainName}/api/lists/${obj.props.params.id}/`, {
+    `${serverAddress}/api/lists/${obj.props.params.id}/`, {
     headers: {
       'Authorization': `Token ${obj.props.user.token}`,
   }})
@@ -126,7 +127,7 @@ export function apiLoadLinkList (obj) {
 }
 
 export function apiGetAllLinks (obj) {
-  axios.get(`${domainName}/api/links/`, {
+  axios.get(`${serverAddress}/api/links/`, {
     headers: {
       'Authorization': `Token ${obj.props.user.token}`,
   }})
@@ -147,7 +148,7 @@ export function apiGetAllLinks (obj) {
 }
 
 export function apiPostNewLink (obj, url) {
-  axios.post(`${domainName}/api/links/`,
+  axios.post(`${serverAddress}/api/links/`,
     {'url': url}, { headers: {
       'Content-Type': 'application/json',
       'Authorization': `Token ${obj.props.user.token}`,
@@ -173,7 +174,7 @@ export function apiPostNewLink (obj, url) {
 }
 
 export function apiUserLogout (obj) {
-  axios.post(`${domainName}/api/auth/logout/`)
+  axios.post(`${serverAddress}/api/auth/logout/`)
   .then(() => {
     window.location.href = '/';
   }, (error) => {
@@ -188,7 +189,7 @@ export function apiUserLogout (obj) {
 }
 
 export function apiUserGet (obj) {
-  axios.get(`${domainName}/api/user/${obj.props.user.username}/`,{
+  axios.get(`${serverAddress}/api/user/${obj.props.user.username}/`,{
     headers: {'Authorization': `Token ${obj.props.user.token}`}
   })
   .then((response) => {
@@ -204,7 +205,7 @@ export function apiUserGet (obj) {
 }
 
 export function apiUserLogin (obj) {
-  axios.post(`${domainName}/api/auth/login/`, {
+  axios.post(`${serverAddress}/api/auth/login/`, {
     'username': obj.state.username,
     'password': obj.state.password,
   }, { headers: {
@@ -233,7 +234,7 @@ export function apiUserLogin (obj) {
 }
 
 export function apiFetchAllUsers (obj) {
-  axios.get(`${domainName}/api/allusers/`)
+  axios.get(`${serverAddress}/api/allusers/`)
   .then((response) => {
     return response.data.reduce((usernames, user) => {
       usernames.push(user['username']);
@@ -251,7 +252,7 @@ export function apiFetchAllUsers (obj) {
 }
 
 export function apiPostNewUser(obj) {
-  axios.post(`${domainName}/api/createuser/`, {
+  axios.post(`${serverAddress}/api/createuser/`, {
     'username': obj.state.username,
     'password': obj.state.passwordOne,
     'email': obj.state.email,
@@ -261,10 +262,16 @@ export function apiPostNewUser(obj) {
   .then((response) => {
     window.location.href = '/login/';
   }, (error) => {
-    let message = error.message;
-    if (error.response.status === 400) {
-      message = 'A user with that name already exists!';
+    const errorContents = JSON.parse(error.request.response);
+    let message;
+    if (typeof(errorContents.username) !== 'undefined') {
+      message = `Error in username field: ${errorContents.username}`;
+    } else if (typeof(errorContents.email) !== 'undefined') {
+      message = `Error in email field: ${errorContents.email}`;
+    } else {
+      message = errorContents;
     }
+    
     obj.setState({
       isModalDisplayed: true,
       modalYesMethod: () => closeModal(obj),
@@ -276,7 +283,7 @@ export function apiPostNewUser(obj) {
 }
 
 export function apiChangePassword(obj) {
-  axios.post(`${domainName}/api/auth/password/change/`, {
+  axios.post(`${serverAddress}/api/auth/password/change/`, {
     new_password1: obj.state.newPasswordOne,
     new_password2: obj.state.newPasswordTwo,
     old_password: obj.state.oldPassword,

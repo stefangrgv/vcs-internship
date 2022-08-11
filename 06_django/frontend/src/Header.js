@@ -4,10 +4,6 @@ import './style.css';
 
 
 class Header extends React.Component {
-  constructor (props) {
-    super(props);
-  }
-
   renderNewButton () {
     if (this.props.user.username !== null) {
       return (

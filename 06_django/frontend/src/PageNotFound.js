@@ -1,4 +1,5 @@
 import React from 'react';
+import pnf from './img/pagenotfound.jpg'
 import './style.css';
 
 
@@ -9,7 +10,7 @@ class PageNotFound extends React.Component {
         <img
           className = 'img-page-not-found'
           alt = 'Page not found!'
-          src = 'pagenotfound.jpg'/>
+          src = {pnf}/>
       </div>
     )
   }

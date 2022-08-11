@@ -11,7 +11,8 @@ import {
   apiListDelete,
 } from './apiRequests';
 import './style.css';
-
+import minimizeIcon from './img/minimize.png';
+import maximizeIcon from './img/maximize.png';
 
 class LinkList extends React.Component {
   constructor (props) {
@@ -44,6 +45,7 @@ class LinkList extends React.Component {
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangePrivacy = this.onChangePrivacy.bind(this);
     this.onChangeNewURL = this.onChangeNewURL.bind(this);
+    this.linkMinimizeMaximize = this.linkMinimizeMaximize.bind(this);
   };
 
   componentDidMount () {
@@ -77,6 +79,14 @@ class LinkList extends React.Component {
         links: newLinks,
       });
     }
+  }
+
+  linkMinimizeMaximize (id) {
+    let newLinks = this.state.links;
+    newLinks[id].isMinimized = !newLinks[id].isMinimized;
+    this.setState({
+      links: newLinks,
+    })
   }
 
   formatURLInput (input) {
@@ -346,14 +356,14 @@ class LinkList extends React.Component {
       ):
       (
         <div className='panel title-and-owner-panel'>
-          <h3>{this.state.title}</h3>
+          <h3 className = 'list-title-privacy'>{this.state.title}</h3>
           { this.props.mode === 'view' &&
             this.state.owner === this.props.user.username ?
             <div>
-              <h4>{
+              <h5 className = 'list-title-privacy'>{
               this.state.isPrivate ?
-              <i>private list</i> : ''
-              }</h4>
+              'private list' : ''
+              }</h5>
               <button 
                 className='btn'
                 onClick={() => {
@@ -374,13 +384,34 @@ class LinkList extends React.Component {
       this.state.links.map((link, n) => { return (
         // link contents: title, description, thumbnail and url
         <div className='link-content' key={'link-content' + n}>
-          <div className='link-title' key={'title' + n}> 
-            {link.needsRendering ?
-              (<h4 key={`num${n}`}> {link.url}</h4>):
-              (<h4 key={`num${n}`}> {link.title}</h4>)
-            }
-          </div>
           {link.needsRendering ?
+            (
+            <div className='link-title' key={'title' + n}>
+              <h4 key={`num${n}`}> {link.url}</h4>
+            </div>
+            ):
+            (
+            <div className='link-title' key={'title' + n}>
+              <h4 key={`num${n}`}> {link.title}</h4>
+              {link.isMinimized ?
+              <button
+                className = 'img-btn img-btn-btn'
+                onClick = {() => this.linkMinimizeMaximize(n)}
+              ><img
+                className = 'img-btn'
+                alt = 'maximize'
+                src = {maximizeIcon}/></button> :
+              <button
+                className = 'img-btn img-btn-btn'
+                onClick = {() => this.linkMinimizeMaximize(n)}
+              ><img
+                className = 'img-btn'
+                alt = 'minimize'
+                src = {minimizeIcon}/></button>
+              }
+            </div>)
+            }
+          {link.needsRendering || link.isMinimized ?
             (<></>):
             (
             <div className='link-description' key={'desc' + n}>
@@ -523,7 +554,7 @@ class LinkList extends React.Component {
     }
 
     return (
-      <div className='link-list-page'>
+      <div className='list-content'>
         {content}
       </div>
     )

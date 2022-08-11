@@ -8,7 +8,7 @@ import {
 import { Modal, closeModal } from './Modal';
 import './style.css';
 
-const domainName = 'http://localhost:3000';
+const domainName = window.location.origin;
 
 class UserPanel extends React.Component {
   constructor (props) {
@@ -49,13 +49,15 @@ class UserPanel extends React.Component {
       },
       modalYesText: 'OK',
       modalBody: (
-        <div className='modal-share-list'>
+        <div className='prompt-and-input-field'>
+          <div className='modal-share-list-body'>
           <h4>Link:</h4>
           <input
             className='input-field input-field-large'
             value = {`${domainName}/list/${id}/`}
             disabled = {true}
           ></input>
+          </div>
         </div>
       ),
       modalNoText: '',
@@ -119,7 +121,7 @@ class UserPanel extends React.Component {
     }
 
     return (
-      <div className='panel user-panel'>
+      <div className='panel'>
         <div className='user-info'>
           <h3>User Panel</h3>
         </div>

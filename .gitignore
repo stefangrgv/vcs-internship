@@ -6714,3 +6714,5 @@ node_modules
 06_django/venv/lib/python3.9/site-packages/tomli-2.0.1.dist-info/METADATA
 06_django/venv/lib/python3.9/site-packages/tomli-2.0.1.dist-info/RECORD
 06_django/venv/lib/python3.9/site-packages/tomli-2.0.1.dist-info/WHEEL
+06_django/frontend/src/style.css.map
+06_django/frontend/src/style.css
