@@ -132,7 +132,10 @@
 }
 
 .error-message {
+  margin: 1rem;
   color: #f8654f;
+  font-size: 1.75rem;
+  text-align: center;
 }
 
 .home {

@@ -531,7 +531,14 @@ class LinkList extends React.Component {
     let content = <h5>loading...</h5>
 
     if (this.state.isLoaded || this.props.mode === 'new') {
-      content = (
+      if (this.props.mode === 'new' && this.props.user.username === null) {
+        content = (
+          <div className='error-message'>
+            You are not logged in.
+          </div>
+        )
+      } else {
+        content = (
         <div className='list-content'>
         {this.renderListTitlePanel()}
         {this.renderPrivacy()}
@@ -549,8 +556,13 @@ class LinkList extends React.Component {
         />
         </div>
       );
+    }
     } else if (!this.state.isResponseOk) {
-      content = this.state.errorMessage;
+      content = (
+        <div className='error-message'>
+          {this.state.errorMessage}
+        </div>
+      )
     }
 
     return (

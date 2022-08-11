@@ -104,7 +104,10 @@ $width-input-buttons: 5rem;
 }
 
 .error-message {
+    margin: 1rem;
     color: colors.$color-red;
+    font-size: 1.75rem;
+    text-align: center;
 }
 
 .home {

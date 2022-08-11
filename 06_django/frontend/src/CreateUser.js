@@ -65,9 +65,9 @@ class CreateUser extends React.Component {
   }
 
   render() {
-    let userInfo = this.isUsernameOk() ? <></> : <h4 className='error-message'><b>Please enter a valid username.</b></h4>;
-    let passwordInfo = this.isPasswordOk() ? <></> : <h4 className='error-message'><b>Passwords do not match.</b></h4>;
-    let emailInfo = this.isEmailOk() ? <></> : <h4 className='error-message'><b>Please enter a valid email.</b></h4>;
+    let userInfo = this.isUsernameOk() ? <></> : <div className='error-message'>Please enter a valid username.</div>;
+    let passwordInfo = this.isPasswordOk() ? <></> : <div className='error-message'>Passwords do not match.</div>;
+    let emailInfo = this.isEmailOk() ? <></> : <div className='error-message'>Please enter a valid email.</div>;
 
     return (
       <div className='panel'>
