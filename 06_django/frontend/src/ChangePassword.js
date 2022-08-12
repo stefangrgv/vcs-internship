@@ -75,34 +75,36 @@ class ChangePassword extends React.Component {
 
   render() {
   return (
-    <div className='app-panel'>
+    <div className='panel'>
     <h3>Change Password for {localStorage.getItem('kodjalinkUsername')}</h3>
-    <div className='prompt-and-input-field'>
-      <h5>Enter old password</h5>
-      <input
-        className='input-field username-password-input-field'
-        name='password'
-        type='password'
-        onChange={this.oldPasswordChange}
-      />
-    </div>
-    <div className='prompt-and-input-field'>
-      <h5>Enter new password</h5>
-      <input
-        className='input-field username-password-input-field'
-        name='password'
-        type='password'
-        onChange={this.newPasswordOneChange}
-      />
-    </div>
-    <div className='prompt-and-input-field'>
-      <h5>Confirm new password</h5>
-      <input
-        className='input-field username-password-input-field'
-        name='password'
-        type='password'
-        onChange={this.newPasswordTwoChange}
-      />
+    <div className='credentials-panel'>
+      <div className='prompt-and-input-field'>
+        <h5>Enter old password</h5>
+        <input
+          className='input-field username-password-input-field'
+          name='password'
+          type='password'
+          onChange={this.oldPasswordChange}
+        />
+      </div>
+      <div className='prompt-and-input-field'>
+        <h5>Enter new password</h5>
+        <input
+          className='input-field username-password-input-field'
+          name='password'
+          type='password'
+          onChange={this.newPasswordOneChange}
+        />
+      </div>
+      <div className='prompt-and-input-field'>
+        <h5>Confirm new password</h5>
+        <input
+          className='input-field username-password-input-field'
+          name='password'
+          type='password'
+          onChange={this.newPasswordTwoChange}
+        />
+      </div>
     </div>
       <button
         className='btn'

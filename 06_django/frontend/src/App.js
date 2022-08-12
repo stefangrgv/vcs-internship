@@ -7,10 +7,10 @@ import './style.css';
 class App extends React.Component {
   render() {
     return (
-    <div className='app'>
+    <>
       <Header user = {this.props.user} />
       <Outlet user = {this.props.user} />
-    </div>
+    </>
     )
   }
 }

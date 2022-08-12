@@ -20,6 +20,28 @@
     background-color: #73A9AD;
   }
 }
+@-webkit-keyframes blink-img-btn {
+  0% {
+    background-color: #C4DFAA;
+  }
+  50% {
+    background-color: #F5F0BB;
+  }
+  100% {
+    background-color: #C4DFAA;
+  }
+}
+@keyframes blink-img-btn {
+  0% {
+    background-color: #C4DFAA;
+  }
+  50% {
+    background-color: #F5F0BB;
+  }
+  100% {
+    background-color: #C4DFAA;
+  }
+}
 @-webkit-keyframes blink-btn {
   0% {
     background-color: #F5F0BB;
@@ -101,7 +123,7 @@
 }
 
 .input-field-large {
-  width: 32.5rem;
+  width: 48.75rem;
 }
 
 .prompt-and-input-field {
@@ -111,10 +133,10 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  margin: auto;
 }
 
 .credentials-panel {
-  margin: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -141,12 +163,18 @@
 }
 
 .img-btn {
+  padding: 2px;
   width: 30px;
   height: auto;
   background-color: transparent;
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.img-btn:hover {
+  -webkit-animation: blink-img-btn 1s infinite;
+          animation: blink-img-btn 1s infinite;
 }
 
 .img-btn-btn {
@@ -290,6 +318,7 @@ input[type=checkbox] {
   text-align: justify;
   flex-direction: row;
   padding-right: 1rem;
+  padding-top: 1rem;
 }
 
 .link-thumbnail {
@@ -340,6 +369,8 @@ input[type=checkbox] {
   padding-right: 1rem;
   display: flex;
   justify-content: right;
+  -moz-column-gap: 0.25rem;
+       column-gap: 0.25rem;
 }
 
 .navbar-hyperlink {
@@ -367,6 +398,7 @@ input[type=checkbox] {
 
 .modal-main {
   width: 50%;
+  max-width: 32.5rem;
   height: auto;
   border: 1px solid black;
   padding-top: 1.5rem;
@@ -388,6 +420,8 @@ input[type=checkbox] {
   display: flex;
   justify-content: center;
   align-items: center;
+  -moz-column-gap: 1rem;
+       column-gap: 1rem;
 }
 
 .new-url-field {

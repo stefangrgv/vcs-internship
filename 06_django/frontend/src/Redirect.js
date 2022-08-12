@@ -12,9 +12,7 @@ class Redirect extends React.Component {
 
   render () {
     return (
-      <div>
         <h3>Redirecting...</h3>
-      </div>
     )
   }
 }

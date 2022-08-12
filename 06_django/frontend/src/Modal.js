@@ -7,6 +7,29 @@ export function closeModal (obj) {
   } )
 }
 
+export function shareList (obj, id, domainName) {
+  obj.setState({
+    isModalDisplayed: true,
+    modalYesMethod: () => {
+      closeModal(obj);
+    },
+    modalYesText: 'OK',
+    modalBody: (
+      <div className='prompt-and-input-field'>
+        <div className='modal-share-list-body'>
+        <h4>Link:</h4>
+        <input
+          className='input-field input-field-large'
+          value = {`${domainName}/list/${id}/`}
+          disabled = {true}
+        ></input>
+        </div>
+      </div>
+    ),
+    modalNoText: '',
+  });
+}
+
 export class Modal extends React.Component {
   render () {
     return(

@@ -5,10 +5,12 @@ import {
   apiUserLogout,
   apiListDelete,
 } from './apiRequests';
-import { Modal, closeModal } from './Modal';
+import {
+  Modal,
+  closeModal,
+  shareList,
+} from './Modal';
 import './style.css';
-
-const domainName = window.location.origin;
 
 class UserPanel extends React.Component {
   constructor (props) {
@@ -39,29 +41,6 @@ class UserPanel extends React.Component {
 
   createNewList () {
     window.location.href = '/list/new/';
-  }
-
-  shareList (id) {
-    this.setState({
-      isModalDisplayed: true,
-      modalYesMethod: () => {
-        closeModal(this);
-      },
-      modalYesText: 'OK',
-      modalBody: (
-        <div className='prompt-and-input-field'>
-          <div className='modal-share-list-body'>
-          <h4>Link:</h4>
-          <input
-            className='input-field input-field-large'
-            value = {`${domainName}/list/${id}/`}
-            disabled = {true}
-          ></input>
-          </div>
-        </div>
-      ),
-      modalNoText: '',
-    });
   }
 
   logout () {
@@ -98,7 +77,7 @@ class UserPanel extends React.Component {
                     >{el.title}</Link>
                     <button
                       className = 'btn'
-                      onClick = {() => this.shareList(el.id) }>
+                      onClick = {() => shareList(this, el.id, this.props.domainName) }>
                       Share
                     </button>
                     <button

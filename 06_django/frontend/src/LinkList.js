@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, closeModal } from './Modal';
+import { Modal, closeModal, shareList } from './Modal';
 import withRouter from './withRouter';
 import { Link } from 'react-router-dom';
 import {
@@ -359,7 +359,7 @@ class LinkList extends React.Component {
           <h3 className = 'list-title-privacy'>{this.state.title}</h3>
           { this.props.mode === 'view' &&
             this.state.owner === this.props.user.username ?
-            <div>
+            <>
               <h5 className = 'list-title-privacy'>{
               this.state.isPrivate ?
               'private list' : ''
@@ -371,8 +371,16 @@ class LinkList extends React.Component {
                   this.props.history.go(`/edit/${this.props.params.id}/`);
                   //window.location.href = `/edit/${this.props.params.id}/`
               }}>Edit list</button>
-            </div> :
-            <></>
+            </> : <></>
+          }
+          { this.props.mode === 'view' ?
+          <>
+            <button 
+              className='btn'
+              onClick={() => {
+                shareList(this, this.props.params.id, this.props.domainName);
+            }}>Share list</button>
+          </> : <></>
           }
         </div>
       )

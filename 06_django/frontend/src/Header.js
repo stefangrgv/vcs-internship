@@ -46,12 +46,13 @@ class Header extends React.Component {
     }
     return (
       <div className='navbar navbar-username'>
-        <h4 className='navbar-text'>Logged in as <Link
-          className='navbar-hyperlink'
-          to='/myprofile/'
-        >{this.props.user.username}</Link></h4>
+        <h4 className='navbar-text'>Logged in as {this.props.user.username}</h4>
         <button
-          className='btn btn-logout'
+          className='btn'
+          onClick={() => window.location.href = '/myprofile/'} // use Router
+        >Profile</button>
+        <button
+          className='btn'
           onClick={this.props.user.logout}
         >Logout</button>
       </div>
@@ -60,6 +61,7 @@ class Header extends React.Component {
 
   render () {
     let navbarType;
+    {console.trace('navbar rendered')}
     (this.props.user.username === null) ? navbarType = 'navbar-guest' : navbarType = 'navbar';
     return (
       <nav className={navbarType}>

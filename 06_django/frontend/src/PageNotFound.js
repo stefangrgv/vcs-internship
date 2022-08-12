@@ -6,12 +6,10 @@ import './style.css';
 class PageNotFound extends React.Component {
   render () {
     return (
-      <div>
-        <img
-          className = 'img-page-not-found'
-          alt = 'Page not found!'
-          src = {pnf}/>
-      </div>
+      <img
+        className = 'img-page-not-found'
+        alt = 'Page not found!'
+        src = {pnf}/>
     )
   }
 }
