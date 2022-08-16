@@ -1,20 +1,23 @@
 import React from 'react';
-import withRouter from './withRouter';
+import  { Navigate, useParams } from 'react-router-dom';
 import './style.css';
 
 
-class Redirect extends React.Component {
-  componentDidMount () {
-    setTimeout(() => {
-      window.location.replace(this.props.params.url);
-    }, 500);
-  }
+function Redirect (props) {
+  // componentDidMount () {
+  //   setTimeout(() => {
+  //     window.location.replace(this.props.params.url); // use router
+  //   }, 500);
+  // }
 
-  render () {
-    return (
-        <h3>Redirecting...</h3>
-    )
-  }
+  const params = useParams();
+  return (
+      <>
+      <h3>Redirecting...</h3>
+      <Navigate to={params.url} replace={true}/> 
+      {/* how to do that with navigate? */}
+      </>
+  )
 }
 
-export default withRouter(Redirect);
+export default Redirect;

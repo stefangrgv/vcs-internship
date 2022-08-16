@@ -1,134 +1,132 @@
-import React from 'react';
+import { React, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import {
   apiPostNewUser,
 } from './apiRequests';
-import { Modal } from './Modal';
 import './style.css';
 
 
-class CreateUser extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: '',
-      passwordOne: '',
-      passwordTwo: '',
-      email: '',
+function CreateUser (props) {
+  const context = useOutletContext();
+  let [username, setUsername] = useState('');
+  let [passwordOne, setPasswordOne] = useState('');
+  let [passwordTwo, setPasswordTwo] = useState('');
+  let [email, setEmail] = useState('');
+
+  const hideModal = () => {
+    context.setModalShow(false);
+  }
+
+  const usernameChange = (event) => {
+    setUsername(event.target.value);
+  }
+
+  const passwordOneChange = (event) => {
+    setPasswordOne(event.target.value);
+  }
+
+  const passwordTwoChange = (event) => {
+    setPasswordTwo(event.target.value);
+  }
+
+  const emailChange = (event) => {
+    setEmail(event.target.value);
+  }
+
+  const isUsernameOk = () => {
+    return (username !== '' && /^[a-z0-9]+$/i.test(username))
+  }
+
+  const isPasswordOk = () => {
+    return ((passwordOne === passwordTwo &&
+        passwordOne !== ''))
+  }
+
+  const isEmailOk = () => {
+    return (email !== '' && /\S+@\S+\.\S+/.test(email))
+  }
+
+  const submit = async () => {
+    let response = await apiPostNewUser(username, passwordOne, email);
+    if (response.status === 201) {
+      context.setModalShow(true);
+      context.setModalYesOnclick( () => () => window.location.href = '/login/' );
+      context.setModalYesText('OK');
+      context.setModalNoText('');
+      context.setModalBody(`User ${username} created successfully! You can now login.`);
+    } else {
+      const errorContents = JSON.parse(response.request.response);
+      let message;
+      if (typeof(errorContents.username) !== 'undefined') {
+        message = `Error in username field: ${errorContents.username}`;
+      } else if (typeof(errorContents.email) !== 'undefined') {
+        message = `Error in email field: ${errorContents.email}`;
+      } else {
+        message = errorContents;
+      }
+      context.setModalShow(true);
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalYesText('OK');
+      context.setModalNoText('');
+      context.setModalBody(message);
     }
-
-    this.usernameChange = this.usernameChange.bind(this);
-    this.passwordOneChange = this.passwordOneChange.bind(this);
-    this.passwordTwoChange = this.passwordTwoChange.bind(this);
-    this.emailChange = this.emailChange.bind(this);
-    this.submit = this.submit.bind(this);
   }
 
-  usernameChange (event) {
-    this.setState({
-      username: event.target.value,
-    });
-  }
+  let userInfo = isUsernameOk() ? <></> : <div className='error-message'>Please enter a valid username.</div>;
+  let passwordInfo = isPasswordOk() ? <></> : <div className='error-message'>Passwords do not match.</div>;
+  let emailInfo = isEmailOk() ? <></> : <div className='error-message'>Please enter a valid email.</div>;
 
-  passwordOneChange (event) {
-    this.setState({
-      passwordOne: event.target.value,
-    });
-  }
-
-  passwordTwoChange (event) {
-    this.setState({
-      passwordTwo: event.target.value,
-    });
-  }
-
-  emailChange (event) {
-    this.setState({
-      email: event.target.value,
-    });
-  }
-
-  isUsernameOk () {
-    return (this.state.username !== '' && /^[a-z0-9]+$/i.test(this.state.username))
-  }
-
-  isPasswordOk () {
-    return ((this.state.passwordOne === this.state.passwordTwo &&
-        this.state.passwordOne !== ''))
-  }
-
-  isEmailOk () {
-    return (this.state.email !== '' && /\S+@\S+\.\S+/.test(this.state.email))
-  }
-
-  submit () {
-    apiPostNewUser(this);
-  }
-
-  render() {
-    let userInfo = this.isUsernameOk() ? <></> : <div className='error-message'>Please enter a valid username.</div>;
-    let passwordInfo = this.isPasswordOk() ? <></> : <div className='error-message'>Passwords do not match.</div>;
-    let emailInfo = this.isEmailOk() ? <></> : <div className='error-message'>Please enter a valid email.</div>;
-
-    return (
-      <div className='panel'>
-        <h3>Register new user</h3>
-        <div className='credentials-panel'>
-          <div className='prompt-and-input-field'>
-            <h5>Username</h5>
-            <input 
-              className='input-field username-password-input-field'
-              name='username'
-              type='text'
-              onChange={this.usernameChange}
-            />
-          </div>
-          <div className='prompt-and-input-field'>
-            <h5>Password</h5>
-            <input 
+  return (
+    <div className='panel'>
+      <h3>Register new user</h3>
+      <div className='credentials-panel'>
+        <div className='prompt-and-input-field'>
+          <h5>Username</h5>
+          <input 
             className='input-field username-password-input-field'
-            name='password'
-            type='password'
-            onChange={this.passwordOneChange}
-            />
-          </div>
-          <div className='prompt-and-input-field'>
-            <h5>Repeat password</h5>
-            <input
-            className='input-field username-password-input-field'
-            name='password'
-            type='password'
-            onChange={this.passwordTwoChange}
-            />
-          </div>
-          <div className='prompt-and-input-field'>
-            <h5>Email</h5>
-            <input
-            className='input-field username-password-input-field' 
-            name='email'
+            name='username'
             type='text'
-            onChange={this.emailChange}
-            />
+            onChange={usernameChange}
+          />
         </div>
-      {userInfo}
-      {passwordInfo}
-      {emailInfo}
+        <div className='prompt-and-input-field'>
+          <h5>Password</h5>
+          <input 
+          className='input-field username-password-input-field'
+          name='password'
+          type='password'
+          onChange={passwordOneChange}
+          />
+        </div>
+        <div className='prompt-and-input-field'>
+          <h5>Repeat password</h5>
+          <input
+          className='input-field username-password-input-field'
+          name='password'
+          type='password'
+          onChange={passwordTwoChange}
+          />
+        </div>
+        <div className='prompt-and-input-field'>
+          <h5>Email</h5>
+          <input
+          className='input-field username-password-input-field' 
+          name='email'
+          type='text'
+          onChange={emailChange}
+          />
       </div>
-        <button
-          className = 'btn'
-          disabled = {!(this.isUsernameOk() && this.isPasswordOk() && this.isEmailOk())}
-          onClick = {this.submit}
-        >Register</button>
-        <Modal
-          show = {this.state.isModalDisplayed}
-          modalYesMethod = {this.state.modalYesMethod}
-          modalYesText = {this.state.modalYesText}
-          modalNoMethod = {this.state.modalNoMethod}
-          modalNoText = {this.state.modalNoText}
-          body = {this.state.modalBody}
-        />
-      </div>
-    )
-  }
+    {userInfo}
+    {passwordInfo}
+    {emailInfo}
+    </div>
+      <button
+        className = 'btn'
+        disabled = {!(isUsernameOk() && isPasswordOk() && isEmailOk())}
+        onClick = {submit}
+      >Register</button>
+    </div>
+  )
 }
 
 export default CreateUser;

@@ -30,11 +30,11 @@ class User {
     this.token = localStorage.getItem('kodjalinkUserToken');
   }
 
-  logout () {
+  async logout () {
     localStorage.removeItem('kodjalinkUsername');
     localStorage.removeItem('kodjalinkUserToken');
     
-    apiUserLogout();
+    return await apiUserLogout();
   }
 }
 

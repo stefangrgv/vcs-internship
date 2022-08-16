@@ -1,7 +1,13 @@
-import React from 'react';
-import { Modal, closeModal, shareList } from './Modal';
-import withRouter from './withRouter';
-import { Link } from 'react-router-dom';
+import {
+  React,
+  useState,
+  useEffect
+} from 'react';
+import {
+  Link,
+  useOutletContext,
+  useMatch,
+} from 'react-router-dom';
 import {
   apiSubmitNewList,
   apiSubmitEditedList,
@@ -10,63 +16,82 @@ import {
   apiPostNewLink,
   apiListDelete,
 } from './apiRequests';
+import { getShareListModalBody } from './Modal';
 import './style.css';
 import minimizeIcon from './img/minimize.png';
 import maximizeIcon from './img/maximize.png';
 
-class LinkList extends React.Component {
-  constructor (props) {
-    super(props);
-    
-    if (this.props.mode === 'view' ||
-        this.props.mode === 'edit') {
-      this.state = {
-        notNew: true,
-        isResponseOk: false,
-        isLoaded: false,
-        isModalDisplayed: false,
-        newURL: '',
-        editedURL: '',
-        allLinks: [],
-      }
-    } else if (this.props.mode === 'new') {
-      this.state = {
-        isPrivate: false,
-        links: [],
-        title: '',
-        newURL: '',
-      }
-    }
-    
-    this.modalSave = this.modalSave.bind(this);
-    this.onChangeEditedURL = this.onChangeEditedURL.bind(this);
-    this.linkAdd = this.linkAdd.bind(this);
-    this.linkListSave = this.linkListSave.bind(this);
-    this.onChangeTitle = this.onChangeTitle.bind(this);
-    this.onChangePrivacy = this.onChangePrivacy.bind(this);
-    this.onChangeNewURL = this.onChangeNewURL.bind(this);
-    this.linkMinimizeMaximize = this.linkMinimizeMaximize.bind(this);
-  };
+function LinkList (props) {
+  const context = useOutletContext();
+  const match = useMatch(`/${props.mode === 'edit' ? 'edit' : 'list'}/:id`);
 
-  componentDidMount () {
-    if (this.props.mode !== 'new') {
-      apiLoadLinkList(this);
+  let [isResponseOk, setResponseOk] = useState(false);
+  let [isLoaded, setLoaded] = useState(false);
+  let [isFetchingLinks, setFetchingLinks] = useState(false);
+  let [editedURL, setEditedURL] = useState('');
+  let [allLinks, setAllLinks] = useState([]);
+  let [isPrivate, setPrivate] = useState(false);
+  let [owner, setOwner] = useState('');
+  let [links, setLinks] = useState([]);
+  let [title, setTitle] = useState('');
+  let [newURL, setNewURL] = useState('');
+  let [errorMessage, setErrorMessage] = useState('');
+
+  async function fetchAllLinks () {
+    let response = await apiGetAllLinks(props.user);
+    if (response.status === 200) {
+      setAllLinks(response.data);
+      setFetchingLinks(false);
+    } else {
+      context.setModalShow(true);
+      context.setModalYesText('OK');
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalNoText('');
+      context.setModalBody(response.message);
     }
-    apiGetAllLinks(this);
   }
 
-  componentDidUpdate () {
-    if ((this.state.isLoaded || this.props.mode === 'new') &&
-        this.state.links.find((l) => l.needsRendering &&
-        !this.state.isFetchingLinks)) {
-      let newLinks = this.state.links.map((link) => {
+  useEffect( () => {
+    async function fetchList () {
+      let response = await apiLoadLinkList(match.params.id, props.user);
+      if (response.status === 200) {
+        setTitle(response.data.title);
+        setLinks(response.data.links);
+        setOwner(response.data.owner);
+        setPrivate(response.data.private);
+        setLoaded(true);
+        setResponseOk(true);
+      } else {
+        let message = response.message;
+        console.log(response)
+        if (response.response.status === 401) {
+          message = 'You are not logged in.';
+        } else if (response.response.status === 403) {
+          message = 'Permission denied: this list is private.';
+        } else if (response.response.status === 404) {
+          message = 'List not found!';
+        }
+        setErrorMessage(message);
+      }
+    }
+
+    if (props.mode !== 'new') {
+      fetchList();
+    }
+
+    fetchAllLinks();
+  }, []);
+
+  useEffect( () => {
+    if ((isLoaded || props.mode === 'new') &&
+        links.find((l) => l.needsRendering &&
+        !isFetchingLinks)) {
+      let newLinks = links.map((link) => {
         if (link.needsRendering) {
-          let linkDbEntry = this.linkUpdateInfo(link.url);
+          let linkDbEntry = linkUpdateInfo(link.url);
           if (linkDbEntry === undefined) {
-            this.setState({
-              isFetchingLinks: true,
-            })
-            apiGetAllLinks(this);
+            setFetchingLinks(true);
+            fetchAllLinks();
             return link;
           }
           return linkDbEntry;
@@ -75,21 +100,21 @@ class LinkList extends React.Component {
         }
       });
 
-      this.setState({
-        links: newLinks,
-      });
+      setLinks(newLinks);
     }
+  });
+
+  const hideModal = () => {
+    context.setModalShow(false);
   }
 
-  linkMinimizeMaximize (id) {
-    let newLinks = this.state.links;
+  const linkMinimizeMaximize = (id) => {
+    let newLinks = links;
     newLinks[id].isMinimized = !newLinks[id].isMinimized;
-    this.setState({
-      links: newLinks,
-    })
+    setLinks(newLinks);
   }
 
-  formatURLInput (input) {
+  const formatURLInput = (input) => {
     // Formats the URL to be properly handled by the DB
     let parsedURL = input.replace('www.', '');
     while (parsedURL.startsWith('/')) {
@@ -107,27 +132,25 @@ class LinkList extends React.Component {
     return parsedURL;
   }
 
-  formatThumbnails () {
+  const formatThumbnails = () => {
     /* 
     Formats the URL paths of all the thumbnails in the list.
     In some cases they are not accepted by the backend unless reformatted.
     */
-    this.setState({
-      links: this.state.links.map((link) => {
+    setLinks(links.map((link) => {
         let l = link;
-        l['thumbnail'] = this.formatURLInput(link['thumbnail']);
+        l['thumbnail'] = formatURLInput(link['thumbnail']);
         return l;
       }),
-    });
+    );
   }
 
-  trimLinkTitle () {
+  const trimLinkTitle = () => {
     /*
     Trims the title of the links to ensure it fits the
     limit enforced in the database (100 symbols).
     */
-    this.setState({
-      links: this.state.links.map((link) => {
+    setLinks(links.map((link) => {
         if (link['title'].length < 100) {
           return link;
         }
@@ -136,34 +159,26 @@ class LinkList extends React.Component {
         l['title'] = l['title'].slice(0, 97) + '...';
         return l;
       }),
-    });
+    );
   }
 
   //////////////////////////////////////
   //  REACT ONCHANGE METHODS
   //////////////////////////////////////
-  onChangeNewURL (event) {
-    this.setState({
-      newURL: event.target.value,
-    })
+  const onChangeNewURL = (event) => {
+    setNewURL(event.target.value);
   }
 
-  onChangeEditedURL (event) {
-    this.setState({
-      editedURL: event.target.value,
-    })
+  const onChangeEditedURL = (event) => {
+    editedURL = event.target.value;
   }
 
-  onChangeTitle (event) {
-    this.setState({
-      title: event.target.value,
-    })
+  const onChangeTitle = (event) => {
+    setTitle(event.target.value);
   }
 
-  onChangePrivacy () {
-    this.setState({
-      isPrivate: !this.state.isPrivate,
-    })
+  const onChangePrivacy = () => {
+    setPrivate(!isPrivate);
   }
   //////////////////////////////////////
 
@@ -171,40 +186,57 @@ class LinkList extends React.Component {
   //  LINKLIST OPERATIONS:
   //    SAVE / DELETE
   //////////////////////////////////////
-  linkListSave () {
-    if (this.state.title.replaceAll(' ', '') === '') {
-      this.setState({
-        isModalDisplayed: true,
-        modalYesMethod: () => closeModal(this),
-        modalYesText: 'OK',
-        modalBody: 'Please enter a title!',
-        modalNoText: '',
-      });
+  const linkListSave = async () => {
+    if (title.replaceAll(' ', '') === '') {
+      context.setModalShow(true);
+      context.setModalYesText('OK');
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalNoText('');
+      context.setModalBody('Please enter a title!');
       return null
     }
 
-    this.formatThumbnails();
-    this.trimLinkTitle();
+    formatThumbnails();
+    trimLinkTitle();
 
-    if (this.props.mode === 'edit') {
-      apiSubmitEditedList(this)
+    if (props.mode === 'edit') {
+      let response = await apiSubmitEditedList(match.params.id, props.user, title, links, isPrivate);
+      context.setModalShow(true);
+      context.setModalYesText('OK');
+      context.setModalNoText('');
+      
+      if (response.status === 200) {
+        context.setModalYesOnclick( () => () => window.location.href = `/list/${match.params.id}/` );
+        context.setModalBody('Success!');
+      } else {
+        context.setModalYesOnclick( () => hideModal);
+        context.setModalBody(response.error.message);
+      }
     } else {
-      apiSubmitNewList(this);
+      let response = await apiSubmitNewList(props.user, title, links, isPrivate);
+      if (response.status === 201) {
+        window.location.href = `/list/${response.data.id}/`;
+        // <Navigate to={`/list/${response.data.id}/`} replace={true}/>  
+      } else {
+        context.setModalShow(true);
+        context.setModalYesText('OK');
+        context.setModalYesOnclick( () => hideModal );
+        context.setModalNoText('');
+        context.setModalBody(response.error.message);
+      }
     }
   }
 
-  linkListAskDelete (link) {
-    this.setState({
-      isModalDisplayed: true,
-      modalYesMethod: () => {
-        apiListDelete(this, this.props.params.id, '/myprofile/');
-        closeModal(this);
-      },
-      modalYesText: 'Yes',
-      modalBody: 'Are you sure you want to delete this linklist?',
-      modalNoText: 'No',
-      modalNoMethod: () => closeModal(this),
+  const linkListAskDelete = (link) => {
+    context.setModalShow(true);
+    context.setModalYesText('Yes');
+    context.setModalYesOnclick( () => async () => {
+      await apiListDelete(match.params.id, props.user);
+      window.location.href = '/myprofile/';
     });
+    context.setModalNoText('No');
+    context.setModalNoOnclick( () => hideModal );
+    context.setModalBody('Are you sure you want to delete this linklist?');
   }
   //////////////////////////////////////
 
@@ -212,73 +244,74 @@ class LinkList extends React.Component {
   //  LINK OPERATIONS:
   //    ADD / EDIT / DELETE / GET
   //////////////////////////////////////
-  linkValidate (url) {
+  const linkValidate = (url) => {
     if (url.replaceAll(' ', '') === '') {
-      this.setState({
-        isModalDisplayed: true,
-        modalYesMethod: () => closeModal(this),
-        modalYesText: 'OK',
-        modalBody: 'Please enter a non-empty URL.',
-        modalNoText: '',
-      });
+      context.setModalShow(true);
+      context.setModalYesText('OK');
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalBody('Please enter a non-empty URL.');
+      context.setModalNoText('');
       return false;
     }
 
-    if (this.state.links.find((l) => l.url === this.formatURLInput(url))) {
-      this.setState({
-        isModalDisplayed: true,
-        modalYesMethod: () => closeModal(this),
-        modalYesText: 'OK',
-        modalBody: 'This link is already in the list.',
-        modalNoText: '',
-      });
+    if (links.find((l) => l.url === formatURLInput(url))) {
+      context.setModalShow(true);
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalYesText('OK');
+      context.setModalBody('This link is already in the list.');
+      context.setModalNoText('');
       return false;
     }
 
     return true;
   }
 
-  linkAdd () {
-    if (this.linkValidate(this.state.newURL)) {
-      let parsedURL = this.formatURLInput(this.state.newURL)
-
-      this.setState({
-        links: [...this.state.links, {url: parsedURL, needsRendering: true}],
-        newURL: '',
-      });
-
+  const linkAdd = async () => {
+    if (linkValidate(newURL)) {
+      let parsedURL = formatURLInput(newURL)
+      setLinks([...links, {url: parsedURL, needsRendering: true}]);
+      setNewURL('');
+      
       // if link is not present in the db, add it
-      if (!this.state.allLinks.find((l) => l.url === parsedURL)) {
-        apiPostNewLink(this, parsedURL);
+      if (!allLinks.find((l) => l.url === parsedURL)) {
+        let response = await apiPostNewLink(props.user, parsedURL);
+        // this will typically fail if the url is invalid
+        if (response.response.status >= 400) {
+          const errorContents = JSON.parse(response.request.response);
+          setLinks([links.pop()]);
+          context.setModalShow(true);
+          context.setModalYesOnclick( () => hideModal );
+          context.setModalYesText('OK');
+          context.setModalBody(
+            errorContents.url !== undefined ? errorContents.url : response.message
+          );
+          context.setModalNoText('');
+        }
       }
     }
   }
 
-  linkDelete (link) {
-    this.setState({
-      links: this.state.links.filter((l) => {
-        return l !== link;
-      }),
-    })
+  const linkDelete = (link) => {
+    setLinks(links.filter((l) => {
+      return l !== link;
+    }));
   }
 
-  linkAskDelete (link) {
-    this.setState({
-      isModalDisplayed: true,
-      modalYesMethod: () => {
-        this.linkDelete(link);
-        closeModal(this);
-      },
-      modalYesText: 'Yes',
-      modalBody: 'Are you sure you want to delete this link?',
-      modalNoText: 'No',
-      modalNoMethod: () => closeModal(this),
-    });
+  const linkAskDelete = (link) => {
+    context.setModalShow(true);
+    context.setModalYesOnclick( () => () => {
+        linkDelete(link);
+        hideModal();
+      });
+    context.setModalYesText('Yes');
+    context.setModalBody('Are you sure you want to delete this link?');
+    context.setModalNoText('No');
+    context.setModalNoOnclick( () => hideModal );
   }
 
-  linkUpdateInfo (url) {
-    return this.state.allLinks.find((l) => {
-      return (l.url === this.formatURLInput(url))
+  const linkUpdateInfo = (url) => {
+    return allLinks.find((l) => {
+      return (l.url === formatURLInput(url))
     })
   }
   //////////////////////////////////////
@@ -286,99 +319,98 @@ class LinkList extends React.Component {
   //////////////////////////////////////
   //  EDIT MODAL ONCLICK METHODS
   //////////////////////////////////////
-  modalSave (n) {
-    if (this.linkValidate(this.state.editedURL)) {
-      let parsedURL = this.formatURLInput(this.state.editedURL);
-      if (!this.state.allLinks.find((l) => l.url === parsedURL)) {
-        apiPostNewLink(this, parsedURL);
-        apiGetAllLinks(this);
+  const modalSave = (n) => {
+    console.log(editedURL)
+    if (linkValidate(editedURL)) {
+      let parsedURL = formatURLInput(editedURL);
+      if (!allLinks.find((l) => l.url === parsedURL)) {
+        apiPostNewLink(props.user, parsedURL);
+        fetchAllLinks();
       }
 
-      let newLinks = this.state.links.map((x) => x);
+      let newLinks = links.map((x) => x);
       newLinks[n] = {
-        url: this.state.editedURL,
-        title: this.state.editedURL,
+        url: editedURL,
+        title: editedURL,
         id: n,
         description: 'loading...',
         thumbnail: '',
         needsRendering: true
       };
 
-      this.setState({
-        isModalDisplayed: false,
-        links: newLinks,
-        editedURL: '',
-      });
-
-      this.modalInput.value = '';
+      context.setModalShow(false);
+      setLinks(newLinks);
+      setEditedURL('');
     }
   }
 
-  modalCancel () {
-    this.setState({
-      isModalDisplayed: false,
-      editedURL: '',
-    })
-    this.modalInput.value = '';
+  const modalCancel = () => {
+    context.setModalShow(false);
+    setEditedURL('');
   }
   //////////////////////////////////////
 
   //////////////////////////////////////
   //  RENDER PAGE ELEMENTS
   //////////////////////////////////////
-  renderPrivacy () {
-    if (this.props.mode === 'new' ||
-        this.props.mode === 'edit') {
+  const renderPrivacy = () => {
+    if (props.mode === 'new' ||
+        props.mode === 'edit') {
       return (
       <div className='panel privacy-panel'>
         <h3>Is this a private list: </h3>
         <input
           type = 'checkbox'
-          checked = {this.state.isPrivate}
-          onChange = {this.onChangePrivacy}
+          checked = {isPrivate}
+          onChange = {onChangePrivacy}
         />
       </div>
       )
     }
   }
 
-  renderListTitlePanel () {
+  const renderListTitlePanel = () => {
     return(
-      this.props.mode !== 'view' ? (
+      props.mode !== 'view' ? (
         <div className='panel title-and-owner-panel'>
           <h3>List title: </h3>
           <input
             className='input-field input-field-large'
             placeholder='Enter list title'
-            onChange={this.onChangeTitle}
-            value = {this.state.title}/>
+            onChange={onChangeTitle}
+            value = {title}/>
         </div>
       ):
       (
         <div className='panel title-and-owner-panel'>
-          <h3 className = 'list-title-privacy'>{this.state.title}</h3>
-          { this.props.mode === 'view' &&
-            this.state.owner === this.props.user.username ?
+          <h3 className = 'list-title-privacy'>{title}</h3>
+          { props.mode === 'view' &&
+            owner === props.user.username ?
             <>
               <h5 className = 'list-title-privacy'>{
-              this.state.isPrivate ?
+              isPrivate ?
               'private list' : ''
               }</h5>
               <button 
                 className='btn'
                 onClick={() => {
-                  this.props.history.push(`/edit/${this.props.params.id}/`);
-                  this.props.history.go(`/edit/${this.props.params.id}/`);
-                  //window.location.href = `/edit/${this.props.params.id}/`
+                  props.history.push(`/edit/${match.params.id}/`);
+                  props.history.go(`/edit/${match.params.id}/`);
+                  //window.location.href = `/edit/${match.params.id}/`
               }}>Edit list</button>
             </> : <></>
           }
-          { this.props.mode === 'view' ?
+          { props.mode === 'view' ?
           <>
             <button 
               className='btn'
               onClick={() => {
-                shareList(this, this.props.params.id, this.props.domainName);
+                context.setModalShow(true);
+                context.setModalBody(
+                  getShareListModalBody(match.params.id, props.domainName)
+                );
+                context.setModalYesOnclick( () => hideModal );
+                context.setModalYesText('OK');
             }}>Share list</button>
           </> : <></>
           }
@@ -387,9 +419,9 @@ class LinkList extends React.Component {
     )
   }
 
-  renderLinksPanel () {
+  const renderLinksPanel = () => {
     return (
-      this.state.links.map((link, n) => { return (
+      links.map((link, n) => { return (
         // link contents: title, description, thumbnail and url
         <div className='link-content' key={'link-content' + n}>
           {link.needsRendering ?
@@ -404,14 +436,14 @@ class LinkList extends React.Component {
               {link.isMinimized ?
               <button
                 className = 'img-btn img-btn-btn'
-                onClick = {() => this.linkMinimizeMaximize(n)}
+                onClick = {() => linkMinimizeMaximize(n)}
               ><img
                 className = 'img-btn'
                 alt = 'maximize'
                 src = {maximizeIcon}/></button> :
               <button
                 className = 'img-btn img-btn-btn'
-                onClick = {() => this.linkMinimizeMaximize(n)}
+                onClick = {() => linkMinimizeMaximize(n)}
               ><img
                 className = 'img-btn'
                 alt = 'minimize'
@@ -439,22 +471,22 @@ class LinkList extends React.Component {
               target = '_blank'>{link.url}</Link></h4>
           </div>
           {// edit and delete buttons
-            this.props.mode === 'new' ||
-            (this.props.mode === 'edit' &&
-              this.props.user.username === this.state.owner)
+            props.mode === 'new' ||
+            (props.mode === 'edit' &&
+              props.user.username === owner)
             ? (
             <div className='links-buttons' key={'links-buttons ' + n}>
               <button
                 className='btn'
                 key={`edit${n}`}
                 onClick={
-                  () => this.renderEditLinkModal(n)
+                  () => renderEditLinkModal(n)
                 }>Edit</button>
               <button
                 className='btn btn-delete'
                   key={`del${n}`}
                   onClick={
-                    () => this.linkAskDelete(link)
+                    () => linkAskDelete(link)
                   }>Delete</button>
             </div>
             ): <></>
@@ -464,70 +496,66 @@ class LinkList extends React.Component {
     )
   }
 
-  renderAddURLPanel () {
-    return (this.props.mode !== 'view') ?
+  const renderAddURLPanel = () => {
+    return (props.mode !== 'view') ?
     (
       <div className='panel new-url-field'>
         <h4>Add URL: </h4>
         <input
           className='input-field input-field-large'
           placeholder = 'Enter URL'
-          onChange = {this.onChangeNewURL}
-          value = {this.state.newURL} />
+          onChange = {onChangeNewURL}
+          value = {newURL} />
       <button
         className='btn'
         onClick={
-          () => this.linkAdd()
+          () => linkAdd()
         }>Add</button>
       </div>
     ):
     <></>
   }
 
-  renderEditLinkModal (n) {
-    this.setState({
-      isModalDisplayed: true,
-      modalYesMethod: () => this.modalSave(n),
-      modalYesText: 'Save',
-      modalNoMethod: () => this.modalCancel(),
-      modalNoText: 'Cancel',
-      editedURL: '',
-      modalBody: (
-        <input
-          className='input-field input-field-large'
-          onChange = {this.onChangeEditedURL}
-          placeholder = 'Enter URL'
-          ref = {modalInput => this.modalInput = modalInput}
-        />
-      ),
-    })
+  const renderEditLinkModal = (n) => {
+    context.setModalShow(true);
+    context.setModalYesOnclick( () => () => modalSave(n) );
+    context.setModalYesText('Save');
+    context.setModalNoOnclick( () => modalCancel );
+    context.setModalNoText('Cancel');
+    context.setModalBody(
+      <input
+        className='input-field input-field-large'
+        onChange = {onChangeEditedURL}
+        placeholder = 'Enter URL'
+      />
+    );
   }
 
-  renderSaveListPanel () {
+  const renderSaveListPanel = () => {
     return (
-    (this.props.mode === 'new' ||
-    (this.props.mode === 'edit' &&
-      this.props.user.username === this.state.owner)) ? (
+    (props.mode === 'new' ||
+    (props.mode === 'edit' &&
+      props.user.username === owner)) ? (
       <div className='panel save-list-panel'>
         <button
          className='btn btn-large'
          onClick={
-          this.linkListSave
+          linkListSave
         }>Save LinkList</button>
       </div>
     ): <></>
     )
   }
 
-  renderDeleteListPanel () {
+  const renderDeleteListPanel = () => {
     return (
-    (this.props.mode === 'edit' &&
-      this.props.user.username === this.state.owner) ? (
+    (props.mode === 'edit' &&
+      props.user.username === owner) ? (
       <div className='panel'>
         <button
          className='btn btn-large btn-delete'
          onClick={
-          () => this.linkListAskDelete()
+          () => linkListAskDelete()
         }>Delete LinkList</button>
       </div>
     ): <></>
@@ -535,50 +563,39 @@ class LinkList extends React.Component {
   }
   //////////////////////////////////////
 
-  render() {  
-    let content = <h5>loading...</h5>
+  let content = <h5>loading...</h5>
 
-    if (this.state.isLoaded || this.props.mode === 'new') {
-      if (this.props.mode === 'new' && this.props.user.username === null) {
-        content = (
-          <div className='error-message'>
-            You are not logged in.
-          </div>
-        )
-      } else {
-        content = (
-        <div className='list-content'>
-        {this.renderListTitlePanel()}
-        {this.renderPrivacy()}
-        {this.renderLinksPanel()}
-        {this.renderAddURLPanel()}
-        {this.renderSaveListPanel()}
-        {this.renderDeleteListPanel()}
-        <Modal
-          show = {this.state.isModalDisplayed}
-          modalYesMethod = {this.state.modalYesMethod}
-          modalYesText = {this.state.modalYesText}
-          modalNoMethod = {this.state.modalNoMethod}
-          modalNoText = {this.state.modalNoText}
-          body = {this.state.modalBody}
-        />
-        </div>
-      );
-    }
-    } else if (!this.state.isResponseOk) {
+  if (isLoaded || props.mode === 'new') {
+    if (props.mode === 'new' && props.user.username === null) {
       content = (
         <div className='error-message'>
-          {this.state.errorMessage}
+          You are not logged in.
         </div>
       )
-    }
-
-    return (
+    } else {
+      content = (
       <div className='list-content'>
-        {content}
+      {renderListTitlePanel()}
+      {renderPrivacy()}
+      {renderLinksPanel()}
+      {renderAddURLPanel()}
+      {renderSaveListPanel()}
+      {renderDeleteListPanel()}
+      </div>
+    );
+  }
+  } else if (!isResponseOk) {
+    content = (
+      <div className='error-message'>
+        {errorMessage}
       </div>
     )
   }
+  return (
+    <div className='list-content'>
+      {content}
+    </div>
+  )
 }
 
-export default withRouter(LinkList);
+export default LinkList;

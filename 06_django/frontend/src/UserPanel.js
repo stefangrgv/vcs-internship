@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { React, useState } from 'react';
+import { Link, Navigate, useOutletContext } from 'react-router-dom';
 import {
   apiUserGet,
   apiUserLogout,
@@ -7,128 +7,163 @@ import {
 } from './apiRequests';
 import {
   Modal,
-  closeModal,
-  shareList,
+  getShareListModalBody,
 } from './Modal';
 import './style.css';
 
-class UserPanel extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      isLoaded: false,
-      isModalDisplayed: false,
-    };
+function UserPanel (props) {
+  const context = useOutletContext();
+  let [isQuerySent, setQuerySent] = useState(false);
+  let [linklists, setLinklists] = useState([]);
+
+  const deleteList = async (id) => {
+    const response = await apiListDelete(id, props.user);
+    console.log(response);
+    if (response.status === 204) {
+      setQuerySent(false);
+      context.setModalShow(true);
+      context.setModalYesOnclick( () => () => hideModal);
+      context.setModalYesText('OK');
+      context.setModalNoText('');
+      context.setModalBody('List deleted successfully.');
+    } else {
+      let message = response.error.message;
+      if (response.response.status === 401) {
+        message = 'You are not logged in.';
+      } else if (response.response.status === 403) {
+        message = 'Permission denied: you do not own this list.';
+      } else if (response.response.status === 404) {
+        message = 'List not found!';
+      }
+      context.setModalDisplayed(true);
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalYesText('OK');
+      context.setModalNoText('');
+      context.setModalBody(message);
+    }
   }
 
-  askDeleteList (id) {
-    this.setState({
-      isModalDisplayed: true,
-      modalYesMethod: () => {
-        apiListDelete(this, id);
-        closeModal(this);
-      },
-      modalYesText: 'Yes',
-      modalBody: 'Are you sure you want to delete this linklist?',
-      modalNoText: 'No',
-      modalNoMethod: () => closeModal(this),
-    });
+  const askDeleteList = (id) => {
+    context.setModalShow(true);
+    context.setModalYesText('Yes');
+    context.setModalYesOnclick( () => async () => {
+      await deleteList(id);
+      hideModal();
+      setQuerySent(false);
+    } );
+    context.setModalNoOnclick( () => hideModal );
+    context.setModalNoText('No');
+    context.setModalBody('Are you sure you want to delete this linklist?');
   }
 
-  editList (id) {
-    window.location.href = `/edit/${id}/`;
+  const hideModal = () => {
+    context.setModalShow(false);
   }
 
-  createNewList () {
+  const editList = (id) => {
+    // window.location.href = `/edit/${id}/`;
+    console.log(`oops... i should go here: /edit/${id}/`)
+  }
+
+  const createNewList = () => {
     window.location.href = '/list/new/';
   }
 
-  logout () {
+  const logout = () => {
     localStorage.removeItem('kodjalinkUsername');
     localStorage.removeItem('kodjalinkUserToken');
 
-    apiUserLogout(this);
+    apiUserLogout();
     window.location.href = '/login/';
   }
 
-  render () {
-    let mylists;
-
-    if (!this.state.isLoaded) {
-      mylists = <h4>loading...</h4>;
-      apiUserGet(this);
+  const loadUserData = async () => {
+    let response = await apiUserGet(props.user.username, props.user.token);
+    if (response.statusText === 'OK') {
+      setLinklists(response.data.linklists);
     } else {
-      if (this.state.linklists.length === 0) {
-        mylists = (
+      context.setModalShow(true);
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalYesText('OK');
+      context.setModalNoText('');
+      context.setModalBody(response.response.status === 401 ? 'You are not logged in!' : response.message);
+    }
+    setQuerySent(true);
+  }
+
+  const shareList = (id) => {
+    context.setModalShow(true);
+    context.setModalBody(getShareListModalBody(id, props.domainName));
+    context.setModalNoText('');
+    context.setModalYesOnclick( () => hideModal );
+    context.setModalYesText('OK');
+  }
+
+  const renderMyLists = () => {
+    if (!isQuerySent) {
+      loadUserData();
+      return <h4>loading...</h4>;
+    } else {
+      if (linklists.length === 0) {
+        return (
           <div className='mylists-list'>
-              <h4>You have no linklists!</h4>
-            </div>    
+            <h4>You have no linklists!</h4>
+          </div>    
         )
       } else {
-        mylists = (
-          <div className='mylists-list'>
-            <ol>
-              {this.state.linklists.map((el) => {
-                return (
-                  <li className='mylists-list-item' key={el.id}>
-                    <Link
-                      className='hyperlink'
-                      to={`/list/${el.id}/`}
-                    >{el.title}</Link>
-                    <button
-                      className = 'btn'
-                      onClick = {() => shareList(this, el.id, this.props.domainName) }>
-                      Share
-                    </button>
-                    <button
-                      className='btn'
-                      onClick={
-                        () => this.editList(el.id)
-                      }>Edit</button>
-                    <button
-                      className='btn btn-delete'
-                      onClick={
-                        () => this.askDeleteList(el.id)
-                      }>Delete</button>
-                  </li>
-                )
-              })}
-            </ol>
-          </div>
+        return (
+          <div className='mylists-list'><ol>
+            {linklists.map((el) => {
+              return (
+                <li className='mylists-list-item' key={el.id}>
+                  <Link
+                    className='hyperlink'
+                    to={`/list/${el.id}/`}
+                  >{el.title}</Link>
+                  <button
+                    className = 'btn'
+                    onClick = {() => shareList(el.id) }>
+                    Share
+                  </button>
+                  <button
+                    className='btn'
+                    onClick={
+                      () => editList(el.id)
+                    }>Edit</button>
+                  <button
+                    className='btn btn-delete'
+                    onClick={
+                      () => askDeleteList(el.id)
+                    }>Delete</button>
+                </li>
+              )
+            })}
+          </ol></div>
         )
       }
-    }
+    }}
 
-    return (
-      <div className='panel'>
-        <div className='user-info'>
-          <h3>User Panel</h3>
-        </div>
-        <div className='panel mylists-panel'>
-          <h3>My linklists</h3>
-          {mylists}
-        </div>
-        <button
+  return (
+    <div className='panel'>
+      <div className='user-info'>
+        <h3>User Panel</h3>
+      </div>
+      <div className='panel mylists-panel'>
+        <h3>My linklists</h3>
+        {renderMyLists()}
+      </div>
+      <button
+        className='btn btn-large'
+        onClick={
+        createNewList
+      }>Create new linklist</button>
+      <button
           className='btn btn-large'
-          onClick={
-          this.createNewList
-        }>Create new linklist</button>
-        <button
-            className='btn btn-large'
-            onClick={() => {
-            window.location.href = '/myprofile/changepassword/';
-          }}>Change password</button>
-        <Modal
-          show = {this.state.isModalDisplayed}
-          modalYesMethod = {this.state.modalYesMethod}
-          modalYesText = {this.state.modalYesText}
-          modalNoMethod = {this.state.modalNoMethod}
-          modalNoText = {this.state.modalNoText}
-          body = {this.state.modalBody}
-        />
+          onClick={() => {
+          window.location.href = '/myprofile/changepassword/';
+        }}>Change password</button>
     </div>
-    )
-  }
+  )
 }
 
 export default UserPanel;

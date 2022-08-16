@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import './style.css';
 
 
-class Header extends React.Component {
-  renderTitle () {
+function Header (props) {
+  const renderTitle = () => {
     return (
     <div className='navbar-text'>
       <h4><Link
@@ -16,8 +16,8 @@ class Header extends React.Component {
     )
   }
 
-  renderNewButton () {
-    if (this.props.user.username !== null) {
+  const renderNewButton = () => {
+    if (props.user.username !== null) {
       return (
       <div className='navbar navbar-middle'>
         <h4 className='navbar-text'><Link
@@ -30,8 +30,8 @@ class Header extends React.Component {
     }
   }
 
-  renderGreeting () {
-    if (this.props.user.username === null) {
+  const renderGreeting = () => {
+    if (props.user.username === null) {
       return (
       <div className='navbar navbar-username'>
         <h4 className='navbar-text'>Hello, guest! Please <Link
@@ -46,31 +46,42 @@ class Header extends React.Component {
     }
     return (
       <div className='navbar navbar-username'>
-        <h4 className='navbar-text'>Logged in as {this.props.user.username}</h4>
+        <h4 className='navbar-text'>Logged in as {props.user.username}</h4>
         <button
           className='btn'
           onClick={() => window.location.href = '/myprofile/'} // use Router
         >Profile</button>
         <button
           className='btn'
-          onClick={this.props.user.logout}
+          onClick={logout}
         >Logout</button>
       </div>
       )
   }
 
-  render () {
-    let navbarType;
-    {console.trace('navbar rendered')}
-    (this.props.user.username === null) ? navbarType = 'navbar-guest' : navbarType = 'navbar';
-    return (
-      <nav className={navbarType}>
-        {this.renderTitle()}
-        {this.renderNewButton()}
-        {this.renderGreeting()}
-      </nav>
-    )
+  const logout = async () => {
+    let response = await props.user.logout();
+    if (response.status === 200) {
+      window.location.href = '/';
+    } else {
+      // MAKEMODAL
+      props.modalChange.setModalShow(true);
+      // props.modalChange.setModalYesOnclick( () => {
+      //   props.modalChange.setModalShow(false);
+      // });
+      props.modalChange.setModalYesText('OK');
+      props.modalChange.setModalNoText('');
+      props.modalChange.setModalBody(response.error.message);
+    }
   }
+
+  return (
+    <nav className={props.user.username === null ? 'navbar-guest' : 'navbar'}>
+      {renderTitle()}
+      {renderNewButton()}
+      {renderGreeting()}
+    </nav>
+  )
 }
 
 export default Header;

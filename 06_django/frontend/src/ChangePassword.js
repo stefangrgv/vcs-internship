@@ -1,79 +1,75 @@
-import React from 'react';
+import { React, useState} from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { apiChangePassword } from './apiRequests';
 import './UserPanel';
-import { Modal, closeModal } from './Modal';
+import { Modal } from './Modal';
 import './style.css';
 
 
-class ChangePassword extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      oldPassword: '',
-      newPasswordOne: '',
-      newPasswordTwo: '',
-    }
+function ChangePassword (props) {
+  const context = useOutletContext();
+  let [oldPassword, setOldPassword] = useState('');
+  let [newPasswordOne, setNewPasswordOne] = useState('');
+  let [newPasswordTwo, setNewPasswordTwo] = useState('');
 
-    this.oldPasswordChange = this.oldPasswordChange.bind(this);
-    this.newPasswordOneChange = this.newPasswordOneChange.bind(this);
-    this.newPasswordTwoChange = this.newPasswordTwoChange.bind(this);
-    this.submit = this.submit.bind(this);
+  const hideModal = () => {
+    context.setModalShow(false);
   }
 
-  oldPasswordChange (event) {
-    this.setState({
-      oldPassword: event.target.value,
-    });
+  const oldPasswordChange = (event) => {
+    setOldPassword(event.target.value);
   }
 
-  newPasswordOneChange (event) {
-    this.setState({
-      newPasswordOne: event.target.value,
-    });
+  const newPasswordOneChange = (event) => {
+    setNewPasswordOne(event.target.value);
   }
 
-  newPasswordTwoChange (event) {
-    this.setState({
-      newPasswordTwo: event.target.value,
-    });
+  const newPasswordTwoChange = (event) => {
+    setNewPasswordTwo(event.target.value);
   }
 
-  submit(event) {
-    if (this.state.oldPassword === '') {
-      this.setState({
-        isModalDisplayed: true,
-        modalYesMethod: () => closeModal(this),
-        modalYesText: 'OK',
-        modalBody: 'Old password is required!',
-      });
-    } else if (this.state.newPasswordOne === '' ||
-          this.state.newPasswordTwo === '') {
-            this.setState({
-              isModalDisplayed: true,
-              modalYesMethod: () => closeModal(this),
-              modalYesText: 'OK',
-              modalBody: 'New password is required!'
-            });
-    } else if (this.state.newPasswordOne !== this.state.newPasswordTwo) {
-      this.setState({
-        isModalDisplayed: true,
-        modalYesMethod: () => closeModal(this),
-        modalYesText: 'OK',
-        modalBody: 'New passwords don\'t match!'
-      });
-    } else if (this.state.newPasswordOne === this.state.oldPassword) {
-      this.setState({
-        isModalDisplayed: true,
-        modalYesMethod: () => closeModal(this),
-        modalYesText: 'OK',
-        modalBody: 'Your new password cannot be the same as your old password.'
-      });
+  const submit = async (event) => {
+    if (oldPassword === '') {
+      context.setModalShow(true);
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalYesText('OK');
+      context.setModalBody('Old password is required!');
+    } else if (newPasswordOne === '' ||
+        newPasswordTwo === '') {
+      context.setModalShow(true);
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalYesText('OK');
+      context.setModalBody('New password is required!');
+    } else if (newPasswordOne !== newPasswordTwo) {
+      context.setModalShow(true);
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalYesText( 'OK');
+      context.setModalBody('New passwords don\'t match!');
+    } else if (newPasswordOne === oldPassword) {
+      context.setModalShow(true);
+      context.setModalYesOnclick( () => hideModal );
+      context.setModalYesText('OK');
+      context.setModalBody('Your new password cannot be the same as your old password.');
     } else {
-      apiChangePassword(this);
+      let response = await apiChangePassword(props.user, oldPassword, newPasswordOne, newPasswordTwo);     
+      if (response.status === 200) {
+        context.setModalShow(true);
+        context.setModalYesOnclick( () => () => {
+          window.location.href = '/myprofile/';
+        });
+        context.setModalYesText('OK');
+        context.setModalNoText('');
+        context.setModalBody('Success!');
+      } else {
+        context.setModalShow(true);
+        context.setModalYesOnclick( () => hideModal );
+        context.setModalYesText('OK');
+        context.setModalNoText('');
+        context.setModalBody(response.response.status === 400 ? 'Old password is not correct!' : response.response.error);
+      }
     }
   }
 
-  render() {
   return (
     <div className='panel'>
     <h3>Change Password for {localStorage.getItem('kodjalinkUsername')}</h3>
@@ -84,7 +80,7 @@ class ChangePassword extends React.Component {
           className='input-field username-password-input-field'
           name='password'
           type='password'
-          onChange={this.oldPasswordChange}
+          onChange={oldPasswordChange}
         />
       </div>
       <div className='prompt-and-input-field'>
@@ -93,7 +89,7 @@ class ChangePassword extends React.Component {
           className='input-field username-password-input-field'
           name='password'
           type='password'
-          onChange={this.newPasswordOneChange}
+          onChange={newPasswordOneChange}
         />
       </div>
       <div className='prompt-and-input-field'>
@@ -102,26 +98,17 @@ class ChangePassword extends React.Component {
           className='input-field username-password-input-field'
           name='password'
           type='password'
-          onChange={this.newPasswordTwoChange}
+          onChange={newPasswordTwoChange}
         />
       </div>
     </div>
       <button
         className='btn'
-        onClick={this.submit}
+        onClick={submit}
       >Submit
       </button>
-     <Modal
-        show = {this.state.isModalDisplayed}
-        modalYesMethod = {this.state.modalYesMethod}
-        modalYesText = {this.state.modalYesText}
-        modalNoMethod = {this.state.modalNoMethod}
-        modalNoText = {this.state.modalNoText}
-        body = {this.state.modalBody}
-      />
   </div>
   )
-  }
 }
 
 export default ChangePassword;
