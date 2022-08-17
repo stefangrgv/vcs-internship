@@ -1,9 +1,6 @@
 import axios from "axios";
 
-const serverPort = 8000;
-const serverAddress = `${window.location.protocol}//${window.location.hostname}:${serverPort}`;
-
-export function apiSubmitNewList (user, title, links, isPrivate) {
+export function apiSubmitNewList (user, title, links, isPrivate, serverAddress) {
   return axios.post(`${serverAddress}/api/lists/`, {
       title: title,
       links: links,
@@ -17,7 +14,7 @@ export function apiSubmitNewList (user, title, links, isPrivate) {
   });
 }
 
-export function apiSubmitEditedList (id, user, title, links, isPrivate) {
+export function apiSubmitEditedList (id, user, title, links, isPrivate, serverAddress) {
   return axios.put(
     `${serverAddress}/api/lists/${id}/`, {
       title: title,
@@ -32,7 +29,7 @@ export function apiSubmitEditedList (id, user, title, links, isPrivate) {
   })
 }
 
-export function apiListDelete (id, user) {
+export function apiListDelete (id, user, serverAddress) {
   return axios.delete(
     `${serverAddress}/api/lists/${id}`,
     { headers: {
@@ -43,7 +40,7 @@ export function apiListDelete (id, user) {
   })
 }
 
-export function apiLoadLinkList (id, user) {
+export function apiLoadLinkList (id, user, serverAddress) {
   return axios.get(
     `${serverAddress}/api/lists/${id}/`, {
     headers: {
@@ -53,7 +50,7 @@ export function apiLoadLinkList (id, user) {
   })
 }
 
-export function apiGetAllLinks (user) {
+export function apiGetAllLinks (user, serverAddress) {
   return axios.get(`${serverAddress}/api/links/`, {
     headers: {
       'Authorization': `Token ${user.token}`,
@@ -62,7 +59,7 @@ export function apiGetAllLinks (user) {
   })
 }
 
-export function apiPostNewLink (user, url) {
+export function apiPostNewLink (user, url, serverAddress) {
   return axios.post(`${serverAddress}/api/links/`,
     {'url': url}, { headers: {
       'Content-Type': 'application/json',
@@ -73,11 +70,11 @@ export function apiPostNewLink (user, url) {
   })
 }
 
-export function apiUserLogout () {
+export function apiUserLogout (serverAddress) {
   return axios.post(`${serverAddress}/api/auth/logout/`);
 }
 
-export function apiUserGet (username, token) {
+export function apiUserGet (username, token, serverAddress) {
   return axios.get(`${serverAddress}/api/user/${username}/`,{
     headers: {'Authorization': `Token ${token}`}
   }).catch((error) => {
@@ -85,7 +82,7 @@ export function apiUserGet (username, token) {
   })
 }
 
-export function apiUserLogin (username, password) {
+export function apiUserLogin (username, password, serverAddress) {
   return axios.post(`${serverAddress}/api/auth/login/`, {
     'username': username,
     'password': password,
@@ -97,7 +94,7 @@ export function apiUserLogin (username, password) {
   })
 }
 
-export function apiPostNewUser(username, password, email) {
+export function apiPostNewUser(username, password, email, serverAddress) {
   return axios.post(`${serverAddress}/api/createuser/`, {
     'username': username,
     'password': password,
@@ -109,7 +106,7 @@ export function apiPostNewUser(username, password, email) {
   })
 }
 
-export function apiChangePassword(user, oldPassword, newPasswordOne, newPasswordTwo) {
+export function apiChangePassword(user, oldPassword, newPasswordOne, newPasswordTwo, serverAddress) {
   return axios.post(`${serverAddress}/api/auth/password/change/`, {
     new_password1: newPasswordOne,
     new_password2: newPasswordTwo,

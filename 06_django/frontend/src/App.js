@@ -7,7 +7,9 @@ import './style.css';
 
 function App (props) {
   const domainName = window.location.origin;
-  let user = new User();
+  const serverPort = 8000;
+  const serverAddress = `${window.location.protocol}//${window.location.hostname}:${serverPort}`;
+  let user = new User(serverAddress);
 
   let [modalVisible, setModalVisible] = useState(false);
   let [modalBody, setModalBody] = useState('');
@@ -43,6 +45,7 @@ function App (props) {
 
   const context = {
     domainName,
+    serverAddress,
     user,
     showMessageModal,
     showQuestionModal,

@@ -40,7 +40,7 @@ function LinkList (props) {
   let [errorMessage, setErrorMessage] = useState('');
 
   async function fetchAllLinks () {
-    let response = await apiGetAllLinks(context.user);
+    let response = await apiGetAllLinks(context.user, context.serverAddress);
     if (response.status === 200) {
       setAllLinks(response.data);
       setFetchingLinks(false);
@@ -50,7 +50,7 @@ function LinkList (props) {
   }
 
   async function fetchList () {
-    let response = await apiLoadLinkList(match.params.id, context.user);
+    let response = await apiLoadLinkList(match.params.id, context.user, context.serverAddress);
     if (response.status === 200) {
       setTitle(response.data.title);
       setLinks(response.data.links);
@@ -190,7 +190,7 @@ function LinkList (props) {
 
     if (props.mode === 'edit') {
       let response = await apiSubmitEditedList(
-        match.params.id, context.user, title, links, isPrivate);
+        match.params.id, context.user, title, links, isPrivate, context.serverAddress);
       context.showMessageModal();
 
       if (response.status === 200) {
@@ -204,7 +204,7 @@ function LinkList (props) {
       }
     } else {
       let response = await apiSubmitNewList(
-        context.user, title, links, isPrivate);
+        context.user, title, links, isPrivate, context.serverAddress);
 
       if (response.status === 201) {
         navigate(`/list/${response.data.id}/`);
@@ -240,7 +240,7 @@ function LinkList (props) {
       
       // if link is not present in the db, add it
       if (!allLinks.find((l) => l.url === parsedURL)) {
-        let response = await apiPostNewLink(context.user, parsedURL);
+        let response = await apiPostNewLink(context.user, parsedURL, context.serverAddress);
         // this will typically fail if the url is invalid
         if (response.response?.status >= 400) {
           const errorContents = JSON.parse(response.request.response);
@@ -272,11 +272,18 @@ function LinkList (props) {
   //////////////////////////////////////
   //  EDIT MODAL ONCLICK METHODS
   //////////////////////////////////////
-  const modalSave = (n) => {
+  const modalSave = async (n) => {
     if (linkNotEmptyOrPresent(editedURL)) {
       let parsedURL = formatURLInput(editedURL);
       if (!allLinks.find((l) => l.url === parsedURL)) {
-        apiPostNewLink(context.user, parsedURL);
+        let response = await apiPostNewLink(context.user, parsedURL, context.serverAddress);
+        if (response.response?.status >= 400) {
+          const errorContents = JSON.parse(response.request.response);
+          context.showMessageModal(
+            errorContents.url !== undefined ? errorContents.url : response.message
+          )
+          return;
+        }
         fetchAllLinks();
       }
 
@@ -509,7 +516,7 @@ function LinkList (props) {
             'Are you sure you want to delete this linklist?',
             'Yes',
             async () => {
-              await apiListDelete(match.params.id, context.user);
+              await apiListDelete(match.params.id, context.user, context.serverAddress);
               context.hideModal();
               navigate('/myprofile/');
             },

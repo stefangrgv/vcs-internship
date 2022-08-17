@@ -41,7 +41,8 @@ function ChangePassword (props) {
     } else if (newPasswordOne === oldPassword) {
       context.showMessageModal('Your new password cannot be the same as your old password.');
     } else {
-      let response = await apiChangePassword(context.user, oldPassword, newPasswordOne, newPasswordTwo);     
+      let response = await apiChangePassword(
+        context.user, oldPassword, newPasswordOne, newPasswordTwo, context.serverAddress);
       if (response.status === 200) {
         context.showMessageModal('Success!');
         context.setModalYesOnclick( () => () => {

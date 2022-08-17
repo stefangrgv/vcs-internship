@@ -48,9 +48,11 @@ function CreateUser (props) {
   }
 
   const submit = async () => {
-    let response = await apiPostNewUser(username, passwordOne, email);
+    let response = await apiPostNewUser(
+      username, passwordOne, email, context.serverAddress);
     if (response.status === 201) {
-      context.showMessageModal(`User ${username} created successfully! You can now login.`);
+      context.showMessageModal(
+        `User ${username} created successfully! You can now login.`);
       context.setModalYesOnclick( () => () => {
         context.hideModal();
         navigate('/login/');

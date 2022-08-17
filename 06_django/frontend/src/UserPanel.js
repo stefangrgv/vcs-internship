@@ -21,7 +21,7 @@ function UserPanel (props) {
   let [linklists, setLinklists] = useState([]);
 
   const deleteList = async (id) => {
-    const response = await apiListDelete(id, context.user);
+    const response = await apiListDelete(id, context.user, context.serverAddress);
     if (response.status === 204) {
       setQuerySent(false);
     } else {
@@ -38,7 +38,8 @@ function UserPanel (props) {
   }
 
   const loadUserData = async () => {
-    let response = await apiUserGet(context.user.username, context.user.token);
+    let response = await apiUserGet(
+      context.user.username, context.user.token, context.serverAddress);
     if (response.statusText === 'OK') {
       setLinklists(response.data.linklists);
     } else {

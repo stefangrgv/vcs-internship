@@ -24,7 +24,7 @@ function Login (props) {
   }
 
   const submit = async (event) => {
-    let response = await apiUserLogin(username, password);
+    let response = await apiUserLogin(username, password, context.serverAddress);
     if (response.statusText === 'OK') {
       context.user.setUserCredentials(username, response.data.key)
       navigate('/myprofile/');
