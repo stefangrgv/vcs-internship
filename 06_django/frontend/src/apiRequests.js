@@ -1,9 +1,5 @@
 import axios from "axios";
 
-const closeModal = () => {
-
-}
-
 const serverPort = 8000;
 const serverAddress = `${window.location.protocol}//${window.location.hostname}:${serverPort}`;
 

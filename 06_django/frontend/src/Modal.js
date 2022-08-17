@@ -1,7 +1,7 @@
 import React from 'react';
 import './style.css';
 
-export function getShareListModalBody (id, domainName) {
+export function createShareModalBody (id, domainName) {
   return (
     <div className='prompt-and-input-field'>
       <div className='modal-share-list-body'>
@@ -24,19 +24,17 @@ export function Modal (props) {
         <div className='modal-main'>
           {props.body}
           <div className='modal-buttons'>
-          <button
-            onClick = {props.yesOnclick}
-            className = 'btn btn-modal'>
-              {props.yesText}
-          </button>
-          {
-            props.noText !== '' ?
-              <button
-                onClick={props.noOnclick}
-                className = 'btn btn-modal'>
-                  {props.noText}
-              </button> : <></>
-          }
+            <button
+              onClick = {props.yesOnclick}
+              className = 'btn btn-modal'>
+                {props.yesText}
+            </button>
+          {props.noText !== '' ?
+            <button
+              onClick={props.noOnclick}
+              className = 'btn btn-modal'>
+                {props.noText}
+            </button> : <></>}
           </div>
         </div>
       </div>

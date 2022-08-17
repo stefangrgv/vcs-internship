@@ -7,6 +7,7 @@ import {
   Link,
   useOutletContext,
   useMatch,
+  useNavigate,
 } from 'react-router-dom';
 import {
   apiSubmitNewList,
@@ -16,7 +17,7 @@ import {
   apiPostNewLink,
   apiListDelete,
 } from './apiRequests';
-import { getShareListModalBody } from './Modal';
+import { createShareModalBody } from './Modal';
 import './style.css';
 import minimizeIcon from './img/minimize.png';
 import maximizeIcon from './img/maximize.png';
@@ -24,6 +25,7 @@ import maximizeIcon from './img/maximize.png';
 function LinkList (props) {
   const context = useOutletContext();
   const match = useMatch(`/${props.mode === 'edit' ? 'edit' : 'list'}/:id`);
+  const navigate = useNavigate();
 
   let [isResponseOk, setResponseOk] = useState(false);
   let [isLoaded, setLoaded] = useState(false);
@@ -38,43 +40,38 @@ function LinkList (props) {
   let [errorMessage, setErrorMessage] = useState('');
 
   async function fetchAllLinks () {
-    let response = await apiGetAllLinks(props.user);
+    let response = await apiGetAllLinks(context.user);
     if (response.status === 200) {
       setAllLinks(response.data);
       setFetchingLinks(false);
     } else {
-      context.setModalShow(true);
-      context.setModalYesText('OK');
-      context.setModalYesOnclick( () => hideModal );
-      context.setModalNoText('');
-      context.setModalBody(response.message);
+      context.showMessageModal(response.message);
+    }
+  }
+
+  async function fetchList () {
+    let response = await apiLoadLinkList(match.params.id, context.user);
+    if (response.status === 200) {
+      setTitle(response.data.title);
+      setLinks(response.data.links);
+      setOwner(response.data.owner);
+      setPrivate(response.data.private);
+      setLoaded(true);
+      setResponseOk(true);
+    } else {
+      let message = response.message;
+      if (response.response.status === 401) {
+        message = 'You are not logged in.';
+      } else if (response.response.status === 403) {
+        message = 'Permission denied: this list is private.';
+      } else if (response.response.status === 404) {
+        message = 'List not found!';
+      }
+      setErrorMessage(message);
     }
   }
 
   useEffect( () => {
-    async function fetchList () {
-      let response = await apiLoadLinkList(match.params.id, props.user);
-      if (response.status === 200) {
-        setTitle(response.data.title);
-        setLinks(response.data.links);
-        setOwner(response.data.owner);
-        setPrivate(response.data.private);
-        setLoaded(true);
-        setResponseOk(true);
-      } else {
-        let message = response.message;
-        console.log(response)
-        if (response.response.status === 401) {
-          message = 'You are not logged in.';
-        } else if (response.response.status === 403) {
-          message = 'Permission denied: this list is private.';
-        } else if (response.response.status === 404) {
-          message = 'List not found!';
-        }
-        setErrorMessage(message);
-      }
-    }
-
     if (props.mode !== 'new') {
       fetchList();
     }
@@ -104,12 +101,8 @@ function LinkList (props) {
     }
   });
 
-  const hideModal = () => {
-    context.setModalShow(false);
-  }
-
   const linkMinimizeMaximize = (id) => {
-    let newLinks = links;
+    let newLinks = links.slice();
     newLinks[id].isMinimized = !newLinks[id].isMinimized;
     setLinks(newLinks);
   }
@@ -188,11 +181,7 @@ function LinkList (props) {
   //////////////////////////////////////
   const linkListSave = async () => {
     if (title.replaceAll(' ', '') === '') {
-      context.setModalShow(true);
-      context.setModalYesText('OK');
-      context.setModalYesOnclick( () => hideModal );
-      context.setModalNoText('');
-      context.setModalBody('Please enter a title!');
+      context.showMessageModal('Please enter a title!');
       return null
     }
 
@@ -200,43 +189,30 @@ function LinkList (props) {
     trimLinkTitle();
 
     if (props.mode === 'edit') {
-      let response = await apiSubmitEditedList(match.params.id, props.user, title, links, isPrivate);
-      context.setModalShow(true);
-      context.setModalYesText('OK');
-      context.setModalNoText('');
-      
+      let response = await apiSubmitEditedList(
+        match.params.id, context.user, title, links, isPrivate);
+      context.showMessageModal();
+
       if (response.status === 200) {
-        context.setModalYesOnclick( () => () => window.location.href = `/list/${match.params.id}/` );
+        context.setModalYesOnclick( () => () => {
+          navigate(`/list/${match.params.id}/`)
+          context.hideModal();
+        });
         context.setModalBody('Success!');
       } else {
-        context.setModalYesOnclick( () => hideModal);
         context.setModalBody(response.error.message);
       }
     } else {
-      let response = await apiSubmitNewList(props.user, title, links, isPrivate);
+      let response = await apiSubmitNewList(
+        context.user, title, links, isPrivate);
+
       if (response.status === 201) {
-        window.location.href = `/list/${response.data.id}/`;
-        // <Navigate to={`/list/${response.data.id}/`} replace={true}/>  
+        navigate(`/list/${response.data.id}/`);
+        navigate(0);
       } else {
-        context.setModalShow(true);
-        context.setModalYesText('OK');
-        context.setModalYesOnclick( () => hideModal );
-        context.setModalNoText('');
-        context.setModalBody(response.error.message);
+        context.showMessageModal(response.error.message);
       }
     }
-  }
-
-  const linkListAskDelete = (link) => {
-    context.setModalShow(true);
-    context.setModalYesText('Yes');
-    context.setModalYesOnclick( () => async () => {
-      await apiListDelete(match.params.id, props.user);
-      window.location.href = '/myprofile/';
-    });
-    context.setModalNoText('No');
-    context.setModalNoOnclick( () => hideModal );
-    context.setModalBody('Are you sure you want to delete this linklist?');
   }
   //////////////////////////////////////
 
@@ -244,22 +220,14 @@ function LinkList (props) {
   //  LINK OPERATIONS:
   //    ADD / EDIT / DELETE / GET
   //////////////////////////////////////
-  const linkValidate = (url) => {
+  const linkNotEmptyOrPresent = (url) => {
     if (url.replaceAll(' ', '') === '') {
-      context.setModalShow(true);
-      context.setModalYesText('OK');
-      context.setModalYesOnclick( () => hideModal );
-      context.setModalBody('Please enter a non-empty URL.');
-      context.setModalNoText('');
+      context.showMessageModal('Please enter a non-empty URL.');
       return false;
     }
 
     if (links.find((l) => l.url === formatURLInput(url))) {
-      context.setModalShow(true);
-      context.setModalYesOnclick( () => hideModal );
-      context.setModalYesText('OK');
-      context.setModalBody('This link is already in the list.');
-      context.setModalNoText('');
+      context.showMessageModal('This link is already in the list.')
       return false;
     }
 
@@ -267,46 +235,31 @@ function LinkList (props) {
   }
 
   const linkAdd = async () => {
-    if (linkValidate(newURL)) {
+    if (linkNotEmptyOrPresent(newURL)) {
       let parsedURL = formatURLInput(newURL)
-      setLinks([...links, {url: parsedURL, needsRendering: true}]);
-      setNewURL('');
       
       // if link is not present in the db, add it
       if (!allLinks.find((l) => l.url === parsedURL)) {
-        let response = await apiPostNewLink(props.user, parsedURL);
+        let response = await apiPostNewLink(context.user, parsedURL);
         // this will typically fail if the url is invalid
-        if (response.response.status >= 400) {
+        if (response.response?.status >= 400) {
           const errorContents = JSON.parse(response.request.response);
-          setLinks([links.pop()]);
-          context.setModalShow(true);
-          context.setModalYesOnclick( () => hideModal );
-          context.setModalYesText('OK');
-          context.setModalBody(
+          context.showMessageModal(
             errorContents.url !== undefined ? errorContents.url : response.message
-          );
-          context.setModalNoText('');
+          )
+          return;
         }
       }
+      setLinks([...links, {url: parsedURL, needsRendering: true}]);      
+      setNewURL('');
     }
   }
+
 
   const linkDelete = (link) => {
     setLinks(links.filter((l) => {
       return l !== link;
     }));
-  }
-
-  const linkAskDelete = (link) => {
-    context.setModalShow(true);
-    context.setModalYesOnclick( () => () => {
-        linkDelete(link);
-        hideModal();
-      });
-    context.setModalYesText('Yes');
-    context.setModalBody('Are you sure you want to delete this link?');
-    context.setModalNoText('No');
-    context.setModalNoOnclick( () => hideModal );
   }
 
   const linkUpdateInfo = (url) => {
@@ -320,33 +273,27 @@ function LinkList (props) {
   //  EDIT MODAL ONCLICK METHODS
   //////////////////////////////////////
   const modalSave = (n) => {
-    console.log(editedURL)
-    if (linkValidate(editedURL)) {
+    if (linkNotEmptyOrPresent(editedURL)) {
       let parsedURL = formatURLInput(editedURL);
       if (!allLinks.find((l) => l.url === parsedURL)) {
-        apiPostNewLink(props.user, parsedURL);
+        apiPostNewLink(context.user, parsedURL);
         fetchAllLinks();
       }
 
       let newLinks = links.map((x) => x);
       newLinks[n] = {
-        url: editedURL,
-        title: editedURL,
+        url: parsedURL,
+        title: parsedURL,
         id: n,
         description: 'loading...',
         thumbnail: '',
         needsRendering: true
       };
 
-      context.setModalShow(false);
+      context.hideModal();
       setLinks(newLinks);
       setEditedURL('');
     }
-  }
-
-  const modalCancel = () => {
-    context.setModalShow(false);
-    setEditedURL('');
   }
   //////////////////////////////////////
 
@@ -385,7 +332,7 @@ function LinkList (props) {
         <div className='panel title-and-owner-panel'>
           <h3 className = 'list-title-privacy'>{title}</h3>
           { props.mode === 'view' &&
-            owner === props.user.username ?
+            owner === context.user.username ?
             <>
               <h5 className = 'list-title-privacy'>{
               isPrivate ?
@@ -394,34 +341,30 @@ function LinkList (props) {
               <button 
                 className='btn'
                 onClick={() => {
-                  props.history.push(`/edit/${match.params.id}/`);
-                  props.history.go(`/edit/${match.params.id}/`);
-                  //window.location.href = `/edit/${match.params.id}/`
+                  navigate(`/edit/${match.params.id}/`);
               }}>Edit list</button>
             </> : <></>
           }
           { props.mode === 'view' ?
-          <>
             <button 
               className='btn'
               onClick={() => {
-                context.setModalShow(true);
-                context.setModalBody(
-                  getShareListModalBody(match.params.id, props.domainName)
+                context.showMessageModal(
+                  createShareModalBody(match.params.id, context.domainName)
                 );
-                context.setModalYesOnclick( () => hideModal );
-                context.setModalYesText('OK');
-            }}>Share list</button>
-          </> : <></>
+            }}>Share list</button> : <></>
           }
         </div>
       )
     )
   }
 
-  const renderLinksPanel = () => {
-    return (
-      links.map((link, n) => { return (
+  const renderLinksPanel = () => { return (
+      links.map((link, n) => { 
+        if (link === undefined) {
+          return <></>;
+        }
+        return (
         // link contents: title, description, thumbnail and url
         <div className='link-content' key={'link-content' + n}>
           {link.needsRendering ?
@@ -473,23 +416,46 @@ function LinkList (props) {
           {// edit and delete buttons
             props.mode === 'new' ||
             (props.mode === 'edit' &&
-              props.user.username === owner)
+              context.user.username === owner)
             ? (
             <div className='links-buttons' key={'links-buttons ' + n}>
               <button
                 className='btn'
                 key={`edit${n}`}
                 onClick={
-                  () => renderEditLinkModal(n)
+                  () => context.showQuestionModal(
+                    <input
+                      className='input-field input-field-large'
+                      onChange = {onChangeEditedURL}
+                      placeholder = 'Enter URL'
+                    />,
+                    'Save',
+                    () => {
+                      modalSave(n)
+                    },
+                    'Cancel',
+                    () => {
+                      setEditedURL('');
+                      context.setModalBody();
+                      context.hideModal();
+                    }
+                  )
                 }>Edit</button>
               <button
                 className='btn btn-delete'
                   key={`del${n}`}
                   onClick={
-                    () => linkAskDelete(link)
+                    () => context.showQuestionModal(
+                      'Are you sure you want to delete this link?',
+                      'Yes',
+                      () => {
+                        linkDelete(link);
+                        context.hideModal();
+                      },
+                      'No',
+                    )
                   }>Delete</button>
-            </div>
-            ): <></>
+            </div>): <></>
           }
         </div>
       )})
@@ -516,49 +482,40 @@ function LinkList (props) {
     <></>
   }
 
-  const renderEditLinkModal = (n) => {
-    context.setModalShow(true);
-    context.setModalYesOnclick( () => () => modalSave(n) );
-    context.setModalYesText('Save');
-    context.setModalNoOnclick( () => modalCancel );
-    context.setModalNoText('Cancel');
-    context.setModalBody(
-      <input
-        className='input-field input-field-large'
-        onChange = {onChangeEditedURL}
-        placeholder = 'Enter URL'
-      />
-    );
-  }
-
   const renderSaveListPanel = () => {
     return (
     (props.mode === 'new' ||
     (props.mode === 'edit' &&
-      props.user.username === owner)) ? (
+      context.user.username === owner)) ? (
       <div className='panel save-list-panel'>
         <button
          className='btn btn-large'
          onClick={
           linkListSave
         }>Save LinkList</button>
-      </div>
-    ): <></>
+      </div>): <></>
     )
   }
 
   const renderDeleteListPanel = () => {
     return (
     (props.mode === 'edit' &&
-      props.user.username === owner) ? (
+      context.user.username === owner) ? (
       <div className='panel'>
         <button
          className='btn btn-large btn-delete'
          onClick={
-          () => linkListAskDelete()
-        }>Delete LinkList</button>
-      </div>
-    ): <></>
+          () => context.showQuestionModal(
+            'Are you sure you want to delete this linklist?',
+            'Yes',
+            async () => {
+              await apiListDelete(match.params.id, context.user);
+              context.hideModal();
+              navigate('/myprofile/');
+            },
+            'No'
+        )}>Delete LinkList</button>
+      </div>): <></>
     )
   }
   //////////////////////////////////////
@@ -566,21 +523,20 @@ function LinkList (props) {
   let content = <h5>loading...</h5>
 
   if (isLoaded || props.mode === 'new') {
-    if (props.mode === 'new' && props.user.username === null) {
+    if (props.mode === 'new' && context.user.username === null) {
       content = (
         <div className='error-message'>
           You are not logged in.
-        </div>
-      )
+        </div>)
     } else {
       content = (
       <div className='list-content'>
-      {renderListTitlePanel()}
-      {renderPrivacy()}
-      {renderLinksPanel()}
-      {renderAddURLPanel()}
-      {renderSaveListPanel()}
-      {renderDeleteListPanel()}
+        {renderListTitlePanel()}
+        {renderPrivacy()}
+        {renderLinksPanel()}
+        {renderAddURLPanel()}
+        {renderSaveListPanel()}
+        {renderDeleteListPanel()}
       </div>
     );
   }
@@ -588,14 +544,12 @@ function LinkList (props) {
     content = (
       <div className='error-message'>
         {errorMessage}
-      </div>
-    )
+      </div>)
   }
   return (
     <div className='list-content'>
       {content}
-    </div>
-  )
+    </div>)
 }
 
 export default LinkList;

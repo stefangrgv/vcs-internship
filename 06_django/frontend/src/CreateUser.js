@@ -1,21 +1,22 @@
-import { React, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import {
-  apiPostNewUser,
-} from './apiRequests';
+  React,
+  useState
+} from 'react';
+import {
+  useOutletContext,
+  useNavigate,
+} from 'react-router-dom';
+import { apiPostNewUser } from './apiRequests';
 import './style.css';
 
 
 function CreateUser (props) {
   const context = useOutletContext();
+  const navigate = useNavigate();
   let [username, setUsername] = useState('');
   let [passwordOne, setPasswordOne] = useState('');
   let [passwordTwo, setPasswordTwo] = useState('');
   let [email, setEmail] = useState('');
-
-  const hideModal = () => {
-    context.setModalShow(false);
-  }
 
   const usernameChange = (event) => {
     setUsername(event.target.value);
@@ -49,11 +50,11 @@ function CreateUser (props) {
   const submit = async () => {
     let response = await apiPostNewUser(username, passwordOne, email);
     if (response.status === 201) {
-      context.setModalShow(true);
-      context.setModalYesOnclick( () => () => window.location.href = '/login/' );
-      context.setModalYesText('OK');
-      context.setModalNoText('');
-      context.setModalBody(`User ${username} created successfully! You can now login.`);
+      context.showMessageModal(`User ${username} created successfully! You can now login.`);
+      context.setModalYesOnclick( () => () => {
+        context.hideModal();
+        navigate('/login/');
+      } );
     } else {
       const errorContents = JSON.parse(response.request.response);
       let message;
@@ -64,17 +65,16 @@ function CreateUser (props) {
       } else {
         message = errorContents;
       }
-      context.setModalShow(true);
-      context.setModalYesOnclick( () => hideModal );
-      context.setModalYesText('OK');
-      context.setModalNoText('');
-      context.setModalBody(message);
+      context.showMessageModal(message);
     }
   }
 
-  let userInfo = isUsernameOk() ? <></> : <div className='error-message'>Please enter a valid username.</div>;
-  let passwordInfo = isPasswordOk() ? <></> : <div className='error-message'>Passwords do not match.</div>;
-  let emailInfo = isEmailOk() ? <></> : <div className='error-message'>Please enter a valid email.</div>;
+  let userInfo = isUsernameOk() ? <></>
+  : <div className='error-message'>Please enter a valid username.</div>;
+  let passwordInfo = isPasswordOk() ? <></>
+  : <div className='error-message'>Passwords do not match.</div>;
+  let emailInfo = isEmailOk() ? <></>
+  : <div className='error-message'>Please enter a valid email.</div>;
 
   return (
     <div className='panel'>

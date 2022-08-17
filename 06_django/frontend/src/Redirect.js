@@ -1,22 +1,19 @@
 import React from 'react';
-import  { Navigate, useParams } from 'react-router-dom';
+import  { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import './style.css';
 
 
 function Redirect (props) {
-  // componentDidMount () {
-  //   setTimeout(() => {
-  //     window.location.replace(this.props.params.url); // use router
-  //   }, 500);
-  // }
-
   const params = useParams();
+  useEffect ( () => {
+      setTimeout(() => {
+      window.location.replace(params.url);
+    }, 1000);
+  });
+  
   return (
-      <>
-      <h3>Redirecting...</h3>
-      <Navigate to={params.url} replace={true}/> 
-      {/* how to do that with navigate? */}
-      </>
+    <h3>Redirecting to <i>{params.url}</i></h3>
   )
 }
 

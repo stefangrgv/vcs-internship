@@ -2,18 +2,52 @@ import { React, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import { Modal } from './Modal';
+import { User } from './user';
 import './style.css';
 
 function App (props) {
-  let [modalShow, setModalShow] = useState(false);
+  const domainName = window.location.origin;
+  let user = new User();
+
+  let [modalVisible, setModalVisible] = useState(false);
   let [modalBody, setModalBody] = useState('');
   let [modalYesOnclick, setModalYesOnclick] = useState();
   let [modalYesText, setModalYesText] = useState('');
   let [modalNoOnclick, setModalNoOnclick] = useState();
   let [modalNoText, setModalNoText] = useState('');
 
-  const modalChange = {
-    setModalShow,
+  const showModal = () => {
+    setModalVisible(true);
+  }
+
+  const hideModal = () => {
+    setModalVisible(false);
+  }
+
+  const showMessageModal = (body) => {
+    showModal();
+    setModalBody(body);
+    setModalYesText('OK');
+    setModalYesOnclick( () => hideModal );
+    setModalNoText('');
+  }
+
+  const showQuestionModal = (body, yesText, yesOnclick, noText, noOnclick = hideModal) => {
+    showModal();
+    setModalBody(body);
+    setModalYesText(yesText);
+    setModalYesOnclick( () => yesOnclick );
+    setModalNoText(noText);
+    setModalNoOnclick( () => noOnclick );
+  }
+
+  const context = {
+    domainName,
+    user,
+    showMessageModal,
+    showQuestionModal,
+    showModal,
+    hideModal,
     setModalBody,
     setModalYesOnclick,
     setModalYesText,
@@ -24,14 +58,13 @@ function App (props) {
   return (
   <>
     <Header
-      user = {props.user}
-      modalChange = {modalChange}
+      context = {context}
     />
     <Outlet
-     context = {modalChange}
+      context = {context}
     />
     <Modal
-      show = {modalShow}
+      show = {modalVisible}
       body = {modalBody}
       yesOnclick = {modalYesOnclick}
       yesText = {modalYesText}

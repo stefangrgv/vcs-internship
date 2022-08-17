@@ -1,16 +1,19 @@
-import { React, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import {
+  React,
+  useState,
+} from 'react';
+import {
+  useOutletContext,
+  useNavigate,
+} from 'react-router-dom';
 import { apiUserLogin } from './apiRequests';
 import './style.css';
 
 function Login (props) {
   const context = useOutletContext();
+  const navigate = useNavigate();
   let [username, setUsername] = useState('');
   let [password, setPassword] = useState('');
-
-  const hideModal = () => {
-    context.setModalShow(false);
-  }
 
   const usernameChange = (event) => {
     setUsername(event.target.value);
@@ -23,9 +26,8 @@ function Login (props) {
   const submit = async (event) => {
     let response = await apiUserLogin(username, password);
     if (response.statusText === 'OK') {
-      localStorage.setItem('kodjalinkUsername', username);
-      localStorage.setItem('kodjalinkUserToken', response.data.key);
-      window.location.href = '/myprofile/';
+      context.user.setUserCredentials(username, response.data.key)
+      navigate('/myprofile/');
     } else {
       let message = response.message;
       if (response.response.status === 400) {
@@ -34,11 +36,7 @@ function Login (props) {
         message = 'Error in request to server.';
       }
       
-      context.setModalShow(true);
-      context.setModalYesText('OK');
-      context.setModalYesOnclick( () => hideModal );
-      context.setModalNoText('');
-      context.setModalBody(message);
+      context.showMessageModal(message);
     }
   }
 
