@@ -1,26 +1,24 @@
 import React from 'react';
 import './style.css';
 
-export function createShareModalBody (id, domainName) {
+function createShareModalBody (id, domainName) {
   return (
     <div className='prompt-and-input-field'>
       <div className='modal-share-list-body'>
-      <h4>Link:</h4>
-      <input
-        className='input-field input-field-large'
-        value = {`${domainName}/list/${id}/`}
-        disabled = {true}
-      ></input>
+        <h4>Link:</h4>
+        <input
+          className='input-field input-field-large'
+          value = {`${domainName}/list/${id}/`}
+          disabled = {true}/>
       </div>
     </div>
   )
 }
 
-export function Modal (props) {
+function Modal (props) {
   return (
       <div className={
-        props.show ? "modal display-block" : "modal display-none"
-      }>
+        props.show ? "modal display-block" : "modal display-none"}>
         <div className='modal-main'>
           {props.body}
           <div className='modal-buttons'>
@@ -40,3 +38,5 @@ export function Modal (props) {
       </div>
   )
 }
+
+export {Modal, createShareModalBody};

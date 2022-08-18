@@ -2,7 +2,7 @@ import { React, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import { Modal } from './Modal';
-import { User } from './user';
+import User from './user';
 import './style.css';
 
 function App (props) {
@@ -18,29 +18,29 @@ function App (props) {
   let [modalNoOnclick, setModalNoOnclick] = useState();
   let [modalNoText, setModalNoText] = useState('');
 
-  const showModal = () => {
+  const showModal = () => () => { // remove if not used
     setModalVisible(true);
   }
 
-  const hideModal = () => {
+  const hideModal = () => () => {
     setModalVisible(false);
   }
 
   const showMessageModal = (body) => {
-    showModal();
+    setModalVisible(true);
     setModalBody(body);
     setModalYesText('OK');
-    setModalYesOnclick( () => hideModal );
+    setModalYesOnclick(hideModal);
     setModalNoText('');
   }
 
   const showQuestionModal = (body, yesText, yesOnclick, noText, noOnclick = hideModal) => {
-    showModal();
+    setModalVisible(true);
     setModalBody(body);
     setModalYesText(yesText);
-    setModalYesOnclick( () => yesOnclick );
+    setModalYesOnclick(yesOnclick);
     setModalNoText(noText);
-    setModalNoOnclick( () => noOnclick );
+    setModalNoOnclick(noOnclick);
   }
 
   const context = {
@@ -51,6 +51,7 @@ function App (props) {
     showQuestionModal,
     showModal,
     hideModal,
+    setModalVisible,
     setModalBody,
     setModalYesOnclick,
     setModalYesText,

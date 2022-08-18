@@ -1,14 +1,15 @@
 import { React } from 'react';
-import {
-  Link,
-  useNavigate,
-} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './style.css';
 
 
 function Header (props) {
   const context = props.context;
   const navigate = useNavigate();
+
+  const navigateToUserpanel = () => {
+    navigate('/myprofile/');
+  }
 
   const renderTitle = () => {
     return (
@@ -55,7 +56,7 @@ function Header (props) {
         <h4 className='navbar-text'>Logged in as {context.user.username}</h4>
         <button
           className='btn'
-          onClick={() => navigate('/myprofile/')}
+          onClick={navigateToUserpanel}
         >Profile</button>
         <button
           className='btn'
@@ -65,13 +66,15 @@ function Header (props) {
       )
   }
 
-  const logout = async () => {
-    let response = await context.user.logout();
-    if (response.status === 200) {
-      navigate('/');
-    } else {
-      context.showMessageModal(response.error.message);
-    }
+  const logout = () => {
+    context.user.logout()
+    .then((response) => {
+      if (response.status === 200) {
+        navigate('/');
+      } else {
+        context.showMessageModal(response.error.message);
+      }
+    });
   }
 
   return (

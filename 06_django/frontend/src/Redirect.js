@@ -7,7 +7,7 @@ import './style.css';
 function Redirect (props) {
   const params = useParams();
   useEffect ( () => {
-      setTimeout(() => {
+    setTimeout(() => {
       window.location.replace(params.url);
     }, 1000);
   });

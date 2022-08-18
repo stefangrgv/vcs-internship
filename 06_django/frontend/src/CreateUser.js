@@ -1,11 +1,5 @@
-import {
-  React,
-  useState
-} from 'react';
-import {
-  useOutletContext,
-  useNavigate,
-} from 'react-router-dom';
+import { React, useState } from 'react';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import { apiPostNewUser } from './apiRequests';
 import './style.css';
 
@@ -13,10 +7,10 @@ import './style.css';
 function CreateUser (props) {
   const context = useOutletContext();
   const navigate = useNavigate();
-  let [username, setUsername] = useState('');
-  let [passwordOne, setPasswordOne] = useState('');
-  let [passwordTwo, setPasswordTwo] = useState('');
-  let [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [passwordOne, setPasswordOne] = useState('');
+  const [passwordTwo, setPasswordTwo] = useState('');
+  const [email, setEmail] = useState('');
 
   const usernameChange = (event) => {
     setUsername(event.target.value);
@@ -47,36 +41,31 @@ function CreateUser (props) {
     return (email !== '' && /\S+@\S+\.\S+/.test(email))
   }
 
-  const submit = async () => {
-    let response = await apiPostNewUser(
-      username, passwordOne, email, context.serverAddress);
-    if (response.status === 201) {
-      context.showMessageModal(
-        `User ${username} created successfully! You can now login.`);
-      context.setModalYesOnclick( () => () => {
-        context.hideModal();
-        navigate('/login/');
-      } );
-    } else {
-      const errorContents = JSON.parse(response.request.response);
-      let message;
-      if (typeof(errorContents.username) !== 'undefined') {
-        message = `Error in username field: ${errorContents.username}`;
-      } else if (typeof(errorContents.email) !== 'undefined') {
-        message = `Error in email field: ${errorContents.email}`;
-      } else {
-        message = errorContents;
-      }
-      context.showMessageModal(message);
-    }
+  const successOnclick = () => () => {
+    context.setModalVisible(false);
+    navigate('/login/');
   }
 
-  let userInfo = isUsernameOk() ? <></>
-  : <div className='error-message'>Please enter a valid username.</div>;
-  let passwordInfo = isPasswordOk() ? <></>
-  : <div className='error-message'>Passwords do not match.</div>;
-  let emailInfo = isEmailOk() ? <></>
-  : <div className='error-message'>Please enter a valid email.</div>;
+  const submit = () => {
+    apiPostNewUser(username, passwordOne, email, context.serverAddress)
+    .then((response) => {
+      if (response.status === 201) {
+        context.showMessageModal(
+          `User ${username} created successfully! You can now login.`);
+        context.setModalYesOnclick(successOnclick);
+      } else {
+        // show the error message
+        const errorContents = JSON.parse(response.request.response);
+        let message = errorContents;
+        if (typeof(errorContents.username) !== 'undefined') {
+          message = `Error in username field: ${errorContents.username}`;
+        } else if (typeof(errorContents.email) !== 'undefined') {
+          message = `Error in email field: ${errorContents.email}`;
+        }
+        context.showMessageModal(message);
+      }
+    });
+  }
 
   return (
     <div className='panel'>
@@ -88,8 +77,7 @@ function CreateUser (props) {
             className='input-field username-password-input-field'
             name='username'
             type='text'
-            onChange={usernameChange}
-          />
+            onChange={usernameChange}/>
         </div>
         <div className='prompt-and-input-field'>
           <h5>Password</h5>
@@ -97,8 +85,7 @@ function CreateUser (props) {
           className='input-field username-password-input-field'
           name='password'
           type='password'
-          onChange={passwordOneChange}
-          />
+          onChange={passwordOneChange}/>
         </div>
         <div className='prompt-and-input-field'>
           <h5>Repeat password</h5>
@@ -106,8 +93,7 @@ function CreateUser (props) {
           className='input-field username-password-input-field'
           name='password'
           type='password'
-          onChange={passwordTwoChange}
-          />
+          onChange={passwordTwoChange}/>
         </div>
         <div className='prompt-and-input-field'>
           <h5>Email</h5>
@@ -115,18 +101,19 @@ function CreateUser (props) {
           className='input-field username-password-input-field' 
           name='email'
           type='text'
-          onChange={emailChange}
-          />
+          onChange={emailChange}/>
       </div>
-    {userInfo}
-    {passwordInfo}
-    {emailInfo}
+      <div className='error-message'>
+        {isUsernameOk() ? <></> : <h3>Please enter a valid username.</h3>}
+        {isPasswordOk() ? <></> : <h3>Passwords do not match.</h3>}
+        {isEmailOk() ? <></> : <h3>Please enter a valid email.</h3>}
+      </div>
     </div>
       <button
         className = 'btn'
         disabled = {!(isUsernameOk() && isPasswordOk() && isEmailOk())}
-        onClick = {submit}
-      >Register</button>
+        onClick = {submit}>
+      Register</button>
     </div>
   )
 }

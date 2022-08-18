@@ -1,6 +1,6 @@
 import { apiUserLogout } from "./apiRequests";
 
-export class User {
+class User {
     constructor (serverAddress) {
       this.serverAddress = serverAddress;
       this.loadUser();
@@ -17,11 +17,13 @@ export class User {
       this.token = localStorage.getItem('kodjalinkUserToken');
     }
   
-    async logout () {
+    logout () {
       localStorage.removeItem('kodjalinkUsername');
       localStorage.removeItem('kodjalinkUserToken');
       this.loadUser();
       
-      return await apiUserLogout(this.serverAddress);
+      return apiUserLogout(this.serverAddress);
     }
   }
+
+  export default User;

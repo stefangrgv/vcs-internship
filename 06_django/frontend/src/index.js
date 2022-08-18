@@ -1,13 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
 import Home from './Home';
-import LinkList from './LinkList';
+import LinkList from './LinkList/LinkList';
 import Login from './Login';
 import CreateUser from './CreateUser';
 import UserPanel from './UserPanel';

@@ -14,9 +14,9 @@ import './style.css';
 function ChangePassword (props) {
   const context = useOutletContext();
   const navigate = useNavigate();
-  let [oldPassword, setOldPassword] = useState('');
-  let [newPasswordOne, setNewPasswordOne] = useState('');
-  let [newPasswordTwo, setNewPasswordTwo] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPasswordOne, setNewPasswordOne] = useState('');
+  const [newPasswordTwo, setNewPasswordTwo] = useState('');
 
   const oldPasswordChange = (event) => {
     setOldPassword(event.target.value);
@@ -30,7 +30,12 @@ function ChangePassword (props) {
     setNewPasswordTwo(event.target.value);
   }
 
-  const submit = async (event) => {
+  const onClickSuccess = () => () => {
+    context.hideModal();
+    navigate('/myprofile/');
+  }
+
+  const submit = () => {
     if (oldPassword === '') {
       context.showMessageModal('Old password is required!');
     } else if (newPasswordOne === '' ||
@@ -41,21 +46,20 @@ function ChangePassword (props) {
     } else if (newPasswordOne === oldPassword) {
       context.showMessageModal('Your new password cannot be the same as your old password.');
     } else {
-      let response = await apiChangePassword(
-        context.user, oldPassword, newPasswordOne, newPasswordTwo, context.serverAddress);
-      if (response.status === 200) {
-        context.showMessageModal('Success!');
-        context.setModalYesOnclick( () => () => {
-          context.hideModal();
-          navigate('/myprofile/');
-        });
-      } else {
-        context.showMessageModal(
-          response.response.status === 400 ?
-          'Old password is not correct!' :
-          response.response.error
-        );
-      }
+      const request = apiChangePassword(
+        context.user, oldPassword, newPasswordOne, newPasswordTwo, context.serverAddress)
+      .then((response) => {
+        if (response.status === 200) {
+          context.showMessageModal('Success!');
+          context.setModalYesOnclick(onClickSuccess);
+        } else {
+          context.showMessageModal(
+            response.response.status === 400 ?
+            'Old password is not correct!' :
+            response.response.error
+          );
+        }
+      })
     }
   }
 
