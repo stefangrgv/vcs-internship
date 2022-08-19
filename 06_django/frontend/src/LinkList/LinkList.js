@@ -5,7 +5,7 @@ import { Link, useOutletContext, useMatch,
 import { apiPostNewLink, apiListDelete } from '../apiRequests';
 import { createShareModalBody } from '../Modal';
 import { fetchAllLinks, fetchList } from './requests';
-import Create from './Create';
+import CreateEdit from './CreateEdit';
 import View from './View';
 import Edit from './Edit';
 
@@ -183,14 +183,10 @@ function LinkList (props) {
   //     {errorMessage}</div>)
   // }
 
-  switch (props.mode) {
-    case 'new':
-      return (<Create/>);
-    case 'view':
-      return (<View/>)
-    case 'edit':
-      return (<Edit/>)
+  if (props.mode === 'view') {
+    return <View/>
   }
+  return <CreateEdit mode={props.mode}/>
 }
 
 export default LinkList;

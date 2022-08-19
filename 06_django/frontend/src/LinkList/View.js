@@ -1,9 +1,14 @@
-import { React, useState, useEffect } from 'react';
-import { useMatch, useNavigate, useOutletContext } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useMatch, useNavigate, useOutletContext } from 'react-router-dom';
 
-import { fetchAllLinks, fetchList } from './requests';
-import { formatThumbnails, trimLinkTitle,  } from './functions';
-import { apiGetAllLinks } from '../apiRequests';
+import { createShareModalBody } from '../Modal';
+import { renderListTitlePanelView, linkMinimizeMaximize } from './functions';
+import { apiGetAllLinks, apiLoadLinkList } from '../apiRequests';
+
+import TitlePanel from './ListPanels/TitlePanel';
+import LinkContents from './ListPanels/LinkContents';
+
+
 
 const View = (props) => {
   const context = useOutletContext();
@@ -20,18 +25,33 @@ const View = (props) => {
   const [title, setTitle] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const linkToggleMinimized = (id) => {
+    let newLinks = links.slice();
+    newLinks[id].isMinimized = !newLinks[id].isMinimized;
+    setLinks(newLinks);
+  }
+  
   useEffect( () => {
     apiGetAllLinks(context.user, context.serverAddress)
     .then((response) => {
-      console.log(response.data)
       setAllLinks(response.data);
       setFetchingLinks(false);
     });
+    apiLoadLinkList(match.params.id, context.user, context.serverAddress)
+    .then((response) => {
+      setLinks(response.data.links);
+      setTitle(response.data.title);
+      setOwner(response.data.owner);
+      setPrivate(response.data.isPrivate);
+      //errorhandle
+    })
   }, []);
 
-  return (
-    <div>View</div>
-  )
+  return(
+    <>
+    <TitlePanel mode='view' title={title} owner={owner} isPrivate={isPrivate}></TitlePanel>
+    <LinkContents mode='view' links={links} linkToggleMinimized={linkToggleMinimized}></LinkContents>
+    </>
+  ) 
 }
-
 export default View;
