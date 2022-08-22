@@ -1,17 +1,7 @@
-import {
-  React,
-  useState,
-  useEffect,
-} from 'react';
-import {
-  Link,
-  useOutletContext,
-  useNavigate,
-} from 'react-router-dom';
-import {
-  apiUserGet,
-  apiListDelete,
-} from './apiRequests';
+import React, { useState, useEffect } from 'react';
+import { Link, useOutletContext, useNavigate } from 'react-router-dom';
+
+import { apiUserGet, apiListDelete } from './apiRequests';
 import { createShareModalBody } from './Modal';
 import './style.css';
 
@@ -25,11 +15,7 @@ function UserPanel (props) {
 
   useEffect (() => {
     if (deleteListId !== null) {
-      context.showQuestionModal(
-        'Are you sure you want to delete this linklist?',
-        'Yes',
-        confirmDeleteList,
-        'No');
+      context.showQuestionModal('Are you sure you want to delete this linklist?', 'Yes', confirmDeleteList, 'No');
       setDeleteListId(null);
     } else {
       context.hideModal();
@@ -47,7 +33,7 @@ function UserPanel (props) {
   }
   
   const deleteList = () => {
-    apiListDelete(deleteListId, context.user, context.serverAddress)
+    apiListDelete(deleteListId, context.user)
     .then((response) => {
       if (response.status === 204) {
         setQuerySent(false);
@@ -66,8 +52,7 @@ function UserPanel (props) {
   }
 
   const loadUserData = () => {
-    apiUserGet(
-      context.user.username, context.user.token, context.serverAddress)
+    apiUserGet(context.user.username, context.user.token)
     .then((response) => {
       if (response.statusText === 'OK') {
         setLinklists(response.data.linklists);
@@ -106,53 +91,25 @@ function UserPanel (props) {
     if (linklists.length === 0) {
       return (<h4>You have no linklists!</h4>)
     }
-    return (
-      <ol>{linklists.map((el) => {
-        return (<li
-          className='mylists-list-item'
-          key={el.id}>
-            <Link
-              className='hyperlink'
-              to={`/list/${el.id}/`}>
-            {el.title}</Link>
-            <button
-              className = 'btn'
-              id={el.id}
-              onClick = {onClickShareList}>
-            Share</button>
-            <button
-              className='btn'
-              id={el.id}
-              onClick={onClickEditList}>
-            Edit</button>
-            <button
-              className='btn btn-delete'
-              id={el.id}
-              onClick={askDeleteList}>
-            Delete</button>
-          </li>)
-      })}</ol>)
-    }
+    return (<ol>{linklists.map((el) => {
+      return (<li className='mylists-list-item' key={el.id}>
+        <Link className='hyperlink' to={`/list/${el.id}/`}>{el.title}</Link>
+        <button className='btn' id={el.id} onClick={onClickShareList}>Share</button>
+        <button className='btn' id={el.id} onClick={onClickEditList}>Edit</button>
+        <button className='btn btn-delete' id={el.id} onClick={askDeleteList}>Delete</button>
+      </li>)
+    })}</ol>)
+  }
 
-  return (
-    <div className='panel'>
-      <div className='user-info'>
-        <h3>User Panel</h3>
-      </div>
-      <div className='panel mylists-panel'>
-        <h3>My linklists</h3>
-        <div className='mylists-list'>
-          {renderMyLists()}
-        </div>
-      </div>
-      <button
-        className='btn btn-large'
-        onClick={navigateNewList}>Create new linklist</button>
-      <button
-        className='btn btn-large'
-        onClick={navigateChangePassword}>Change password</button>
+  return (<div className='panel'>
+    <div className='user-info'><h3>User Panel</h3></div>
+    <div className='panel mylists-panel'>
+      <h3>My linklists</h3>
+      <div className='mylists-list'>{renderMyLists()}</div>
     </div>
-  )
+    <button className='btn btn-large' onClick={navigateNewList}>Create new linklist</button>
+    <button className='btn btn-large' onClick={navigateChangePassword}>Change password</button>
+  </div>)
 }
 
 export default UserPanel;

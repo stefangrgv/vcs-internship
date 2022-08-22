@@ -1,5 +1,6 @@
-import { React, useState } from 'react';
+import React, { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
+
 import { apiPostNewUser } from './apiRequests';
 import './style.css';
 
@@ -33,8 +34,7 @@ function CreateUser (props) {
   }
 
   const isPasswordOk = () => {
-    return ((passwordOne === passwordTwo &&
-        passwordOne !== ''))
+    return (passwordOne && (passwordOne === passwordTwo))
   }
 
   const isEmailOk = () => {
@@ -47,7 +47,7 @@ function CreateUser (props) {
   }
 
   const submit = () => {
-    apiPostNewUser(username, passwordOne, email, context.serverAddress)
+    apiPostNewUser(username, passwordOne, email)
     .then((response) => {
       if (response.status === 201) {
         context.showMessageModal(
@@ -73,49 +73,26 @@ function CreateUser (props) {
       <div className='credentials-panel'>
         <div className='prompt-and-input-field'>
           <h5>Username</h5>
-          <input 
-            className='input-field username-password-input-field'
-            name='username'
-            type='text'
-            onChange={usernameChange}/>
+          <input className='input-field username-password-input-field' name='username' type='text' onChange={usernameChange}/>
         </div>
+        {!isUsernameOk() ? <div className='error-message'>Please enter a valid username.</div> : <></>}
         <div className='prompt-and-input-field'>
           <h5>Password</h5>
-          <input 
-          className='input-field username-password-input-field'
-          name='password'
-          type='password'
-          onChange={passwordOneChange}/>
+          <input  className='input-field username-password-input-field' name='password' type='password' onChange={passwordOneChange}/>
         </div>
         <div className='prompt-and-input-field'>
           <h5>Repeat password</h5>
-          <input
-          className='input-field username-password-input-field'
-          name='password'
-          type='password'
-          onChange={passwordTwoChange}/>
+          <input className='input-field username-password-input-field' name='password' type='password' onChange={passwordTwoChange}/>
         </div>
+        {!isPasswordOk() ? <div className='error-message'>Passwords do not match.</div> : <></>}
         <div className='prompt-and-input-field'>
           <h5>Email</h5>
-          <input
-          className='input-field username-password-input-field' 
-          name='email'
-          type='text'
-          onChange={emailChange}/>
+          <input className='input-field username-password-input-field' name='email' type='text' onChange={emailChange}/>
       </div>
-      <div className='error-message'>
-        {isUsernameOk() ? <></> : <h3>Please enter a valid username.</h3>}
-        {isPasswordOk() ? <></> : <h3>Passwords do not match.</h3>}
-        {isEmailOk() ? <></> : <h3>Please enter a valid email.</h3>}
-      </div>
+      {!isEmailOk() ? <div className='error-message'>Please enter a valid email.</div> : <></>}
     </div>
-      <button
-        className = 'btn'
-        disabled = {!(isUsernameOk() && isPasswordOk() && isEmailOk())}
-        onClick = {submit}>
-      Register</button>
-    </div>
-  )
+    <button className='btn' disabled={!(isUsernameOk() && isPasswordOk() && isEmailOk())} onClick={submit}>Register</button>
+  </div>)
 }
 
 export default CreateUser;

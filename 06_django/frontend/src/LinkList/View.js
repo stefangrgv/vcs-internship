@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useMatch, useNavigate, useOutletContext } from 'react-router-dom';
-
-import { createShareModalBody } from '../Modal';
-import { renderListTitlePanelView, linkMinimizeMaximize } from './functions';
-import { apiGetAllLinks, apiLoadLinkList } from '../apiRequests';
+import { useMatch, useOutletContext } from 'react-router-dom';
 
 import TitlePanel from './ListPanels/TitlePanel';
 import LinkContents from './ListPanels/LinkContents';
-
-
+import { apiGetAllLinks, apiLoadLinkList } from '../apiRequests';
 
 const View = (props) => {
   const context = useOutletContext();
   const match = useMatch(`/${props.mode === 'edit' ? 'edit' : 'list'}/:id`);
-  const navigate = useNavigate();
 
-  const [isResponseOk, setResponseOk] = useState(false);
-  const [isLoaded, setLoaded] = useState(false);
   const [isFetchingLinks, setFetchingLinks] = useState(false);
   const [allLinks, setAllLinks] = useState([]);
   const [isPrivate, setPrivate] = useState(false);
@@ -24,20 +16,14 @@ const View = (props) => {
   const [links, setLinks] = useState([]);
   const [title, setTitle] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
-  const linkToggleMinimized = (id) => {
-    let newLinks = links.slice();
-    newLinks[id].isMinimized = !newLinks[id].isMinimized;
-    setLinks(newLinks);
-  }
   
   useEffect( () => {
-    apiGetAllLinks(context.user, context.serverAddress)
+    apiGetAllLinks(context.user)
     .then((response) => {
       setAllLinks(response.data);
       setFetchingLinks(false);
     });
-    apiLoadLinkList(match.params.id, context.user, context.serverAddress)
+    apiLoadLinkList(match.params.id, context.user)
     .then((response) => {
       setLinks(response.data.links);
       setTitle(response.data.title);
@@ -47,11 +33,9 @@ const View = (props) => {
     })
   }, []);
 
-  return(
-    <>
-    <TitlePanel mode='view' title={title} owner={owner} isPrivate={isPrivate}></TitlePanel>
-    <LinkContents mode='view' links={links} linkToggleMinimized={linkToggleMinimized}></LinkContents>
-    </>
-  ) 
+  return(<>
+    <TitlePanel mode='view' id={match.params.id} title={title} owner={owner} isPrivate={isPrivate}></TitlePanel>
+    <LinkContents mode='view' links={links} setLinks={setLinks}></LinkContents>
+  </>) 
 }
 export default View;

@@ -9,10 +9,10 @@ const AddLinkPanel = (props) => {
 
   const addLink = () => {
     if (props.isLinkNotEmptyOrPresent(newURL)) {
-      let parsedURL = props.formatURLInput(newURL)
+      const parsedURL = props.formatURLInput(newURL)
       // if link is not present in the db, add it
       if (!props.allLinks.find((l) => l.url === parsedURL)) {
-        apiPostNewLink(context.user, parsedURL, context.serverAddress)
+        apiPostNewLink(context.user, parsedURL)
         .then((response) => {
           // response will typically yield an error if the url is invalid
           if (response.response?.status >= 400) {

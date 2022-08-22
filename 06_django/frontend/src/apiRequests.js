@@ -1,22 +1,22 @@
 import axios from 'axios';
+import { SERVERADDRESS } from './globalVariables';
 
-function apiSubmitNewList (user, title, links, isPrivate, serverAddress) {
-  return axios.post(`${serverAddress}/api/lists/`, {
-      title: title,
-      links: links,
-      private: isPrivate,
-    }, { headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Token ${user.token}`,
-      }
-  }).catch((error) => {
+function apiSubmitNewList (user, title, links, isPrivate) {
+  return axios.post(`${SERVERADDRESS}/api/lists/`, {
+    title: title,
+    links: links,
+    private: isPrivate,
+  }, { headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Token ${user.token}`,
+  }}).catch((error) => {
     return error
   });
 }
 
-function apiSubmitEditedList (id, user, title, links, isPrivate, serverAddress) {
+function apiSubmitEditedList (id, user, title, links, isPrivate) {
   return axios.put(
-    `${serverAddress}/api/lists/${id}/`, {
+    `${SERVERADDRESS}/api/lists/${id}/`, {
       title: title,
       links: links,
       private: isPrivate,
@@ -29,9 +29,9 @@ function apiSubmitEditedList (id, user, title, links, isPrivate, serverAddress) 
   })
 }
 
-function apiListDelete (id, user, serverAddress) {
+function apiListDelete (id, user) {
   return axios.delete(
-    `${serverAddress}/api/lists/${id}`,
+    `${SERVERADDRESS}/api/lists/${id}`,
     { headers: {
         'Authorization': `Token ${user.token}`,
     }}
@@ -40,9 +40,9 @@ function apiListDelete (id, user, serverAddress) {
   })
 }
 
-function apiLoadLinkList (id, user, serverAddress) {
+function apiLoadLinkList (id, user) {
   return axios.get(
-    `${serverAddress}/api/lists/${id}/`, {
+    `${SERVERADDRESS}/api/lists/${id}/`, {
     headers: {
       'Authorization': `Token ${user.token}`,
   }}).catch((error) => {
@@ -50,8 +50,8 @@ function apiLoadLinkList (id, user, serverAddress) {
   })
 }
 
-function apiGetAllLinks (user, serverAddress) {
-  return axios.get(`${serverAddress}/api/links/`, {
+function apiGetAllLinks (user) {
+  return axios.get(`${SERVERADDRESS}/api/links/`, {
     headers: {
       'Authorization': `Token ${user.token}`,
   }}).catch((error) => {
@@ -59,8 +59,8 @@ function apiGetAllLinks (user, serverAddress) {
   })
 }
 
-function apiPostNewLink (user, url, serverAddress) {
-  return axios.post(`${serverAddress}/api/links/`,
+function apiPostNewLink (user, url) {
+  return axios.post(`${SERVERADDRESS}/api/links/`,
     {'url': url}, { headers: {
       'Content-Type': 'application/json',
       'Authorization': `Token ${user.token}`,
@@ -70,15 +70,15 @@ function apiPostNewLink (user, url, serverAddress) {
   })
 }
 
-function apiUserLogout (serverAddress) {
-  return axios.post(`${serverAddress}/api/auth/logout/`)
+function apiUserLogout () {
+  return axios.post(`${SERVERADDRESS}/api/auth/logout/`)
   .catch((error) => {
     return error;
   });
 }
 
-function apiUserLogin (username, password, serverAddress) {
-  return axios.post(`${serverAddress}/api/auth/login/`, {
+function apiUserLogin (username, password) {
+  return axios.post(`${SERVERADDRESS}/api/auth/login/`, {
     'username': username,
     'password': password,
   }, { headers: {
@@ -89,16 +89,16 @@ function apiUserLogin (username, password, serverAddress) {
   })
 }
 
-function apiUserGet (username, token, serverAddress) {
-  return axios.get(`${serverAddress}/api/user/${username}/`,{
+function apiUserGet (username, token) {
+  return axios.get(`${SERVERADDRESS}/api/user/${username}/`,{
     headers: {'Authorization': `Token ${token}`}
   }).catch((error) => {
     return error;
   })
 }
 
-function apiPostNewUser(username, password, email, serverAddress) {
-  return axios.post(`${serverAddress}/api/createuser/`, {
+function apiPostNewUser(username, password, email) {
+  return axios.post(`${SERVERADDRESS}/api/createuser/`, {
     'username': username,
     'password': password,
     'email': email,
@@ -109,8 +109,8 @@ function apiPostNewUser(username, password, email, serverAddress) {
   })
 }
 
-function apiChangePassword(user, oldPassword, newPasswordOne, newPasswordTwo, serverAddress) {
-  return axios.post(`${serverAddress}/api/auth/password/change/`, {
+function apiChangePassword(user, oldPassword, newPasswordOne, newPasswordTwo) {
+  return axios.post(`${SERVERADDRESS}/api/auth/password/change/`, {
     new_password1: newPasswordOne,
     new_password2: newPasswordTwo,
     old_password: oldPassword,

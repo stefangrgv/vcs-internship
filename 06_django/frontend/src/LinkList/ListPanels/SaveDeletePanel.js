@@ -1,14 +1,14 @@
 import React from 'react'
 import { useOutletContext } from 'react-router-dom';
 import { apiSubmitNewList, apiSubmitEditedList } from '../../apiRequests';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 // apiPOSTnew/editedlist
 // where is the new 
 // add ifs
 const SaveDeletePanel = (props) => {
   const context = useOutletContext();
   const navigate = useNavigate();
-  const match = useMatch(`/${props.mode === 'edit' ? 'edit' : 'list'}/:id`);
 
   const saveList = () => {
     if (props.title.replaceAll(' ', '') === '') {
@@ -20,15 +20,14 @@ const SaveDeletePanel = (props) => {
     props.trimLinkTitle();
     
     let request = props.mode === 'new' ?
-    apiSubmitEditedList(match.params.id, context.user, props.title, props.links, props.isPrivate, context.serverAddress) :
-    apiSubmitNewList(context.user, props.title, props.links, props.isPrivate, context.serverAddress)
+    apiSubmitNewList(context.user, props.title, props.links, props.isPrivate) :
+    apiSubmitEditedList(props.id, context.user, props.title, props.links, props.isPrivate)
 
     request.then((response) => {
-      if (response.status === 200) {
-        navigate(`/list/${match.params.id}/`);
-      } else if (response.status === 201) {
-        alert('6to ne navigira6 be? mai tr da e v gorniq component')
-        navigate(`/list/${match.params.id}/`);
+      if (response.status === 200) {  // newly created
+        navigate(`/list/${props.id}/`);
+      } else if (response.status === 201) { // edit saved
+        navigate(`/list/${props.id}/`);
         navigate(0);
       }
       // } else {
@@ -37,10 +36,21 @@ const SaveDeletePanel = (props) => {
     });
   }
 
+  const deleteList = () => {
+
+  }
+
+  const askDeleteList = (event) => {
+
+  }
+
   return (<div className='panel save-list-panel'>
     <button
     className='btn btn-large'
     onClick={saveList}>Save LinkList</button>
+    <button
+    className='btn btn-large btn-delete'
+    onClick={askDeleteList}>Delete LinkList</button>
   </div>)
 }
 

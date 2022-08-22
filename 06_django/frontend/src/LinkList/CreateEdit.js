@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useMatch, useNavigate, useOutletContext } from 'react-router-dom';
+import { useMatch, useOutletContext } from 'react-router-dom';
 
 import { apiGetAllLinks, apiLoadLinkList } from '../apiRequests';
 
@@ -7,16 +7,13 @@ import TitlePanel from './ListPanels/TitlePanel';
 import LinkContents from './ListPanels/LinkContents';
 import AddLinkPanel from './ListPanels/AddLinkPanel';
 import SaveDeletePanel from './ListPanels/SaveDeletePanel';
-import { fetchList } from './requests';
 
 const CreateEdit = (props) => {
   const context = useOutletContext();
   const match = useMatch(`/${props.mode === 'edit' ? 'edit' : 'list'}/:id`);
-  const navigate = useNavigate();
 
   const [isResponseOk, setResponseOk] = useState(false);
   const [isFetchingLinks, setFetchingLinks] = useState(false);
-  const [editedURL, setEditedURL] = useState('');
   const [allLinks, setAllLinks] = useState([]);
   const [isPrivate, setPrivate] = useState(false);
   const [owner, setOwner] = useState('');
@@ -26,7 +23,7 @@ const CreateEdit = (props) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const fetchAllLinks = () => {
-    apiGetAllLinks(context.user, context.serverAddress)
+    apiGetAllLinks(context.user)
     .then((response) => {
       setAllLinks(response.data);
       setFetchingLinks(false);
@@ -68,13 +65,13 @@ const CreateEdit = (props) => {
   }
 
   useEffect( () => {
-    apiGetAllLinks(context.user, context.serverAddress)
+    apiGetAllLinks(context.user)
     .then((response) => {
       setAllLinks(response.data);
       setFetchingLinks(false);
     });
     if (props.mode === 'edit') {
-      apiLoadLinkList(match.params.id, context.user, context.serverAddress)
+      apiLoadLinkList(match.params.id, context.user)
       .then((response) => {
         setLinks(response.data.links);
         setTitle(response.data.title);
@@ -86,19 +83,18 @@ const CreateEdit = (props) => {
   }, []);
 
   useEffect( () => { // i don't like how this looks, without reading it
-    if (links.find((l) => l.needsRendering &&
-        !isFetchingLinks)) {
+    if (links.find((l) => l.needsRendering && !isFetchingLinks)) {
       setLinks(links.map((link) => {
-        if (link.needsRendering) {
+        if (!link.needsRendering) {
+          return link;
+        } else {
           let linkDbEntry = updateLinkInfo(link.url);
-          if (linkDbEntry === undefined) {
+          if (!linkDbEntry) {
             setFetchingLinks(true);
             fetchAllLinks();
             return link;
           }
           return linkDbEntry;
-        } else {
-          return link;
         }
       }));
     }
@@ -144,25 +140,13 @@ const CreateEdit = (props) => {
     return true;
   }
   
-  return (
-    <>
-      <TitlePanel mode={props.mode} title={title} setTitle={setTitle}/>
-      <LinkContents mode={props.mode} owner={owner} links={links}
-        setLinks={setLinks} setEditedURL={setEditedURL}/>
-      <AddLinkPanel
-        allLinks={allLinks}
-        links={links}
-        setLinks={setLinks}
-        isLinkNotEmptyOrPresent={isLinkNotEmptyOrPresent}
-        formatURLInput={formatURLInput}/>
-      <SaveDeletePanel
-        title={title}
-        links={links}
-        isPrivate={isPrivate}
-        formatThumbnails={formatThumbnails}
-        trimLinkTitle={trimLinkTitle}/>
-    </>
-  )
+  return (<><TitlePanel mode={props.mode} title={title} setTitle={setTitle}/>
+    <LinkContents mode={props.mode} owner={owner} links={links} allLinks={allLinks}
+      isLinkNotEmptyOrPresent={isLinkNotEmptyOrPresent} setLinks={setLinks} formatURLInput={formatURLInput}/>
+    <AddLinkPanel allLinks={allLinks} links={links} setLinks={setLinks}
+      isLinkNotEmptyOrPresent={isLinkNotEmptyOrPresent} formatURLInput={formatURLInput}/>
+    <SaveDeletePanel id={match.params.id} mode={props.mode} title={title} links={links} isPrivate={isPrivate}
+      formatThumbnails={formatThumbnails} trimLinkTitle={trimLinkTitle}/></>)
 }
 
 export default CreateEdit;

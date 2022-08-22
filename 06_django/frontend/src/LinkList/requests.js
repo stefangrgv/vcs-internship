@@ -1,7 +1,7 @@
 import {apiGetAllLinks, apiLoadLinkList} from '../apiRequests';
 
 function fetchAllLinks (context) {
-    apiGetAllLinks(context.user, context.serverAddress)
+    apiGetAllLinks(context.user)
     .then((response) => { 
       if (response.status === 200) {
         console.log('fetched')
@@ -14,7 +14,7 @@ function fetchAllLinks (context) {
 
   function fetchList (id, context, setTitle, setLinks,
     setOwner, setPrivate, setLoaded, setResponseOk, setErrorMessage) {
-    apiLoadLinkList(id, context.user, context.serverAddress)
+    apiLoadLinkList(id, context.user)
     .then((response) => {
       if (response.status === 200) {
         setTitle(response.data.title);

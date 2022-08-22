@@ -1,6 +1,5 @@
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { useMatch } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 import { createShareModalBody  } from '../../Modal';
@@ -8,16 +7,15 @@ import { apiSubmitNewList } from '../../apiRequests';
 
 const TitlePanel = (props) => {
   const context = useOutletContext();
-  const match = useMatch(`/${props.mode === 'edit' ? 'edit' : 'list'}/:id`);
   const navigate = useNavigate();
 
   const navigateToEdit = () => {
-    navigate(`/edit/${match.params.id}/`);
+    navigate(`/edit/${props.id}/`);
   }
 
   const onClickShareLink = () => {
     context.showMessageModal(
-      createShareModalBody(match.params.id, context.domainName));
+      createShareModalBody(props.id, context.domainName));
   }
 
   const onChangeNewURL = (event) => {
