@@ -24,11 +24,6 @@ function ChangePassword (props) {
     setNewPasswordTwo(event.target.value);
   };
 
-  const onClickSuccess = () => () => {
-    context.hideModal();
-    navigate('/myprofile/');
-  };
-
   const submit = () => {
     if (oldPassword === '') context.showMessageModal('Old password is required!');
     else if (newPasswordOne === '' || newPasswordTwo === '') context.showMessageModal('New password is required!');
@@ -37,8 +32,7 @@ function ChangePassword (props) {
     else {
       apiChangePassword(context.user, oldPassword, newPasswordOne, newPasswordTwo).then((response) => {
         if (response.status === 200) {
-          context.showMessageModal('Success!');
-          context.setModalYesOnclick(onClickSuccess);
+          navigate('/myprofile/');
         } else {
           context.showMessageModal(response.response.status === 400 ? 'Old password is not correct!' : response.response.error);
         }
