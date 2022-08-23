@@ -1,11 +1,8 @@
-import React from 'react'
-import { useOutletContext } from 'react-router-dom';
-import { apiSubmitNewList, apiSubmitEditedList } from '../../apiRequests';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 
-// apiPOSTnew/editedlist
-// where is the new 
-// add ifs
+import { apiPostNewList, apiPutEditedList, apiDeleteList } from '../../apiRequests';
+
 const SaveDeletePanel = (props) => {
   const context = useOutletContext();
   const navigate = useNavigate();
@@ -13,45 +10,50 @@ const SaveDeletePanel = (props) => {
   const saveList = () => {
     if (props.title.replaceAll(' ', '') === '') {
       context.showMessageModal('Please enter a title!');
-      return null
+      return null;
     }
     
     props.formatThumbnails();
     props.trimLinkTitle();
     
     let request = props.mode === 'new' ?
-    apiSubmitNewList(context.user, props.title, props.links, props.isPrivate) :
-    apiSubmitEditedList(props.id, context.user, props.title, props.links, props.isPrivate)
+    apiPostNewList(context.user, props.title, props.links, props.isPrivate) :
+    apiPutEditedList(props.id, context.user, props.title, props.links, props.isPrivate);
 
     request.then((response) => {
-      if (response.status === 200) {  // newly created
+      if (response.status === 200) {  // edited
         navigate(`/list/${props.id}/`);
-      } else if (response.status === 201) { // edit saved
-        navigate(`/list/${props.id}/`);
-        navigate(0);
+      } else if (response.status === 201) {  // created new
+        navigate(`/list/${response.data.id}/`);
+      } else {
+        context.showMessageModal(response.error.message);
       }
-      // } else {
-      //   context.setModalBody(response.error.message);
-      // }
     });
-  }
+  };
 
-  const deleteList = () => {
-
-  }
+  const deleteList = () => () => {
+    apiDeleteList(props.id, context.user).then((response) => {
+      context.hideModal();
+      if (response.status === 204) { 
+        navigate('/myprofile/');
+      } else if (response.response.status === 401) {
+        context.showMessageModal('Error: you are not logged in.');
+      } else if (response.response.status === 403) {
+        context.showMessageModal('Error: you do not own this list.');
+      } else {
+        context.showMessageModal(`${response.message}: ${response.response.statusText}`);
+      }
+    });
+  };
 
   const askDeleteList = (event) => {
-
-  }
+    context.showQuestionModal('Are you sure you want to delete this linklist?', 'Yes', deleteList, 'No');
+  };
 
   return (<div className='panel save-list-panel'>
-    <button
-    className='btn btn-large'
-    onClick={saveList}>Save LinkList</button>
-    <button
-    className='btn btn-large btn-delete'
-    onClick={askDeleteList}>Delete LinkList</button>
-  </div>)
-}
+    <button className='btn btn-large' onClick={saveList}>Save LinkList</button>
+    <button className='btn btn-large btn-delete' onClick={askDeleteList}>Delete LinkList</button>
+  </div>);
+};
 
 export default SaveDeletePanel;

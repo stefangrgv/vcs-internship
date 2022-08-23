@@ -13,7 +13,7 @@ function Redirect (props) {
     }, 1000);
   });
   
-  return (<h3>Redirecting to <i>{params.url}</i></h3>)
+  return (<h3>Redirecting to <i>{params.url}</i></h3>);
 }
 
 export default Redirect;

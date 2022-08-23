@@ -10,7 +10,7 @@ function createShareModalBody (id) {
         <input className='input-field input-field-large' value={`${DOMAINNAME}/list/${id}/`} disabled={true}/>
       </div>
     </div>
-  )
+  );
 }
 
 function Modal (props) {
@@ -21,7 +21,7 @@ function Modal (props) {
         {props.noText !== '' ? <button onClick={props.noOnclick} className='btn btn-modal'>{props.noText}</button> : <></>}
       </div>
     </div>
-  </div>)
+  </div>);
 }
 
 export {Modal, createShareModalBody};

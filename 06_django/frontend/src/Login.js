@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { apiUserLogin } from './apiRequests';
+import { apiLoginUser } from './apiRequests';
 import './style.css';
 
 function Login (props) {
@@ -11,29 +11,26 @@ function Login (props) {
 
   const usernameChange = (event) => {
     setUsername(event.target.value);
-  }
+  };
 
   const passwordChange = (event) => {
     setPassword(event.target.value);
-  }
+  };
 
   const submit = () => {
-    apiUserLogin(username, password)
-    .then((response) => {
-      if (response.statusText === 'OK') {
+    apiLoginUser(username, password).then((response) => {
+      if (response.status === 200) {
         context.user.setUserCredentials(username, response.data.key);
         navigate('/myprofile/');
       } else {
-        let message = response.message;
         if (response.response.status === 400) {
-          message = 'Incorrect username or password!';
+          context.showMessageModal('Incorrect username or password!');
         } else if (response.response.status > 400) {
-          message = 'Error in request to server.';
-        } 
-        context.showMessageModal(message);
+          context.showMessageModal(`${response.message}: ${response.response.statusText}`);
+        }
       }
     });
-  }
+  };
 
   return (<div className='panel'>
     <h3>Login</h3>
@@ -48,7 +45,7 @@ function Login (props) {
       </div>
     </div>
     <button className='btn' onClick={submit}>Login</button>
-  </div>)
+  </div>);
 }
 
 export default Login;

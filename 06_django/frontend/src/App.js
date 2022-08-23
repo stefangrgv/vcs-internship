@@ -19,7 +19,7 @@ function App (props) {
 
   const hideModal = () => () => {
     setModalVisible(false);
-  }
+  };
 
   const showMessageModal = (body) => {
     setModalVisible(true);
@@ -27,7 +27,7 @@ function App (props) {
     setModalYesText('OK');
     setModalYesOnclick(hideModal);
     setModalNoText('');
-  }
+  };
 
   const showQuestionModal = (body, yesText, yesOnclick, noText, noOnclick = hideModal) => {
     setModalVisible(true);
@@ -36,7 +36,7 @@ function App (props) {
     setModalYesOnclick(yesOnclick);
     setModalNoText(noText);
     setModalNoOnclick(noOnclick);
-  }
+  };
 
   const context = {
     user,
@@ -49,14 +49,14 @@ function App (props) {
     setModalYesText,
     setModalNoOnclick,
     setModalNoText
-  }
+  };
 
   return (<>
     <Header context = {context}/>
     <Outlet context = {context}/>
     <Modal show = {modalVisible} body = {modalBody} yesOnclick = {modalYesOnclick}
       yesText = {modalYesText} noOnclick = {modalNoOnclick} noText = {modalNoText}/>
-  </>)
+  </>);
 }
 
 export default App;

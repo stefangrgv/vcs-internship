@@ -14,20 +14,20 @@ function ChangePassword (props) {
 
   const oldPasswordChange = (event) => {
     setOldPassword(event.target.value);
-  }
+  };
 
   const newPasswordOneChange = (event) => {
     setNewPasswordOne(event.target.value);
-  }
+  };
 
   const newPasswordTwoChange = (event) => {
     setNewPasswordTwo(event.target.value);
-  }
+  };
 
   const onClickSuccess = () => () => {
     context.hideModal();
     navigate('/myprofile/');
-  }
+  };
 
   const submit = () => {
     if (oldPassword === '') context.showMessageModal('Old password is required!');
@@ -35,17 +35,16 @@ function ChangePassword (props) {
     else if (newPasswordOne !== newPasswordTwo) context.showMessageModal('New passwords don\'t match!');
     else if (newPasswordOne === oldPassword) context.showMessageModal('Your new password cannot be the same as your old password.');
     else {
-      apiChangePassword(context.user, oldPassword, newPasswordOne, newPasswordTwo)
-      .then((response) => {
+      apiChangePassword(context.user, oldPassword, newPasswordOne, newPasswordTwo).then((response) => {
         if (response.status === 200) {
           context.showMessageModal('Success!');
           context.setModalYesOnclick(onClickSuccess);
         } else {
           context.showMessageModal(response.response.status === 400 ? 'Old password is not correct!' : response.response.error);
         }
-      })
+      });
     }
-  }
+  };
 
   return (<div className='panel'>
     <h3>Change Password for {context.user.username}</h3>
@@ -64,7 +63,7 @@ function ChangePassword (props) {
       </div>
     </div>
     <button className='btn' onClick={submit}>Submit</button>
-  </div>)
+  </div>);
 }
 
 export default ChangePassword;

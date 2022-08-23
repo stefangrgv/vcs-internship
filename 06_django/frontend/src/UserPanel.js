@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useOutletContext, useNavigate } from 'react-router-dom';
 
-import { apiUserGet, apiListDelete } from './apiRequests';
+import { apiGetUser, apiDeleteList } from './apiRequests';
 import { createShareModalBody } from './Modal';
 import './style.css';
 
@@ -20,21 +20,20 @@ function UserPanel (props) {
     } else {
       context.hideModal();
     }
-  }, [deleteListId])
+  }, [deleteListId]);
 
   const askDeleteList = (event) => {
     setDeleteListId(event.currentTarget.id);
-  }
+  };
 
   const confirmDeleteList = () => () => {
     context.setModalVisible(false);
     setQuerySent(false);
     deleteList();
-  }
+  };
   
   const deleteList = () => {
-    apiListDelete(deleteListId, context.user)
-    .then((response) => {
+    apiDeleteList(deleteListId, context.user).then((response) => {
       if (response.status === 204) {
         setQuerySent(false);
       } else {
@@ -49,39 +48,38 @@ function UserPanel (props) {
         context.showMessageModal(message);
       }
     });
-  }
+  };
 
   const loadUserData = () => {
-    apiUserGet(context.user.username, context.user.token)
-    .then((response) => {
-      if (response.statusText === 'OK') {
+    apiGetUser(context.user.username, context.user.token).then((response) => {
+      if (response.status === 200) {
         setLinklists(response.data.linklists);
+      } else if (response.response.status === 401) {  
+        context.showMessageModal('You are not logged in!');
       } else {
-        context.showMessageModal(
-          response.response.status === 401 ?
-          'You are not logged in!' : response.message);
+        context.showMessageModal(`${response.message}: ${response.response.statusText}`);
       }
       setQuerySent(true);
     });
-  }
+  };
 
   const onClickShareList = (event) => {
     context.showMessageModal(
       createShareModalBody(event.currentTarget.id, context.domainName)
     );
-  }
+  };
 
   const onClickEditList = (event) => {
     navigate(`/edit/${event.currentTarget.id}/`);
-  }
+  };
 
   const navigateChangePassword = () => {
     navigate('/myprofile/changepassword/');
-  }
+  };
 
   const navigateNewList = () => {
     navigate('/list/new/');
-  }
+  };
 
   const renderMyLists = () => {
     if (!isQuerySent) {
@@ -89,7 +87,7 @@ function UserPanel (props) {
       return <h4>loading...</h4>;
     }
     if (linklists.length === 0) {
-      return (<h4>You have no linklists!</h4>)
+      return (<h4>You have no linklists!</h4>);
     }
     return (<ol>{linklists.map((el) => {
       return (<li className='mylists-list-item' key={el.id}>
@@ -97,9 +95,9 @@ function UserPanel (props) {
         <button className='btn' id={el.id} onClick={onClickShareList}>Share</button>
         <button className='btn' id={el.id} onClick={onClickEditList}>Edit</button>
         <button className='btn btn-delete' id={el.id} onClick={askDeleteList}>Delete</button>
-      </li>)
-    })}</ol>)
-  }
+      </li>);
+    })}</ol>);
+  };
 
   return (<div className='panel'>
     <div className='user-info'><h3>User Panel</h3></div>
@@ -109,7 +107,7 @@ function UserPanel (props) {
     </div>
     <button className='btn btn-large' onClick={navigateNewList}>Create new linklist</button>
     <button className='btn btn-large' onClick={navigateChangePassword}>Change password</button>
-  </div>)
+  </div>);
 }
 
 export default UserPanel;

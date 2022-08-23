@@ -1,8 +1,11 @@
 import axios from 'axios';
+
 import { SERVERADDRESS } from './globalVariables';
 
-function apiSubmitNewList (user, title, links, isPrivate) {
-  return axios.post(`${SERVERADDRESS}/api/lists/`, {
+axios.defaults.baseURL = SERVERADDRESS;
+
+function apiPostNewList (user, title, links, isPrivate) {
+  return axios.post('/api/lists/', {
     title: title,
     links: links,
     private: isPrivate,
@@ -10,75 +13,66 @@ function apiSubmitNewList (user, title, links, isPrivate) {
     'Content-Type': 'application/json',
     'Authorization': `Token ${user.token}`,
   }}).catch((error) => {
-    return error
+    return error;
   });
 }
 
-function apiSubmitEditedList (id, user, title, links, isPrivate) {
-  return axios.put(
-    `${SERVERADDRESS}/api/lists/${id}/`, {
-      title: title,
-      links: links,
-      private: isPrivate,
-    }, { headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${user.token}`,
-       }
+function apiPutEditedList (id, user, title, links, isPrivate) {
+  return axios.put(`/api/lists/${id}/`, {
+    title: title,
+    links: links,
+    private: isPrivate,
+  }, { headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Token ${user.token}`,
+      }
   }).catch((error) => {
     return error;
-  })
+  });
 }
 
-function apiListDelete (id, user) {
-  return axios.delete(
-    `${SERVERADDRESS}/api/lists/${id}`,
-    { headers: {
-        'Authorization': `Token ${user.token}`,
-    }}
-  ).catch((error) => {
-    return error;
-  })
-}
-
-function apiLoadLinkList (id, user) {
-  return axios.get(
-    `${SERVERADDRESS}/api/lists/${id}/`, {
-    headers: {
-      'Authorization': `Token ${user.token}`,
+function apiDeleteList (id, user) {
+  return axios.delete(`/api/lists/${id}`, { headers: {
+    'Authorization': `Token ${user.token}`,
   }}).catch((error) => {
     return error;
-  })
+  });
+}
+
+function apiGetList (id, user) {
+  return axios.get(`/api/lists/${id}/`, { headers: {
+    'Authorization': `Token ${user.token}`,
+  }}).catch((error) => {
+    return error;
+  });
 }
 
 function apiGetAllLinks (user) {
-  return axios.get(`${SERVERADDRESS}/api/links/`, {
-    headers: {
-      'Authorization': `Token ${user.token}`,
+  return axios.get(`/api/links/`, { headers: {
+    'Authorization': `Token ${user.token}`,
   }}).catch((error) => {
     return error;
-  })
+  });
 }
 
 function apiPostNewLink (user, url) {
-  return axios.post(`${SERVERADDRESS}/api/links/`,
-    {'url': url}, { headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Token ${user.token}`,
-    }
-  }).catch((error) => {
+  return axios.post('/api/links/', {'url': url}, { headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Token ${user.token}`,
+  }}).catch((error) => {
     return error;
-  })
+  });
 }
 
-function apiUserLogout () {
-  return axios.post(`${SERVERADDRESS}/api/auth/logout/`)
+function apiLogoutUser () {
+  return axios.post('/api/auth/logout/')
   .catch((error) => {
     return error;
   });
 }
 
-function apiUserLogin (username, password) {
-  return axios.post(`${SERVERADDRESS}/api/auth/login/`, {
+function apiLoginUser (username, password) {
+  return axios.post('/api/auth/login/', {
     'username': username,
     'password': password,
   }, { headers: {
@@ -86,19 +80,19 @@ function apiUserLogin (username, password) {
     'Content-Type': 'application/json',
   }}).catch((error) => {
     return error;
-  })
+  });
 }
 
-function apiUserGet (username, token) {
-  return axios.get(`${SERVERADDRESS}/api/user/${username}/`,{
+function apiGetUser (username, token) {
+  return axios.get(`/api/user/${username}/`, {
     headers: {'Authorization': `Token ${token}`}
   }).catch((error) => {
     return error;
-  })
+  });
 }
 
-function apiPostNewUser(username, password, email) {
-  return axios.post(`${SERVERADDRESS}/api/createuser/`, {
+function apiPostNewUser (username, password, email) {
+  return axios.post('/api/createuser/', {
     'username': username,
     'password': password,
     'email': email,
@@ -106,11 +100,11 @@ function apiPostNewUser(username, password, email) {
     'Content-Type': 'application/json',
   }}).catch((error) => {
     return error;
-  })
+  });
 }
 
-function apiChangePassword(user, oldPassword, newPasswordOne, newPasswordTwo) {
-  return axios.post(`${SERVERADDRESS}/api/auth/password/change/`, {
+function apiChangePassword (user, oldPassword, newPasswordOne, newPasswordTwo) {
+  return axios.post('/api/auth/password/change/', {
     new_password1: newPasswordOne,
     new_password2: newPasswordTwo,
     old_password: oldPassword,
@@ -120,19 +114,8 @@ function apiChangePassword(user, oldPassword, newPasswordOne, newPasswordTwo) {
     'Authorization': `Token ${user.token}`,
   }}).catch((error) => {
     return error;
-  })
+  });
 }
 
-export {
-  apiSubmitNewList,
-  apiSubmitEditedList,
-  apiListDelete,
-  apiLoadLinkList,
-  apiGetAllLinks,
-  apiPostNewLink,
-  apiUserLogout,
-  apiUserGet,
-  apiUserLogin,
-  apiPostNewUser,
-  apiChangePassword
-}
+export { apiPostNewList, apiPutEditedList, apiDeleteList, apiGetList, apiGetAllLinks,
+  apiPostNewLink, apiLogoutUser, apiGetUser, apiLoginUser, apiPostNewUser, apiChangePassword };
