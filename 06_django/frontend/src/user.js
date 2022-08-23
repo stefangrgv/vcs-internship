@@ -24,6 +24,6 @@ class User {
     
     return apiLogoutUser(this.serverAddress);
   }
-  }
+}
 
-  export default User;
+export default User;

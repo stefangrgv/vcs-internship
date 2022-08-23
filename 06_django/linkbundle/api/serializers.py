@@ -161,8 +161,8 @@ class UserChangePasswordSerializer(serializers.ModelSerializer):
     """
 
     old_password = serializers.CharField(required=True)
-    new_password_one = serializers.CharField(required=True)
-    new_password_two = serializers.CharField(required=True)
+    new_password1 = serializers.CharField(required=True)
+    new_password2 = serializers.CharField(required=True)
 
     class Meta:
         model = User

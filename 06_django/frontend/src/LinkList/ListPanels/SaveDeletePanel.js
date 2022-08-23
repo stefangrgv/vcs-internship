@@ -16,8 +16,7 @@ const SaveDeletePanel = (props) => {
     props.formatThumbnails();
     props.trimLinkTitle();
     
-    let request = props.mode === 'new' ?
-    apiPostNewList(context.user, props.title, props.links, props.isPrivate) :
+    let request = props.mode === 'new' ? apiPostNewList(context.user, props.title, props.links, props.isPrivate) :
     apiPutEditedList(props.id, context.user, props.title, props.links, props.isPrivate);
 
     request.then((response) => {

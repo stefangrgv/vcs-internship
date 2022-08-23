@@ -32,9 +32,7 @@ function ListContentsPanel (props) {
 
   useEffect( () => {
     if (deleteId !== null) {
-      context.showQuestionModal(
-        'Are you sure you want to delete this link?',
-        'Yes', deleteLink, 'No', clearDeleteId);
+      context.showQuestionModal('Are you sure you want to delete this link?', 'Yes', deleteLink, 'No', clearDeleteId);
     } else {
       context.hideModal();
     }
