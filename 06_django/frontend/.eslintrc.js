@@ -15,9 +15,6 @@ module.exports = {
         'allowImportExportEverywhere': true
   },
   'rules': {
-        'camelcase': ['error', {
-                                'properties': 'always'
-                              }],
         'space-before-function-paren': ['error', 'always'],
         'space-before-blocks': ['error', 'always'],
         'quotes': [2, 'single', {'allowTemplateLiterals': true, 'avoidEscape': true}],
