@@ -21,7 +21,6 @@ const NewEdit = (props) => {
   const [owner, setOwner] = useState('');
   const [links, setLinks] = useState([]);
   const [title, setTitle] = useState('');
-  
 
   const fetchAllLinks = () => {
     apiGetAllLinks(context.user).then((response) => {
@@ -32,7 +31,7 @@ const NewEdit = (props) => {
 
   const updateLinkInfo = (url) => {
     return allLinks.find((l) => {
-      return (l.url === formatURLInput(url));
+      return l.url === formatURLInput(url);
     });
   };
 
@@ -41,11 +40,13 @@ const NewEdit = (props) => {
     Formats the URL paths of all the thumbnails in the list.
     In some cases they are not accepted by the backend unless reformatted.
     */
-    setLinks(links.map((link) => {
-      let l = link;
-      l['thumbnail'] = formatURLInput(link['thumbnail']);
-      return l;
-    }));
+    setLinks(
+      links.map((link) => {
+        let l = link;
+        l['thumbnail'] = formatURLInput(link['thumbnail']);
+        return l;
+      })
+    );
   };
 
   const trimLinkTitle = () => {
@@ -53,52 +54,86 @@ const NewEdit = (props) => {
     Trims the title of the links to ensure it fits the
     limit enforced in the database (100 symbols).
     */
-    setLinks(links.map((link) => {
-      if (link['title'].length < 100) {
-        return link;
-      }
-  
-      let l = link;
-      l['title'] = l['title'].slice(0, 97) + '...';
-      return l;
-    }));
+    setLinks(
+      links.map((link) => {
+        if (link['title'].length < 100) {
+          return link;
+        }
+
+        let l = link;
+        l['title'] = l['title'].slice(0, 97) + '...';
+        return l;
+      })
+    );
   };
 
-  useEffect( () => {
+  useEffect(() => {
     fetchAllLinks();
     if (props.mode === 'edit') {
-      fetchList(match.params.id, context, setTitle, setLinks, setOwner, setPrivate, setResponseOk, setErrorMessage);
+      fetchList(
+        match.params.id,
+        context,
+        setTitle,
+        setLinks,
+        setOwner,
+        setPrivate,
+        setResponseOk,
+        setErrorMessage
+      );
     }
   }, []);
 
-  useEffect( () => {
+  useEffect(() => {
     if (links.find((l) => l.needsRendering && !isFetchingLinks)) {
-      setLinks(links.map((link) => {
-        if (!link.needsRendering) {
-          return link;
-        } else {
-          let linkDbEntry = updateLinkInfo(link.url);
-          if (!linkDbEntry) {
-            setFetchingLinks(true);
-            fetchAllLinks();
+      setLinks(
+        links.map((link) => {
+          if (!link.needsRendering) {
             return link;
+          } else {
+            let linkDbEntry = updateLinkInfo(link.url);
+            if (!linkDbEntry) {
+              setFetchingLinks(true);
+              fetchAllLinks();
+              return link;
+            }
+            return linkDbEntry;
           }
-          return linkDbEntry;
-        }
-      }));
+        })
+      );
     }
   });
 
   if (isResponseOk || props.mode === 'new') {
-    return (<>
-      <TitlePanel mode={props.mode} title={title} setTitle={setTitle} isPrivate={isPrivate} setPrivate={setPrivate}/>
-      <ContentsPanel mode={props.mode} owner={owner} links={links} allLinks={allLinks} setLinks={setLinks}/>
-      <AddLinkPanel allLinks={allLinks} links={links} setLinks={setLinks}/>
-      <SaveDeletePanel id={match.params.id} mode={props.mode} title={title} links={links} isPrivate={isPrivate}
-        formatThumbnails={formatThumbnails} trimLinkTitle={trimLinkTitle}/>
-    </>);
+    return (
+      <>
+        <TitlePanel
+          mode={props.mode}
+          title={title}
+          setTitle={setTitle}
+          isPrivate={isPrivate}
+          setPrivate={setPrivate}
+        />
+        <ContentsPanel
+          mode={props.mode}
+          owner={owner}
+          links={links}
+          allLinks={allLinks}
+          setLinks={setLinks}
+        />
+        <AddLinkPanel allLinks={allLinks} links={links} setLinks={setLinks} />
+        <SaveDeletePanel
+          id={match.params.id}
+          mode={props.mode}
+          title={title}
+          links={links}
+          isPrivate={isPrivate}
+          formatThumbnails={formatThumbnails}
+          trimLinkTitle={trimLinkTitle}
+        />
+      </>
+    );
   }
-  return (<div className='error-message'>{errorMessage}</div>);
+  return <div className="error-message">{errorMessage}</div>;
 };
 
 export default NewEdit;

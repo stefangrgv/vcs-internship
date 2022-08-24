@@ -1,6 +1,15 @@
-import {apiGetList} from '../apiRequests';
+import { apiGetList } from '../apiRequests';
 
-function fetchList (id, context, setTitle, setLinks, setOwner, setPrivate, setResponseOk, setErrorMessage) {
+function fetchList (
+  id,
+  context,
+  setTitle,
+  setLinks,
+  setOwner,
+  setPrivate,
+  setResponseOk,
+  setErrorMessage
+) {
   apiGetList(id, context.user).then((response) => {
     if (response.status === 200) {
       setTitle(response.data.title);
@@ -9,12 +18,13 @@ function fetchList (id, context, setTitle, setLinks, setOwner, setPrivate, setRe
       setPrivate(response.data.private);
       setResponseOk(true);
     } else {
+      const errorStatus = response.response.status;
       let message = response.message;
-      if (response.response.status === 401) {
+      if (errorStatus === 401) {
         message = 'You are not logged in.';
-      } else if (response.response.status === 403) {
+      } else if (errorStatus === 403) {
         message = 'Permission denied: this list is private.';
-      } else if (response.response.status === 404) {
+      } else if (errorStatus === 404) {
         message = 'This link does not exist.';
       }
       setErrorMessage(message);
@@ -39,11 +49,11 @@ const formatURLInput = (input) => {
 };
 
 const isLinkEmpty = (url) => {
-  return (url.replaceAll(' ', '') === '');
+  return url.replaceAll(' ', '') === '';
 };
 
 const isLinkAlreadyPresent = (url, links) => {
-  return (links.find((l) => l.url === formatURLInput(url)));
+  return links.find((l) => l.url === formatURLInput(url));
 };
 
-export {fetchList, formatURLInput, isLinkEmpty, isLinkAlreadyPresent};
+export { fetchList, formatURLInput, isLinkEmpty, isLinkAlreadyPresent };

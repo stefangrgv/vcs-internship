@@ -1,4 +1,4 @@
-@use 'colors';
+@use "colors";
 
 $fontsize: 1rem;
 $linkContentsPadding: 0.75rem;
@@ -9,33 +9,57 @@ $height-input-buttons: 1.75rem;
 $width-input-buttons: 5rem;
 
 @mixin flexJustify() {
-    display: flex;
-    text-align: justify;
-    flex-direction: row;
+  display: flex;
+  text-align: justify;
+  flex-direction: row;
 }
 
 @keyframes blink-hyperlink {
-    0% {background-color: colors.$bgcolor-navbar;}
-    50% {background-color: colors.$bgcolor-panel-contents;}
-    100% {background-color: colors.$bgcolor-navbar;}
+  0% {
+    background-color: colors.$bgcolor-navbar;
+  }
+  50% {
+    background-color: colors.$bgcolor-panel-contents;
+  }
+  100% {
+    background-color: colors.$bgcolor-navbar;
+  }
 }
 
 @keyframes blink-img-btn {
-    0% {background-color: colors.$bgcolor-panel-heading;}
-    50% {background-color: colors.$bgcolor-panel-contents;}
-    100% {background-color: colors.$bgcolor-panel-heading;}
+  0% {
+    background-color: colors.$bgcolor-panel-heading;
+  }
+  50% {
+    background-color: colors.$bgcolor-panel-contents;
+  }
+  100% {
+    background-color: colors.$bgcolor-panel-heading;
+  }
 }
 
 @keyframes blink-btn {
-    0% {background-color: colors.$bgcolor-panel-contents;}
-    50% {background-color: colors.$bgcolor-panel-heading;}
-    100% {background-color: colors.$bgcolor-panel-contents;}
+  0% {
+    background-color: colors.$bgcolor-panel-contents;
+  }
+  50% {
+    background-color: colors.$bgcolor-panel-heading;
+  }
+  100% {
+    background-color: colors.$bgcolor-panel-contents;
+  }
 }
 
 @keyframes blink-btn-delete {
-    0% {background-color: colors.$color-red;}
-    50% {background-color: colors.$color-white;}
-    100% {background-color: colors.$color-red;}
+  0% {
+    background-color: colors.$color-red;
+  }
+  50% {
+    background-color: colors.$color-white;
+  }
+  100% {
+    background-color: colors.$color-red;
+  }
 }
 
 /////////////////////////////////////////
@@ -43,426 +67,429 @@ $width-input-buttons: 5rem;
 /////////////////////////////////////////
 
 * {
-    font-family: 'Times New Roman', Times, serif;
-    background-color: colors.$color-white;
+  font-family: "Times New Roman", Times, serif;
+  background-color: colors.$color-white;
 }
 
 .display-block {
-    display: block;
+  display: block;
 }
-  
+
 .display-none {
-    display: none;
+  display: none;
 }
 
 .hyperlink {
-    padding-left: $linkContentsPadding;
-    font-size: 1.2*$fontsize;
-    font-weight: 300;
-    color: colors.$color-red;
-    background-color: transparent;
-    text-decoration: none;
+  padding-left: $linkContentsPadding;
+  font-size: 1.2 * $fontsize;
+  font-weight: 300;
+  color: colors.$color-red;
+  background-color: transparent;
+  text-decoration: none;
 }
 
 .hyperlink:hover {
-    color: colors.$bgcolor-navbar;
+  color: colors.$bgcolor-navbar;
 }
 
 .input-field {
-    width: 2.5*$btn-width;
-    max-width: 50%;
-    height: $height-input-buttons;
-    border: 1px solid;
-    border-radius: 0.25rem;
-    font-size: 1.5*$fontsize;
-    text-align: center;
+  width: 2.5 * $btn-width;
+  max-width: 50%;
+  height: $height-input-buttons;
+  border: 1px solid;
+  border-radius: 0.25rem;
+  font-size: 1.5 * $fontsize;
+  text-align: center;
 }
 
 .input-field-large {
-    width: 7.5*$btn-width;
+  width: 7.5 * $btn-width;
 }
 
 .prompt-and-input-field {
-    width: 100%;
-    column-gap: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin: auto;
+  width: 100%;
+  column-gap: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: auto;
 }
 
 .credentials-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .username-password-input-field {
-    width: 5*$btn-width;
-    background-color: colors.$bgcolor-panel-contents;
+  width: 5 * $btn-width;
+  background-color: colors.$bgcolor-panel-contents;
 }
 
 .error-message {
-    margin: 1rem;
-    color: colors.$color-red;
-    font-size: 1.5*$fontsize;
-    text-align: center;
+  margin: 1rem;
+  color: colors.$color-red;
+  font-size: 1.5 * $fontsize;
+  text-align: center;
 }
 
 .home {
-    text-align: center;
+  text-align: center;
 }
 
 .img-page-not-found {
-    width: 100%
+  width: 100%;
 }
 
 .img-btn {
-    padding: 2px;
-    width: $img-btn-size;
-    height: auto;
-    background-color: transparent;
-    position: absolute;
-    top: 0;
-    right: 0;
+  padding: 2px;
+  width: $img-btn-size;
+  height: auto;
+  background-color: transparent;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .img-btn:hover {
-    animation: blink-img-btn 1s infinite;
+  animation: blink-img-btn 1s infinite;
 }
 
 .img-btn-btn {
-    border: 0px;
+  border: 0px;
 }
 
 h2 {
-    font-size: 1.75*$fontsize;
-    background-color: inherit;
+  font-size: 1.75 * $fontsize;
+  background-color: inherit;
 }
 
 h3 {
-    font-size: 1.5*$fontsize;
-    background-color: inherit;
+  font-size: 1.5 * $fontsize;
+  background-color: inherit;
 }
 
 h4 {
-    font-size: 1.25*$fontsize;
-    background-color: inherit;
+  font-size: 1.25 * $fontsize;
+  background-color: inherit;
 }
 
 h5 {
-    font-size: 1*$fontsize;
-    font-weight: 300;
-    background-color: inherit;
+  font-size: 1 * $fontsize;
+  font-weight: 300;
+  background-color: inherit;
 }
 
-div, i, ol, li {
-    background-color: inherit;
+div,
+i,
+ol,
+li {
+  background-color: inherit;
 }
 
 ol {
-    padding: 0;
-    margin-top: 0;
-    margin-bottom: 0;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
-input[type=checkbox] {
-    width: 1.2rem;
-    height: 1.2rem;;
+input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 /////////////////////////////////////////
 ///     PANELS
 /////////////////////////////////////////
 .panel {
-    padding-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .title-and-owner-panel {
-    margin-top: 0.15rem;
-    margin-bottom: 0.15rem;
-    background-color: colors.$bgcolor-title-panel;
-    text-align: center;
+  margin-top: 0.15rem;
+  margin-bottom: 0.15rem;
+  background-color: colors.$bgcolor-title-panel;
+  text-align: center;
 }
 
 .privacy-panel {
-    padding-bottom: 0;
-    flex-direction: row;
-    justify-content: center;
-    column-gap: 1rem;
+  padding-bottom: 0;
+  flex-direction: row;
+  justify-content: center;
+  column-gap: 1rem;
 }
 
 .save-list-panel {
-    border-top: 2px solid;
-    padding-top: 1rem;
+  border-top: 2px solid;
+  padding-top: 1rem;
 }
 
 .mylists-panel {
-    width: 100%;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    background-color: colors.$bgcolor-title-panel;
-    text-align: center;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  background-color: colors.$bgcolor-title-panel;
+  text-align: center;
 }
 
 .mylists-list {
-    width: 99%;
-    background-color: colors.$bgcolor-panel-contents;
+  width: 99%;
+  background-color: colors.$bgcolor-panel-contents;
 }
 
 /////////////////////////////////////////
 ///     BUTTONS
 /////////////////////////////////////////
 .btn {
-    width: $btn-width;
-    height: $btn-height;
-    font-size: 1.2*$fontsize;
-    border-radius: 0.25rem;
-    color: black;
-    background-color: colors.$bgcolor-btn;
-    border-color: black;
+  width: $btn-width;
+  height: $btn-height;
+  font-size: 1.2 * $fontsize;
+  border-radius: 0.25rem;
+  color: black;
+  background-color: colors.$bgcolor-btn;
+  border-color: black;
 }
 
 .btn:disabled {
-    display: none;
+  display: none;
 }
 
 .btn:hover {
-    animation: blink-btn 1s infinite;
+  animation: blink-btn 1s infinite;
 }
 
 .btn-large {
-    width: 2*$btn-width;
+  width: 2 * $btn-width;
 }
 
 .btn-delete {
-    background-color: colors.$color-red;
-    color: black;
+  background-color: colors.$color-red;
+  color: black;
 }
 
 .btn-delete:hover {
-    animation: blink-btn-delete 1s infinite;
+  animation: blink-btn-delete 1s infinite;
 }
 
 .btn-logout {
-    width: $btn-width;
-    margin-left: 0.5rem;
+  width: $btn-width;
+  margin-left: 0.5rem;
 }
 
 .btn-modal {
-    width: $width-input-buttons;
-    height: $height-input-buttons;
-    background-color: colors.$bgcolor-panel-heading;
+  width: $width-input-buttons;
+  height: $height-input-buttons;
+  background-color: colors.$bgcolor-panel-heading;
 }
 
 /////////////////////////////////////////
 ///     LINKS INSIDE A LIST
-/// 
+///
 /////////////////////////////////////////
 
 .link-title {
-    padding-top: 0.1rem;
-    padding-bottom: 0.1rem;
-    background-color: colors.$bgcolor-panel-heading;
-    text-align: center;
-    position: relative;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+  background-color: colors.$bgcolor-panel-heading;
+  text-align: center;
+  position: relative;
 }
 
 .link-content {
-    border: 1px solid;
-    margin-bottom: 1rem;
-    background-color: colors.$bgcolor-panel-contents;
+  border: 1px solid;
+  margin-bottom: 1rem;
+  background-color: colors.$bgcolor-panel-contents;
 }
 
 .link-description {
-    @include flexJustify();
-    padding-right: 1rem;
-    padding-top: 1rem;
+  @include flexJustify();
+  padding-right: 1rem;
+  padding-top: 1rem;
 }
 
 .link-thumbnail {
-    width: 150px;
-    height: 150px;
-    padding-left: $linkContentsPadding;
-    padding-right: $linkContentsPadding;
-    background-color: colors.$bgcolor-panel-contents;
+  width: 150px;
+  height: 150px;
+  padding-left: $linkContentsPadding;
+  padding-right: $linkContentsPadding;
+  background-color: colors.$bgcolor-panel-contents;
 }
 
 .link-hyperlink {
-    @include flexJustify();
+  @include flexJustify();
 }
 /////////////////////////////////////////
 ///     NAVBAR
 /////////////////////////////////////////
 .navbar {
-    height: 3.5rem;
-    padding-left: 1rem;
-    border-bottom: 1px solid black;
-    background-color: colors.$bgcolor-navbar;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    align-items: center;
-    align-content: center;
-    position: sticky;
-    top: 0;
-    z-index: 99999;
+  height: 3.5rem;
+  padding-left: 1rem;
+  border-bottom: 1px solid black;
+  background-color: colors.$bgcolor-navbar;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  align-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 99999;
 }
 
 .navbar-guest {
-    @extend .navbar;
-    grid-template-columns: 1fr 2fr;
+  @extend .navbar;
+  grid-template-columns: 1fr 2fr;
 }
 
 .navbar-text {
-    background-color: transparent;
-    color: colors.$bgcolor-panel-contents;
+  background-color: transparent;
+  color: colors.$bgcolor-panel-contents;
 }
 
 .navbar-middle {
-    padding: 0;
-    display: flex;
-    justify-content: center;
+  padding: 0;
+  display: flex;
+  justify-content: center;
 }
 
 .navbar-username {
-    padding-right: 1rem;
-    display: flex;
-    justify-content: right;
-    column-gap: 0.25rem;
+  padding-right: 1rem;
+  display: flex;
+  justify-content: right;
+  column-gap: 0.25rem;
 }
 
 .navbar-hyperlink {
-    height: 100%;
-    font-size: 1.5*$fontsize;
-    color: colors.$color-white;
-    background-color: transparent;   
-    text-decoration: none;
+  height: 100%;
+  font-size: 1.5 * $fontsize;
+  color: colors.$color-white;
+  background-color: transparent;
+  text-decoration: none;
 }
 
 .navbar-hyperlink:hover {
-    border-radius: 0.5rem;
-    animation: blink-hyperlink 1s infinite;
+  border-radius: 0.5rem;
+  animation: blink-hyperlink 1s infinite;
 }
 
 /////////////////////////////////////////
 ///     MODAL
 /////////////////////////////////////////
 .modal {
-    width:100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    position: fixed;
-    top: 0;
-    left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  top: 0;
+  left: 0;
 }
-  
+
 .modal-main {
-    width: 50%;
-    max-width: 5*$btn-width;
-    height: auto;
-    border: 1px solid black;
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-    background: colors.$bgcolor-panel-contents;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform: translate(-50%,-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: baseline;
-    row-gap: 1rem;
+  width: 50%;
+  max-width: 5 * $btn-width;
+  height: auto;
+  border: 1px solid black;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  background: colors.$bgcolor-panel-contents;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: baseline;
+  row-gap: 1rem;
 }
 
 .modal-share-list-body {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    column-gap: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 1rem;
 }
 /////////////////////////////////////////
-
 
 /////////////////////////////////////////
 ///     OTHERS
 /////////////////////////////////////////
 .new-url-field {
-    padding-top: 0.05rem;
-    background-color: colors.$bgcolor-panel-heading;
+  padding-top: 0.05rem;
+  background-color: colors.$bgcolor-panel-heading;
 }
 
 .list-title-privacy {
-    padding: 0.5rem;
-    margin: 0;
+  padding: 0.5rem;
+  margin: 0;
 }
 
 .links-buttons {
-    padding-bottom: 0.5rem;
-    gap: 0.5rem;
-    display: flex;
-    justify-content: center;
+  padding-bottom: 0.5rem;
+  gap: 0.5rem;
+  display: flex;
+  justify-content: center;
 }
 
 .user-info {
-    width: 100%;
-    background-color: colors.$bgcolor-panel-heading;
-    text-align: center;
+  width: 100%;
+  background-color: colors.$bgcolor-panel-heading;
+  text-align: center;
 }
 
 .mylists-list-item {
-    padding: 0.1rem;
-    display: grid;
-    grid-auto-flow: column;
-    justify-items: center;
-    align-items: center;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);
+  padding: 0.1rem;
+  display: grid;
+  grid-auto-flow: column;
+  justify-items: center;
+  align-items: center;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .login-title {
-    width: 100%;
-    margin: 0.15rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    background-color: colors.$bgcolor-panel-heading;
-    text-align: center;
+  width: 100%;
+  margin: 0.15rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: colors.$bgcolor-panel-heading;
+  text-align: center;
 }
-  
+
 .site-title {
-    margin: 1rem;
-    font-size: 1.75*$fontsize;
+  margin: 1rem;
+  font-size: 1.75 * $fontsize;
 }
 
 .site-description {
-    margin-top: 0.5rem;
-    margin-bottom: 0;
-    padding-bottom: 1.5rem;
-    border-bottom: 2px solid black;
-    font-size: 1.5*$fontsize;
-    font-style: italic;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid black;
+  font-size: 1.5 * $fontsize;
+  font-style: italic;
 }
 
 .footer {
-    margin-top: 2px;
-    border-top: 2px solid black;
+  margin-top: 2px;
+  border-top: 2px solid black;
 }
 
 @media only screen and (max-width: 600px) {
-    .mylists-list-item {
-        display: grid;
-        grid-template-columns: 1fr;
-    }
+  .mylists-list-item {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
 
-    .credentials-panel {
-        width: 100%;
-    }
+  .credentials-panel {
+    width: 100%;
+  }
 
-    .navbar-hyperlink, .navbar-text {
-        font-size: 100%;
-    }
+  .navbar-hyperlink,
+  .navbar-text {
+    font-size: 100%;
+  }
 }

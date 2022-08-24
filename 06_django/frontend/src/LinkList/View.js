@@ -16,17 +16,37 @@ const View = (props) => {
   const [links, setLinks] = useState([]);
   const [title, setTitle] = useState('');
 
-  
-  useEffect( () => {
-    fetchList(match.params.id, context, setTitle, setLinks, setOwner, setPrivate, setResponseOk, setErrorMessage);
+  useEffect(() => {
+    fetchList(
+      match.params.id,
+      context,
+      setTitle,
+      setLinks,
+      setOwner,
+      setPrivate,
+      setResponseOk,
+      setErrorMessage
+    );
   }, []);
 
   if (isResponseOk) {
-    return(<>
-      <TitlePanel mode='view' id={match.params.id} title={title} owner={owner} isPrivate={isPrivate}></TitlePanel>
-      <ContentsPanel mode='view' links={links} setLinks={setLinks}></ContentsPanel>
-    </>); 
+    return (
+      <>
+        <TitlePanel
+          mode="view"
+          id={match.params.id}
+          title={title}
+          owner={owner}
+          isPrivate={isPrivate}
+        ></TitlePanel>
+        <ContentsPanel
+          mode="view"
+          links={links}
+          setLinks={setLinks}
+        ></ContentsPanel>
+      </>
+    );
   }
-  return (<div className='error-message'>{errorMessage}</div>);
+  return <div className="error-message">{errorMessage}</div>;
 };
 export default View;

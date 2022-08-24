@@ -5,7 +5,7 @@ import Header from './Header';
 import { Modal } from './Modal';
 import User from './user';
 import './style.css';
-import {SERVERADDRESS} from './globalVariables';
+import { SERVERADDRESS } from './globalVariables';
 
 function App (props) {
   const user = new User(SERVERADDRESS);
@@ -29,7 +29,13 @@ function App (props) {
     setModalNoText('');
   };
 
-  const showQuestionModal = (body, yesText, yesOnclick, noText, noOnclick = hideModal) => {
+  const showQuestionModal = (
+    body,
+    yesText,
+    yesOnclick,
+    noText,
+    noOnclick = hideModal
+  ) => {
     setModalVisible(true);
     setModalBody(body);
     setModalYesText(yesText);
@@ -48,15 +54,23 @@ function App (props) {
     setModalYesOnclick,
     setModalYesText,
     setModalNoOnclick,
-    setModalNoText
+    setModalNoText,
   };
 
-  return (<>
-    <Header context = {context}/>
-    <Outlet context = {context}/>
-    <Modal show = {modalVisible} body = {modalBody} yesOnclick = {modalYesOnclick}
-      yesText = {modalYesText} noOnclick = {modalNoOnclick} noText = {modalNoText}/>
-  </>);
+  return (
+    <>
+      <Header context={context} />
+      <Outlet context={context} />
+      <Modal
+        show={modalVisible}
+        body={modalBody}
+        yesOnclick={modalYesOnclick}
+        yesText={modalYesText}
+        noOnclick={modalNoOnclick}
+        noText={modalNoText}
+      />
+    </>
+  );
 }
 
 export default App;

@@ -24,29 +24,46 @@ function Login (props) {
         context.user.setUserCredentials(username, response.data.key);
         navigate('/myprofile/');
       } else {
-        if (response.response.status === 400) {
+        const errorStatus = response.response.status;
+        if (errorStatus === 400) {
           context.showMessageModal('Incorrect username or password!');
-        } else if (response.response.status > 400) {
-          context.showMessageModal(`${response.message}: ${response.response.statusText}`);
+        } else if (errorStatus > 400) {
+          context.showMessageModal(
+            `${response.message}: ${response.response.statusText}`
+          );
         }
       }
     });
   };
 
-  return (<div className='panel'>
-    <h3>Login</h3>
-    <div className='credentials-panel'>
-      <div className='prompt-and-input-field'>
-        <h5>Username</h5>
-        <input className='input-field username-password-input-field' name='username' type='text' onChange={usernameChange}/>
+  return (
+    <div className="panel">
+      <h3>Login</h3>
+      <div className="credentials-panel">
+        <div className="prompt-and-input-field">
+          <h5>Username</h5>
+          <input
+            className="input-field username-password-input-field"
+            name="username"
+            type="text"
+            onChange={usernameChange}
+          />
+        </div>
+        <div className="prompt-and-input-field">
+          <h5>Password</h5>
+          <input
+            className="input-field username-password-input-field"
+            name="password"
+            type="password"
+            onChange={passwordChange}
+          />
+        </div>
       </div>
-      <div className='prompt-and-input-field'>
-        <h5>Password</h5>
-        <input className='input-field username-password-input-field' name='password' type='password' onChange={passwordChange}/>
-      </div>
+      <button className="btn" onClick={submit}>
+        Login
+      </button>
     </div>
-    <button className='btn' onClick={submit}>Login</button>
-  </div>);
+  );
 }
 
 export default Login;

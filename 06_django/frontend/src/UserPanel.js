@@ -13,9 +13,14 @@ function UserPanel (props) {
   const [linklists, setLinklists] = useState([]);
   const [deleteListId, setDeleteListId] = useState(null);
 
-  useEffect (() => {
+  useEffect(() => {
     if (deleteListId !== null) {
-      context.showQuestionModal('Are you sure you want to delete this linklist?', 'Yes', confirmDeleteList, 'No');
+      context.showQuestionModal(
+        'Are you sure you want to delete this linklist?',
+        'Yes',
+        confirmDeleteList,
+        'No'
+      );
       setDeleteListId(null);
     } else {
       context.hideModal();
@@ -31,18 +36,19 @@ function UserPanel (props) {
     setQuerySent(false);
     deleteList();
   };
-  
+
   const deleteList = () => {
     apiDeleteList(deleteListId, context.user).then((response) => {
       if (response.status === 204) {
         setQuerySent(false);
       } else {
+        const errorStatus = response.response.status;
         let message = response.error.message;
-        if (response.response.status === 401) {
+        if (errorStatus === 401) {
           message = 'You are not logged in.';
-        } else if (response.response.status === 403) {
+        } else if (errorStatus === 403) {
           message = 'Permission denied: you do not own this list.';
-        } else if (response.response.status === 404) {
+        } else if (errorStatus === 404) {
           message = 'List not found!';
         }
         context.showMessageModal(message);
@@ -54,10 +60,12 @@ function UserPanel (props) {
     apiGetUser(context.user.username, context.user.token).then((response) => {
       if (response.status === 200) {
         setLinklists(response.data.linklists);
-      } else if (response.response.status === 401) {  
+      } else if (response.response.status === 401) {
         context.showMessageModal('You are not logged in!');
       } else {
-        context.showMessageModal(`${response.message}: ${response.response.statusText}`);
+        context.showMessageModal(
+          `${response.message}: ${response.response.statusText}`
+        );
       }
       setQuerySent(true);
     });
@@ -87,27 +95,53 @@ function UserPanel (props) {
       return <h4>loading...</h4>;
     }
     if (linklists.length === 0) {
-      return (<h4>You have no linklists!</h4>);
+      return <h4>You have no linklists!</h4>;
     }
-    return (<ol>{linklists.map((el) => {
-      return (<li className='mylists-list-item' key={el.id}>
-        <Link className='hyperlink' to={`/list/${el.id}/`}>{el.title}</Link>
-        <button className='btn' id={el.id} onClick={onClickShareList}>Share</button>
-        <button className='btn' id={el.id} onClick={onClickEditList}>Edit</button>
-        <button className='btn btn-delete' id={el.id} onClick={askDeleteList}>Delete</button>
-      </li>);
-    })}</ol>);
+    return (
+      <ol>
+        {linklists.map((el) => {
+          return (
+            <li className="mylists-list-item" key={el.id}>
+              <Link className="hyperlink" to={`/list/${el.id}/`}>
+                {el.title}
+              </Link>
+              <button className="btn" id={el.id} onClick={onClickShareList}>
+                Share
+              </button>
+              <button className="btn" id={el.id} onClick={onClickEditList}>
+                Edit
+              </button>
+              <button
+                className="btn btn-delete"
+                id={el.id}
+                onClick={askDeleteList}
+              >
+                Delete
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    );
   };
 
-  return (<div className='panel'>
-    <div className='user-info'><h3>User Panel</h3></div>
-    <div className='panel mylists-panel'>
-      <h3>My linklists</h3>
-      <div className='mylists-list'>{renderMyLists()}</div>
+  return (
+    <div className="panel">
+      <div className="user-info">
+        <h3>User Panel</h3>
+      </div>
+      <div className="panel mylists-panel">
+        <h3>My linklists</h3>
+        <div className="mylists-list">{renderMyLists()}</div>
+      </div>
+      <button className="btn btn-large" onClick={navigateNewList}>
+        Create new linklist
+      </button>
+      <button className="btn btn-large" onClick={navigateChangePassword}>
+        Change password
+      </button>
     </div>
-    <button className='btn btn-large' onClick={navigateNewList}>Create new linklist</button>
-    <button className='btn btn-large' onClick={navigateChangePassword}>Change password</button>
-  </div>);
+  );
 }
 
 export default UserPanel;

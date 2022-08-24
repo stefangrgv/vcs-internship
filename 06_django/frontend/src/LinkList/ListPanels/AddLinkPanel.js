@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { apiPostNewLink } from '../../apiRequests';
 
-import { formatURLInput, isLinkEmpty, isLinkAlreadyPresent } from '../commonFunctions';
+import {
+  formatURLInput,
+  isLinkEmpty,
+  isLinkAlreadyPresent,
+} from '../commonFunctions';
 
 const AddLinkPanel = (props) => {
   const context = useOutletContext();
   const [newURL, setNewURL] = useState('');
 
   const addLink = (url) => {
-    props.setLinks([...props.links, {url: url, needsRendering: true}]); 
+    props.setLinks([...props.links, { url: url, needsRendering: true }]);
     setNewURL('');
   };
 
@@ -31,7 +35,9 @@ const AddLinkPanel = (props) => {
         } else {
           // response will typically yield an error if the url is invalid
           const errorContents = JSON.parse(response.request.response);
-          context.showMessageModal(errorContents.url ? errorContents.url : response.message);
+          context.showMessageModal(
+            errorContents.url ? errorContents.url : response.message
+          );
         }
       });
     } else {
@@ -43,11 +49,20 @@ const AddLinkPanel = (props) => {
     setNewURL(event.target.value);
   };
 
-  return (<div className='panel new-url-field'>
-    <h4>Add URL:</h4>
-    <input className='input-field input-field-large' placeholder='Enter URL' onChange={onChangeNewURL} value={newURL}/>
-    <button className='btn' onClick={requestAddLink}>Add</button>
-  </div>);
+  return (
+    <div className="panel new-url-field">
+      <h4>Add URL:</h4>
+      <input
+        className="input-field input-field-large"
+        placeholder="Enter URL"
+        onChange={onChangeNewURL}
+        value={newURL}
+      />
+      <button className="btn" onClick={requestAddLink}>
+        Add
+      </button>
+    </div>
+  );
 };
 
 export default AddLinkPanel;

@@ -11,17 +11,17 @@ class User {
     localStorage.setItem('kodjalinkUserToken', token);
     this.loadUser();
   }
-  
+
   loadUser () {
     this.username = localStorage.getItem('kodjalinkUsername');
     this.token = localStorage.getItem('kodjalinkUserToken');
   }
-  
+
   logout () {
     localStorage.removeItem('kodjalinkUsername');
     localStorage.removeItem('kodjalinkUserToken');
     this.loadUser();
-    
+
     return apiLogoutUser(this.serverAddress);
   }
 }
