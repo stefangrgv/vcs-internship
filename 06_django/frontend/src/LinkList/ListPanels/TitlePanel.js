@@ -29,18 +29,16 @@ const TitlePanel = (props) => {
     return (
       <div className="panel title-and-owner-panel">
         <h3 className="list-title-privacy">{props.title}</h3>
-        {props.isPrivate ? (
-          <h4 className="list-title-privacy">private list</h4>
-        ) : (
-          <></>
-        )}
-        {props.owner === context.user.username ? (
-          <button className="btn" onClick={navigateToEdit}>
+        {props.isPrivate
+        ? <h4 className="list-title-privacy">private list</h4>
+        : <></>
+        }
+        {props.owner === context.user.username 
+        ? <button className="btn" onClick={navigateToEdit}>
             Edit list
           </button>
-        ) : (
-          <></>
-        )}
+        : <></>
+        }
         <button className="btn" onClick={onClickShareLink}>
           Share list
         </button>

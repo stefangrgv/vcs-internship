@@ -20,8 +20,7 @@ const SaveDeletePanel = (props) => {
     props.formatThumbnails();
     props.trimLinkTitle();
 
-    let request =
-      props.mode === 'new'
+    let request = props.mode === 'new'
         ? apiPostNewList(
             context.user,
             props.title,
