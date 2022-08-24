@@ -1,0 +1,3 @@
+linkbundle-venv/
+venv/
+**/**/*.pyc
